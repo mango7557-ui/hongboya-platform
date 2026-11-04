@@ -56,13 +56,28 @@ def clean_profile(value):
             return raw
         return url(raw)
     result = {key: text(key, limit) for key, limit in
-              [('name', 60), ('bio', 400), ('region', 60), ('handle', 40), ('badgeText', 40)]}
+              [('name', 60), ('bio', 400), ('region', 60), ('handle', 40), ('badgeText', 40),
+               ('bgmTitle', 60), ('minimeMsg', 50)]}
     if not result['name']:
         raise ValueError('활동명을 입력하세요.')
     result['role'] = text('role', 20) if value.get('role') in ('producer', 'maker', 'creative', 'local') else 'local'
     result['theme'] = text('theme', 20) if value.get('theme') in ('coral', 'forest', 'violet', 'ocean', 'amber', 'rose') else 'coral'
     result['bgStyle'] = text('bgStyle', 20) if value.get('bgStyle') in ('clean', 'dots', 'grid', 'soft') else 'clean'
     result['btnShape'] = text('btnShape', 20) if value.get('btnShape') in ('rounded', 'pill', 'sharp') else 'rounded'
+    result['mood'] = text('mood', 20) if value.get('mood') in ('sunny', 'harvest', 'hot', 'sale', 'work', 'new') else 'sunny'
+    result['bgmPreset'] = text('bgmPreset', 20) if value.get('bgmPreset') in ('sunny', 'breeze', 'lofi', 'cafe') else 'sunny'
+    result['roomTheme'] = text('roomTheme', 20) if value.get('roomTheme') in ('farm', 'atelier', 'studio', 'cafe', 'hanok') else 'farm'
+    result['minime'] = text('minime', 20) if value.get('minime') in ('farmer', 'maker', 'creator', 'barista', 'cat', 'dog') else 'farmer'
+    allowed_props = {'box', 'plant', 'basket', 'lamp', 'speaker', 'coffee', 'sign', 'balloon'}
+    raw_props = value.get('roomProps', ['box', 'plant', 'sign'])
+    result['roomProps'] = [p for p in (raw_props if isinstance(raw_props, list) else []) if p in allowed_props][:8]
+    raw_guest = value.get('guestbook', [])
+    if not isinstance(raw_guest, list) or len(raw_guest) > 12:
+        raise ValueError('일촌평은 12개까지 등록할 수 있습니다.')
+    result['guestbook'] = [
+        {'nick': str(g.get('nick', '일촌')).strip()[:24] or '일촌', 'text': str(g.get('text', '')).strip()[:120]}
+        for g in raw_guest if isinstance(g, dict) and str(g.get('text', '')).strip()
+    ]
     result['image'] = image_url(value.get('image', ''))
     result['coverImage'] = image_url(value.get('coverImage', ''))
     for collection, limit in [('links', 8), ('products', 12)]:

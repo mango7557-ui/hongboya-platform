@@ -67,14 +67,48 @@
   <label class="url-sub-label">또는 테마 배경 이미지 주소 직접 입력<input name="coverImage" type="text" placeholder="https://... (선택 · 배경 업로드/프리셋 선택 가능)"></label>
  </div>
  <div class="deco-box">
-  <div class="section-head"><h2>🎨 미니홈피 꾸미기</h2><span class="pill">STYLE CUSTOM</span></div>
+  <div class="section-head"><h2>🎨 싸이월드 감성 · 미니홈피 & 미니룸 꾸미기</h2><span class="pill">CYWORLD STUDIO</span></div>
   <div class="two">
-   <label>나의 포인트 색<select name="theme"><option value="coral">코랄 · 따뜻한 시작</option><option value="forest">포레스트 · 자연의 정성</option><option value="violet">바이올렛 · 새로운 영감</option><option value="ocean">오션 · 로컬의 발견</option><option value="amber">선셋 골드 · 풍요로운 수확</option><option value="rose">로즈 베리 · 감성 아틀리에</option></select></label>
-   <label>배경 분위기 (패턴)<select name="bgStyle"><option value="clean">클린 · 깔끔한 기본</option><option value="dots">도트 · 아기자기한 감성</option><option value="grid">그리드 · 공방 노트 스타일</option><option value="soft">소프트 · 은은한 그라데이션</option></select></label>
+   <label>나의 포인트 색 (다이어리 스킨)<select name="theme"><option value="coral">코랄 · 따뜻한 시작</option><option value="forest">포레스트 · 자연의 정성</option><option value="violet">바이올렛 · 새로운 영감</option><option value="ocean">오션 · 로컬의 발견</option><option value="amber">선셋 골드 · 풍요로운 수확</option><option value="rose">로즈 베리 · 감성 아틀리에</option></select></label>
+   <label>TODAY IS... (오늘의 기분·상태)<select name="mood"><option value="sunny">☀️ 기분좋음 · 설레는 하루</option><option value="harvest">🌾 수확중 · 산지직송 준비</option><option value="hot">🔥 주문폭주 · 정성껏 포장중</option><option value="sale">💝 특가오픈 · 직거래 혜택</option><option value="work">☕ 작업중 · 꼼꼼하게 제작중</option><option value="new">🎉 신상출시 · 첫 공개</option></select></label>
   </div>
   <div class="two">
-   <label>버튼 · 카드 모양<select name="btnShape"><option value="rounded">라운드 · 부드러운 모서리</option><option value="pill">캡슐형 · 동글동글 필 버튼</option><option value="sharp">모던 · 단정한 스퀘어</option></select></label>
-   <label>상단 환영 스티커 문구<input name="badgeText" maxlength="40" placeholder="예: 🌿 오늘 수확한 제철 농산물 직거래 오픈!"></label>
+   <label>배경 분위기 (다이어리 속지)<select name="bgStyle"><option value="clean">클린 · 깔끔한 기본</option><option value="dots">도트 · 싸이월드 도트 감성</option><option value="grid">그리드 · 모눈종이 다이어리</option><option value="soft">소프트 · 은은한 파스텔</option></select></label>
+   <label>버튼 · 카드 모양<select name="btnShape"><option value="rounded">라운드 · 부드러운 모서리</option><option value="pill">캡슐형 · 동글동글 필 버튼</option><option value="sharp">픽셀/스퀘어 · 레트로 각진형</option></select></label>
+  </div>
+  <div class="two">
+   <label>상단 전광판 환영 문구<input name="badgeText" maxlength="40" placeholder="예: 🌿 오늘 수확한 제철 농산물 직거래 오픈!"></label>
+   <label>💿 BGM 주크박스 멜로디<select name="bgmPreset"><option value="sunny">🎵 어쿠스틱 모닝 (설레는 시작)</option><option value="breeze">🎵 산지의 산들바람 (오르골)</option><option value="lofi">🎵 작업실의 오후 (감성 피아노)</option><option value="cafe">🎵 골목길 로컬 카페 (재즈풍)</option></select></label>
+  </div>
+  <label>💿 BGM 플레이어 표시 곡명<input name="bgmTitle" maxlength="60" placeholder="예: 프리스타일 - Y (홍보야 Acoustic Ver.)"></label>
+  <div class="miniroom-config">
+   <div class="profile-upload-head">
+    <span>🏠 나의 미니룸 & 미니미 꾸미기</span>
+    <span class="pill">MINI ROOM</span>
+   </div>
+   <div class="two">
+    <label>미니룸 공간 배경<select name="roomTheme"><option value="farm">🌿 햇살 농원 온실룸</option><option value="atelier">🏺 성수 공방 아틀리에룸</option><option value="studio">💻 크리에이터 데스크룸</option><option value="cafe">☕ 강릉 해변 로컬카페룸</option><option value="hanok">🌸 따스한 한옥 마당룸</option></select></label>
+    <label>나의 미니미 캐릭터<select name="minime"><option value="farmer">👩‍🌾 농부 미니미</option><option value="maker">🧑‍🎨 메이커 장인 미니미</option><option value="creator">🧑‍💻 크리에이터 미니미</option><option value="barista">🧑‍🍳 로컬 바리스타 미니미</option><option value="cat">🐱 고양이 점장 미니미</option><option value="dog">🐶 강아지 매니저 미니미</option></select></label>
+   </div>
+   <label>💬 미니미 말풍선 한마디<input name="minimeMsg" maxlength="50" placeholder="예: 일촌님들 반가워요! 오늘 수확한 직거래 상품 구경하세요 ♥"></label>
+   <div class="prop-selector-wrap">
+    <span class="preset-label">미니룸 소품 배치 (클릭해서 켜기/끄기):</span>
+    <div id="room-props-chips" class="cover-presets" role="group" aria-label="미니룸 소품 선택">
+     <button type="button" class="preset-chip prop-chip" data-action="toggle-prop" data-prop="box">📦 직거래 택배함</button>
+     <button type="button" class="preset-chip prop-chip" data-action="toggle-prop" data-prop="plant">🪴 반려 화분</button>
+     <button type="button" class="preset-chip prop-chip" data-action="toggle-prop" data-prop="basket">🍎 수확 바구니</button>
+     <button type="button" class="preset-chip prop-chip" data-action="toggle-prop" data-prop="lamp">🕯️ 감성 조명</button>
+     <button type="button" class="preset-chip prop-chip" data-action="toggle-prop" data-prop="speaker">🎸 음악 스피커</button>
+     <button type="button" class="preset-chip prop-chip" data-action="toggle-prop" data-prop="coffee">☕ 따뜻한 커피</button>
+     <button type="button" class="preset-chip prop-chip" data-action="toggle-prop" data-prop="sign">🪧 OPEN 입간판</button>
+     <button type="button" class="preset-chip prop-chip" data-action="toggle-prop" data-prop="balloon">🎈 축하 풍선</button>
+    </div>
+   </div>
+  </div>
+  <div class="guestbook-config">
+   <div class="section-head"><h3>📝 일촌평 (What Friends Say) 관리</h3><button type="button" data-action="add-guestbook">+ 일촌평 추가</button></div>
+   <p class="muted">방문자들에게 보여줄 환영 일촌평이나 단골 후기를 등록해보세요. 방문자 화면에서도 직접 일촌평을 남길 수 있습니다.</p>
+   <div id="guestbook-fields"></div>
   </div>
  </div>
  <div class="section-head"><h2>나의 쇼핑몰 & SNS</h2><button type="button" data-action="add-link">+ 링크 추가</button></div><p class="muted">쇼핑몰, 인스타그램, 유튜브, 블로그, 문의 채널의 주소를 연결하세요.</p><div id="link-fields"></div>
