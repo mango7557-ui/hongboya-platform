@@ -9,9 +9,10 @@ const base=process.argv[2] || 'http://127.0.0.1:8012/';
   for(const width of [1440,390,320]){
    await page.setViewportSize({width,height:1000});await page.goto(base);
    await page.locator('.creator-card').first().waitFor();
-   assert.equal(await page.locator('.creator-card').count(),4);
+   assert.equal(await page.locator('.creator-card').count(),16);
+   if(width===1440){const rows=await page.locator('.creator-card').evaluateAll(cards=>[...new Set(cards.map(card=>Math.round(card.getBoundingClientRect().top)))]);assert.equal(rows.length,4);}
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`overflow at ${width}`);
-   await page.locator('[data-filter=maker]').click();assert.equal(await page.locator('.creator-card').count(),1);
+   await page.locator('[data-filter=maker]').click();assert.equal(await page.locator('.creator-card').count(),4);
    await page.locator('[data-filter=all]').click();await page.locator('#creator-search').fill('강릉');assert.equal(await page.locator('.creator-card').count(),1);
    await page.locator('#creator-search').fill('no-matching-creator');assert.equal(await page.locator('#empty-state').isVisible(),true);
    await page.locator('#reset-search').click();await page.locator('.card-button').first().click();await page.locator('#creator-preview').waitFor({state:'visible'});
