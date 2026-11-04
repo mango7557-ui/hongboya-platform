@@ -3,7 +3,7 @@ from pathlib import Path
 import shutil
 
 ROOT = Path(__file__).resolve().parent
-OUTPUT = ROOT / '_site'
+OUTPUT = ROOT / 'docs'
 
 
 def main():

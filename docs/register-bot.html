@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <script src="./web-preview.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>홍보야 - 챗봇 회원가입</title>
+    <link rel="icon" type="image/png" href="https://www.genspark.ai/api/files/s/L6fGSb1x">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        hongbo: {
+                            50:  '#fef2f2',
+                            100: '#fee2e2',
+                            200: '#fecaca',
+                            300: '#fca5a5',
+                            400: '#f87171',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f4f4f5; font-family: 'Pretendard', sans-serif; }
+        .chat-container { height: calc(100vh - 60px); }
+        .message-enter { animation: slideIn 0.3s ease-out forwards; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .typing-indicator span {
+            display: inline-block;
+            width: 6px; height: 6px;
+            background-color: #9ca3af;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out both;
+            margin: 0 2px;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+
+    <!-- Header -->
+    <header class="h-[60px] bg-white border-b border-gray-200 flex items-center px-4 justify-between shrink-0 shadow-sm z-10 relative">
+        <div class="flex items-center gap-3">
+            <button onclick="location.href='index.html'" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-600 transition-colors">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div class="flex items-center gap-2">
+                <img src="https://www.genspark.ai/api/files/s/L6fGSb1x" alt="로고" class="w-8 h-8 object-contain">
+                <h1 class="text-lg font-bold text-gray-800">홍보야 가입 봇</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Chat Area -->
+    <main class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 relative chat-container" id="chat-box">
+        <!-- Messages will be injected here by JS -->
+    </main>
+
+    <!-- Input Area (Fixed at bottom) -->
+    <div id="input-area" class="bg-white border-t border-gray-200 p-3 pb-6 sm:pb-3 shrink-0 hidden shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] relative z-10">
+        
+        <!-- 업로드 버튼 뷰 -->
+        <div id="upload-view" class="flex flex-col items-center justify-center py-2 hidden">
+            <input type="file" id="biz-license-upload" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+            <button onclick="document.getElementById('biz-license-upload').click()" class="w-full max-w-sm bg-hongbo-600 hover:bg-hongbo-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                <i class="fa-solid fa-camera"></i> 사업자등록증 사진 업로드
+            </button>
+            <p class="text-xs text-gray-500 mt-3 text-center">빛 반사가 없도록 정면에서 선명하게 촬영해 주세요.</p>
+        </div>
+
+        <!-- 텍스트 입력 뷰 -->
+        <div id="text-input-view" class="hidden flex items-center gap-2 w-full max-w-2xl mx-auto">
+            <input type="text" id="chat-input" class="flex-1 border border-gray-300 rounded-full px-4 py-2.5 outline-none focus:border-hongbo-500 text-sm" placeholder="메시지를 입력하세요..." onkeypress="if(event.key==='Enter') handleSendText()">
+            <button onclick="handleSendText()" class="w-11 h-11 bg-hongbo-600 rounded-full text-white flex items-center justify-center shrink-0 hover:bg-hongbo-700 transition-colors shadow-sm">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const inputArea = document.getElementById('input-area');
+        const uploadView = document.getElementById('upload-view');
+        const textInputView = document.getElementById('text-input-view');
+        const chatInput = document.getElementById('chat-input');
+
+        // 상태 관리
+        let currentState = 'START';
+        const formData = {
+            companyName: '',
+            businessNumber: '',
+            representative: '',
+            address: '',
+            phone: '',
+            category: ''
+        };
+        const mockOcrData = {
+            companyName: "홍보야 주식회사",
+            businessNumber: "123-45-67890",
+            representative: "홍길동",
+            address: "서울특별시 강남구 테헤란로 123, 1층"
+        };
+
+        // Initialize Chat
+        window.onload = () => {
+            setTimeout(() => {
+                addBotMessage('안녕하세요! 홍보야 파트너스 회원가입을 환영합니다. 🎉');
+                setTimeout(() => {
+                    addBotMessage('가입 절차를 빠르고 간편하게 진행하기 위해, <b>사업자등록증 사진</b>을 업로드해 주세요.<br><span class="text-xs text-gray-500 font-normal mt-1 block">AI가 이미지의 글자를 자동으로 인식하여 가입을 도와드립니다!</span>');
+                    inputArea.classList.remove('hidden');
+                    uploadView.classList.remove('hidden');
+                    textInputView.classList.add('hidden');
+                    scrollToBottom();
+                }, 800);
+            }, 500);
+        };
+
+        function addBotMessage(htmlContent) {
+            const div = document.createElement('div');
+            div.className = 'flex gap-3 message-enter w-full max-w-2xl mx-auto';
+            div.innerHTML = `
+                <div class="w-9 h-9 rounded-full bg-hongbo-50 flex items-center justify-center shrink-0 border border-hongbo-100 mt-1">
+                    <img src="https://www.genspark.ai/api/files/s/L6fGSb1x" alt="봇" class="w-6 h-6 object-contain">
+                </div>
+                <div class="flex flex-col gap-1 max-w-[85%] sm:max-w-[80%]">
+                    <span class="text-xs font-bold text-gray-500 ml-1">홍보야 봇</span>
+                    <div class="bg-white px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 text-sm text-gray-800 leading-relaxed">
+                        ${htmlContent}
+                    </div>
+                </div>
+            `;
+            chatBox.appendChild(div);
+            scrollToBottom();
+            return div;
+        }
+
+        function addUserMessage(text) {
+            const div = document.createElement('div');
+            div.className = 'flex justify-end message-enter w-full max-w-2xl mx-auto mb-2';
+            div.innerHTML = `<div class="bg-hongbo-600 text-white px-4 py-2.5 rounded-2xl rounded-tr-sm shadow-sm text-sm max-w-[85%] sm:max-w-[80%] break-words leading-relaxed">${text}</div>`;
+            chatBox.appendChild(div);
+            scrollToBottom();
+        }
+
+        function addUserImageMessage(imageUrl) {
+            const div = document.createElement('div');
+            div.className = 'flex justify-end message-enter w-full max-w-2xl mx-auto mb-2';
+            div.innerHTML = `
+                <div class="bg-hongbo-600 p-2 rounded-2xl rounded-tr-sm shadow-sm max-w-[70%] sm:max-w-[50%]">
+                    <img src="${imageUrl}" class="w-full h-auto rounded-xl border border-hongbo-700/30">
+                </div>
+            `;
+            chatBox.appendChild(div);
+            scrollToBottom();
+        }
+
+        function addTypingIndicator() {
+            const div = document.createElement('div');
+            div.className = 'flex gap-3 message-enter w-full max-w-2xl mx-auto';
+            div.id = 'typing-indicator';
+            div.innerHTML = `
+                <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center shrink-0 border border-gray-200 mt-1">
+                    <i class="fa-solid fa-robot text-gray-400"></i>
+                </div>
+                <div class="bg-white px-4 py-3.5 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 text-sm">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            chatBox.appendChild(div);
+            scrollToBottom();
+            return div;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) indicator.remove();
+        }
+
+        function scrollToBottom() {
+            setTimeout(() => {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 50);
+        }
+
+        function enableTextInput() {
+            inputArea.classList.remove('hidden');
+            uploadView.classList.add('hidden');
+            textInputView.classList.remove('hidden');
+            textInputView.classList.add('flex');
+            chatInput.focus();
+        }
+
+        function disableInput() {
+            inputArea.classList.add('hidden');
+        }
+
+        // 파일 업로드 처리
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            disableInput();
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                addUserImageMessage(e.target.result);
+                addTypingIndicator();
+
+                // 구글 비전 OCR 시뮬레이션 (2초 대기)
+                setTimeout(() => {
+                    removeTypingIndicator();
+                    addBotMessage('구글 비전 AI로 사업자등록증 인식을 완료했습니다! 🔍<br>이제부터 순차적으로 정보를 확인하겠습니다.');
+                    
+                    setTimeout(() => {
+                        addBotMessage(`📝 <b>상호명(법인명)</b>이 <b>'${mockOcrData.companyName}'</b>(으)로 인식되었습니다.<br><br>맞으시면 '네'라고 답해주시고, 수정이 필요하면 올바른 상호명을 입력해주세요.`);
+                        currentState = 'COMPANY_NAME';
+                        enableTextInput();
+                    }, 800);
+                }, 2000);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 텍스트 전송 처리
+        function handleSendText() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+            
+            addUserMessage(text);
+            chatInput.value = '';
+            disableInput(); // 봇 응답 전까지 입력 막기
+
+            setTimeout(() => {
+                processAnswer(text);
+            }, 600); // 봇 응답 딜레이
+        }
+
+        // 상태별 로직 처리
+        function processAnswer(text) {
+            const isConfirm = ['네', '맞아', '맞음', '응', 'ㅇㅇ', 'yes', 'y'].includes(text.toLowerCase());
+
+            if (currentState === 'COMPANY_NAME') {
+                formData.companyName = isConfirm ? mockOcrData.companyName : text;
+                addBotMessage(`✅ 상호명이 <b>[${formData.companyName}]</b>(으)로 저장되었습니다.`);
+                
+                setTimeout(() => {
+                    addBotMessage(`📝 <b>사업자등록번호</b>가 <b>'${mockOcrData.businessNumber}'</b>(으)로 인식되었습니다.<br>맞으시면 '네', 수정하려면 올바른 번호를 입력해주세요.`);
+                    currentState = 'BIZ_NUM';
+                    enableTextInput();
+                }, 800);
+            } 
+            else if (currentState === 'BIZ_NUM') {
+                formData.businessNumber = isConfirm ? mockOcrData.businessNumber : text;
+                addBotMessage(`✅ 사업자등록번호가 <b>[${formData.businessNumber}]</b>(으)로 저장되었습니다.`);
+                
+                setTimeout(() => {
+                    addBotMessage(`📝 <b>대표자명</b>이 <b>'${mockOcrData.representative}'</b>(으)로 인식되었습니다.<br>맞으시면 '네', 수정하려면 올바른 성함을 입력해주세요.`);
+                    currentState = 'REP_NAME';
+                    enableTextInput();
+                }, 800);
+            }
+            else if (currentState === 'REP_NAME') {
+                formData.representative = isConfirm ? mockOcrData.representative : text;
+                addBotMessage(`✅ 대표자명이 <b>[${formData.representative}]</b>(으)로 저장되었습니다.`);
+                
+                setTimeout(() => {
+                    addBotMessage(`📝 <b>사업장 소재지</b>가 <b>'${mockOcrData.address}'</b>(으)로 인식되었습니다.<br>맞으시면 '네', 수정하려면 올바른 주소를 입력해주세요.`);
+                    currentState = 'ADDRESS';
+                    enableTextInput();
+                }, 800);
+            }
+            else if (currentState === 'ADDRESS') {
+                formData.address = isConfirm ? mockOcrData.address : text;
+                addBotMessage(`✅ 사업장 주소가 <b>[${formData.address}]</b>(으)로 저장되었습니다.`);
+                
+                setTimeout(() => {
+                    addBotMessage(`📞 고객들에게 노출될 <b>대표 전화번호</b>를 입력해주세요.<br>(예: 02-123-4567)`);
+                    currentState = 'PHONE';
+                    enableTextInput();
+                }, 800);
+            }
+            else if (currentState === 'PHONE') {
+                formData.phone = text;
+                addBotMessage(`✅ 전화번호가 <b>[${formData.phone}]</b>(으)로 저장되었습니다.`);
+                
+                setTimeout(() => {
+                    askCategory();
+                }, 800);
+            }
+        }
+
+        // 카테고리 선택 UI
+        function askCategory() {
+            currentState = 'CATEGORY';
+            disableInput(); // 텍스트 입력창 대신 셀렉트 박스 사용
+
+            const options = `
+                <option value="">-- 카테고리 선택 --</option>
+                <optgroup label="── 외식·F&B 그룹 ──">
+                <option value="커피·카페·무인카페">커피·카페·무인카페</option>
+                <option value="제과제빵·디저트">제과제빵·디저트</option>
+                <option value="한식·고기·찜·탕·죽">한식·고기·찜·탕·죽</option>
+                <option value="중식·마라탕">중식·마라탕</option>
+                <option value="일식·회·도시락">일식·회·도시락</option>
+                <option value="양식·아시아음식">양식·아시아음식</option>
+                <option value="별식·퓨전요리">별식·퓨전요리</option>
+                <option value="주점·바·이자카야">주점·바·이자카야</option>
+                <option value="치킨·피자·족발">치킨·피자·족발</option>
+                <option value="패스트푸드·편의점">패스트푸드·편의점</option>
+                <option value="분식·떡볶이·김밥">분식·떡볶이·김밥</option>
+                </optgroup>
+                <optgroup label="── 생활서비스·전문업 그룹 ──">
+                <option value="뷰티·미용·에스테틱">뷰티·미용·에스테틱</option>
+                <option value="반려동물·펫케어">반려동물·펫케어</option>
+                <option value="헬스·스포츠·웰니스">헬스·스포츠·웰니스</option>
+                <option value="의료·헬스케어·한의원">의료·헬스케어·한의원</option>
+                <option value="자동차·모빌리티">자동차·모빌리티</option>
+                <option value="숙박·공간대여">숙박·공간대여</option>
+                <option value="생활서비스·소매">생활서비스·소매</option>
+                <option value="도소매·PC방·빨래방">도소매·PC방·빨래방</option>
+                <option value="상가부동산·창업·컨설팅">상가부동산·창업·컨설팅</option>
+                <option value="소프트웨어 개발·디자인·마케팅">소프트웨어 개발·디자인·마케팅</option>
+                <option value="가맹거래사·세무사·노무사">가맹거래사·세무사·노무사</option>
+                <option value="행정사·변호사·변리사">행정사·변호사·변리사</option>
+                </optgroup>
+                <optgroup label="── 시설관리·레저 그룹 ──">
+                <option value="청소·방역·홈케어·AS">청소·방역·홈케어·AS</option>
+                <option value="철물·전기·설비">철물·전기·설비</option>
+                <option value="레저·아웃도어·관광">레저·아웃도어·관광</option>
+                <option value="여가·오락·교육·유아·스터디카페">여가·오락·교육·유아·스터디카페</option>
+                </optgroup>
+            `;
+
+            const html = `
+                <p class="mb-2">🏷️ <b>업체의 카테고리</b>를 목록에서 선택해주세요.</p>
+                <select id="chat-cat-select" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm mb-3 focus:ring-1 focus:ring-hongbo-500 outline-none">${options}</select>
+                <button onclick="handleCategorySelect()" class="w-full bg-hongbo-600 hover:bg-hongbo-700 text-white font-bold rounded-lg py-2.5 text-sm shadow-sm transition-colors">선택 완료</button>
+            `;
+            addBotMessage(html);
+        }
+
+        function handleCategorySelect() {
+            const selectEl = document.getElementById('chat-cat-select');
+            const val = selectEl.value;
+            if(!val) {
+                alert('카테고리를 선택해주세요.');
+                return;
+            }
+            // 버튼과 셀렉트 박스 비활성화
+            selectEl.disabled = true;
+            selectEl.nextElementSibling.disabled = true;
+            selectEl.nextElementSibling.classList.replace('bg-hongbo-600', 'bg-gray-400');
+            
+            addUserMessage(val);
+            formData.category = val;
+            
+            setTimeout(() => {
+                showFinalSummary();
+            }, 600);
+        }
+
+        function showFinalSummary() {
+            currentState = 'DONE';
+            
+            const html = `
+                <p class="mb-3">🎉 모든 정보 수집이 완료되었습니다!<br>입력하신 내용을 마지막으로 확인해 주세요.</p>
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 text-[13px] text-gray-700 flex flex-col gap-2 mb-3">
+                    <div class="flex"><span class="w-24 text-gray-500 font-bold shrink-0">상호명</span><span class="font-medium">${formData.companyName}</span></div>
+                    <div class="flex"><span class="w-24 text-gray-500 font-bold shrink-0">사업자번호</span><span class="font-medium">${formData.businessNumber}</span></div>
+                    <div class="flex"><span class="w-24 text-gray-500 font-bold shrink-0">대표자명</span><span class="font-medium">${formData.representative}</span></div>
+                    <div class="flex"><span class="w-24 text-gray-500 font-bold shrink-0">소재지</span><span class="font-medium">${formData.address}</span></div>
+                    <div class="flex"><span class="w-24 text-gray-500 font-bold shrink-0">전화번호</span><span class="font-medium">${formData.phone}</span></div>
+                    <div class="flex"><span class="w-24 text-gray-500 font-bold shrink-0">카테고리</span><span class="font-medium text-hongbo-600">${formData.category}</span></div>
+                </div>
+                <button id="final-submit-btn" onclick="submitRegistration()" class="w-full bg-gray-800 hover:bg-black text-white font-bold py-3 rounded-xl shadow-sm transition-colors text-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check"></i> 이대로 가입 완료하기
+                </button>
+            `;
+            addBotMessage(html);
+        }
+
+        // 최종 가입 데이터 제출
+        async function submitRegistration() {
+            const submitBtn = document.getElementById('final-submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 처리중...';
+
+            const payload = {
+                id: 'mem_' + Date.now(),
+                company_name: formData.companyName,
+                business_number: formData.businessNumber,
+                representative: formData.representative,
+                address: formData.address,
+                phone: formData.phone,
+                category: formData.category
+            };
+
+            try {
+                // Table API POST 호출
+                const res = await fetch('tables/member_registrations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!res.ok) throw new Error('Network error');
+
+                setTimeout(() => {
+                    addBotMessage(`🎉 <b>${payload.company_name}</b> 님, 회원가입이 성공적으로 처리되었습니다!<br><br>관리자 승인 후 정식 서비스 이용이 가능합니다. 메인 화면으로 돌아가시겠습니까?<br><br><button onclick="location.href='index.html'" class="mt-2 w-full bg-hongbo-100 hover:bg-hongbo-200 text-hongbo-700 font-bold py-2.5 px-4 rounded-xl transition-colors border border-hongbo-200 text-sm flex justify-center items-center gap-1"><i class="fa-solid fa-house text-xs"></i> 메인 화면으로 이동</button>`);
+                }, 600);
+
+            } catch (error) {
+                console.error(error);
+                alert("등록 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> 이대로 가입 완료하기';
+            }
+        }
+    </script>
+</body>
+</html>

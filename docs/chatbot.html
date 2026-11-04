@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <script src="./web-preview.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 가맹 컨설팅 챗봇</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --primary-light: #e0e7ff;
+      --bg: #f0f2ff;
+      --surface: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --user-bubble: #4f46e5;
+      --ai-bubble: #ffffff;
+      --shadow: 0 4px 24px rgba(79,70,229,0.10);
+      --radius: 18px;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ───── 레이아웃 ───── */
+    .app-wrapper {
+      width: 100%;
+      max-width: 780px;
+      height: 100vh;
+      max-height: 900px;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ───── 헤더 ───── */
+    .app-header {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-avatar {
+      width: 44px; height: 44px;
+      background: rgba(255,255,255,0.22);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .header-info h1 { color: #fff; font-size: 16px; font-weight: 700; line-height: 1.2; }
+    .header-info p  { color: rgba(255,255,255,0.75); font-size: 11.5px; margin-top: 2px; }
+    .status-dot {
+      display: inline-block; width: 7px; height: 7px;
+      background: #fbbf24; border-radius: 50%; margin-right: 4px;
+      transition: background 0.3s;
+    }
+    .status-dot.on { background: #4ade80; }
+    .header-right { display: flex; gap: 8px; align-items: center; }
+
+    /* 홈 버튼 */
+    .home-btn {
+      background: rgba(255,255,255,0.18);
+      border: none; border-radius: 10px;
+      padding: 7px 14px;
+      display: flex; align-items: center; gap-6px;
+      color: #fff; font-size: 12px; font-weight: 600;
+      cursor: pointer; gap: 6px;
+      transition: background 0.2s;
+      text-decoration: none;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    .home-btn:hover { background: rgba(255,255,255,0.30); }
+
+    /* ───── 데이터 로딩 바 ───── */
+    .data-loading-bar {
+      background: #fefce8;
+      border-bottom: 2px solid #fde047;
+      padding: 10px 18px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: #92400e; font-weight: 500;
+      flex-shrink: 0;
+    }
+    .data-loading-bar.hidden { display: none; }
+
+    /* ───── AI 연결 상태 바 ───── */
+    .ai-status-bar {
+      background: #f0fdf4;
+      border-bottom: 2px solid #86efac;
+      padding: 8px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 12.5px; color: #166534; font-weight: 500;
+      flex-shrink: 0;
+    }
+    .ai-status-bar.hidden { display: none; }
+    .ai-status-left { display: flex; align-items: center; gap: 8px; }
+
+    /* ───── 브랜드 필터 칩 바 ───── */
+    .brand-chips-bar {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex; gap: 6px; overflow-x: auto;
+      flex-shrink: 0; background: #fafafa;
+      scrollbar-width: none;
+    }
+    .brand-chips-bar::-webkit-scrollbar { display: none; }
+    .brand-chip {
+      flex-shrink: 0;
+      padding: 5px 14px;
+      border-radius: 99px;
+      font-size: 12px; font-weight: 600;
+      border: 1.5px solid #c7d2fe;
+      background: #fff; color: #4f46e5;
+      cursor: pointer; transition: all 0.18s;
+      white-space: nowrap;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    .brand-chip:hover  { background: #e0e7ff; }
+    .brand-chip.active { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+
+    /* 모델 선택 + 초기화 바 */
+    .model-bar {
+      padding: 7px 16px;
+      border-bottom: 1px solid var(--border);
+      display: none;
+      align-items: center; gap: 8px;
+      flex-shrink: 0; background: #f8fafc; flex-wrap: wrap;
+    }
+    .model-bar label { font-size: 12px; color: var(--text-muted); font-weight: 500; white-space: nowrap; }
+
+    /* AI 프로바이더 선택 버튼 그룹 */
+    .provider-group {
+      display: flex; gap: 0; border-radius: 10px; overflow: hidden;
+      border: 1.5px solid var(--border); flex-shrink: 0;
+    }
+    .provider-btn {
+      padding: 5px 12px;
+      border: none; background: #fff; color: var(--text-muted);
+      font-size: 11.5px; font-weight: 700; cursor: pointer;
+      transition: all 0.18s; white-space: nowrap;
+      font-family: 'Noto Sans KR', sans-serif;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .provider-btn + .provider-btn { border-left: 1.5px solid var(--border); }
+    .provider-btn.active-gemini {
+      background: linear-gradient(135deg,#4f46e5,#7c3aed);
+      color: #fff;
+    }
+    .provider-btn.active-openai {
+      background: linear-gradient(135deg,#16a34a,#15803d);
+      color: #fff;
+    }
+    .provider-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: currentColor;
+      opacity: 0.7;
+    }
+
+    .model-select {
+      flex: 1; min-width: 140px; padding: 6px 10px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 12px; background: #fff; color: var(--text);
+      font-family: 'Noto Sans KR', sans-serif; cursor: pointer; outline: none;
+    }
+    .model-select:focus { border-color: var(--primary); }
+    .clear-btn {
+      padding: 6px 12px;
+      background: #fff; border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: 12px; color: var(--text-muted);
+      cursor: pointer; transition: all 0.2s; white-space: nowrap;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    .clear-btn:hover { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
+
+    /* ───── 메시지 영역 ───── */
+    .chat-area {
+      flex: 1; overflow-y: auto;
+      padding: 20px 16px;
+      display: flex; flex-direction: column; gap: 14px;
+      scroll-behavior: smooth;
+    }
+    .chat-area::-webkit-scrollbar { width: 4px; }
+    .chat-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+
+    /* 웰컴 */
+    .welcome {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 14px; padding: 30px 16px;
+      text-align: center; flex: 1;
+    }
+    .welcome-icon {
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      border-radius: 24px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; box-shadow: 0 8px 24px rgba(79,70,229,0.28);
+    }
+    .welcome h2 { font-size: 20px; font-weight: 700; color: var(--text); }
+    .welcome .sub { font-size: 13.5px; color: var(--text-muted); line-height: 1.7; max-width: 360px; }
+    .welcome .loading-brands { font-size: 13px; color: #6d28d9; font-weight: 500; }
+
+    /* 빠른 질문 칩 */
+    .suggestion-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 6px; }
+    .chip {
+      padding: 8px 15px;
+      background: var(--primary-light); color: var(--primary-dark);
+      border: none; border-radius: 99px;
+      font-size: 12.5px; font-weight: 500;
+      cursor: pointer; transition: all 0.2s;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    .chip:hover { background: var(--primary); color: #fff; transform: translateY(-1px); }
+
+    /* 메시지 버블 */
+    .msg-row { display: flex; gap: 8px; animation: fadeUp 0.22s ease; }
+    .msg-row.user { flex-direction: row-reverse; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .msg-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; flex-shrink: 0; align-self: flex-end;
+    }
+    .msg-avatar.ai   { background: linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; }
+    .msg-avatar.user { background: linear-gradient(135deg,#f97316,#ef4444); color:#fff; }
+    .bubble {
+      max-width: 75%; padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 14px; line-height: 1.75; word-break: break-word;
+    }
+    .bubble.ai {
+      background: var(--ai-bubble); color: var(--text);
+      border: 1.5px solid var(--border);
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .bubble.user {
+      background: var(--user-bubble); color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .bubble-time { font-size: 10px; color: var(--text-muted); margin-top: 3px; text-align: right; }
+    .msg-row.user .bubble-time { text-align: left; }
+
+    /* 마크다운 */
+    .bubble.ai strong { font-weight: 700; }
+    .bubble.ai code { background:#f1f5f9; padding:2px 6px; border-radius:5px; font-size:12.5px; font-family:monospace; }
+    .bubble.ai pre { background:#1e293b; color:#e2e8f0; padding:12px; border-radius:10px; overflow-x:auto; margin:8px 0; font-size:12.5px; }
+    .bubble.ai pre code { background:none; padding:0; color:inherit; }
+    .bubble.ai ul,.bubble.ai ol { padding-left:18px; margin:6px 0; }
+    .bubble.ai li { margin-bottom:3px; }
+    .bubble.ai p { margin-bottom:6px; }
+    .bubble.ai p:last-child { margin-bottom:0; }
+    .bubble.ai h1,.bubble.ai h2,.bubble.ai h3 { margin:8px 0 4px; font-weight:700; }
+    .bubble.ai blockquote { border-left:3px solid var(--primary); padding-left:10px; color:var(--text-muted); margin:6px 0; }
+
+    /* 시스템 메시지 */
+    .system-msg {
+      text-align: center; font-size: 11.5px; color: #6366f1;
+      background: #eef2ff; border-radius: 99px;
+      padding: 5px 14px; align-self: center;
+    }
+
+    /* 타이핑 인디케이터 */
+    .typing-indicator { display:flex; gap:5px; align-items:center; padding:4px 0; }
+    .typing-indicator span {
+      width:7px; height:7px; background:var(--primary);
+      border-radius:50%; animation:bounce 1.2s infinite;
+    }
+    .typing-indicator span:nth-child(2) { animation-delay:.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay:.4s; }
+    @keyframes bounce {
+      0%,60%,100% { transform:translateY(0); }
+      30% { transform:translateY(-7px); }
+    }
+
+    /* ───── 입력 영역 ───── */
+    .input-area { padding:12px 14px 14px; border-top:1.5px solid var(--border); background:var(--surface); flex-shrink:0; }
+    .input-wrap {
+      display:flex; gap:8px; align-items:flex-end;
+      background:#f8fafc; border:1.5px solid var(--border);
+      border-radius:16px; padding:9px 10px;
+      transition:border-color 0.2s,box-shadow 0.2s;
+    }
+    .input-wrap:focus-within { border-color:var(--primary); box-shadow:0 0 0 3px rgba(79,70,229,0.12); }
+    #msgInput {
+      flex:1; border:none; background:transparent;
+      font-size:14px; font-family:'Noto Sans KR',sans-serif;
+      color:var(--text); resize:none; min-height:24px; max-height:110px;
+      outline:none; line-height:1.5;
+    }
+    #msgInput::placeholder { color:var(--text-muted); }
+    .send-btn {
+      width:38px; height:38px;
+      background:linear-gradient(135deg,#4f46e5,#7c3aed);
+      border:none; border-radius:12px; color:#fff; font-size:15px;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:all 0.2s; flex-shrink:0;
+    }
+    .send-btn:hover:not(:disabled) { transform:scale(1.07); box-shadow:0 4px 12px rgba(79,70,229,0.4); }
+    .send-btn:disabled { opacity:0.45; cursor:not-allowed; transform:none; }
+    .input-hint { font-size:11px; color:var(--text-muted); margin-top:5px; text-align:center; }
+
+    /* 에러 */
+    .error-msg {
+      display:flex; align-items:center; gap:8px;
+      background:#fef2f2; border:1.5px solid #fca5a5;
+      border-radius:12px; padding:10px 14px;
+      font-size:13px; color:#dc2626;
+    }
+
+    /* 토스트 */
+    .toast {
+      position:fixed; bottom:28px; left:50%; transform:translateX(-50%);
+      background:#1e293b; color:#fff;
+      padding:10px 22px; border-radius:99px;
+      font-size:13px; z-index:9999;
+      box-shadow:0 4px 16px rgba(0,0,0,0.2);
+      animation:toastIn 0.3s ease;
+    }
+    @keyframes toastIn {
+      from { opacity:0; transform:translateX(-50%) translateY(8px); }
+      to   { opacity:1; transform:translateX(-50%) translateY(0); }
+    }
+
+    @media (max-width:600px) {
+      body { background:var(--surface); }
+      .app-wrapper { border-radius:0; max-height:100vh; }
+      .bubble { max-width:88%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+
+  <!-- 헤더 -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="header-avatar">🤖</div>
+      <div class="header-info">
+        <h1>AI 가맹 컨설팅</h1>
+        <p><span class="status-dot" id="statusDot"></span><span id="statusText">데이터 불러오는 중...</span></p>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="index.html" class="home-btn">
+        <i class="fas fa-home"></i> 메인으로
+      </a>
+    </div>
+  </header>
+
+  <!-- 데이터 로딩 바 -->
+  <div class="data-loading-bar" id="dataLoadingBar">
+    <i class="fas fa-circle-notch fa-spin"></i>
+    <span id="dataLoadingText">브랜드 데이터를 학습하고 있습니다...</span>
+  </div>
+
+  <!-- AI 연결 상태 바 -->
+  <div class="ai-status-bar hidden" id="aiStatusBar">
+    <div class="ai-status-left">
+      <i class="fas fa-check-circle" style="color:#16a34a"></i>
+      <span id="aiStatusText">Gemini AI 연결됨</span>
+    </div>
+    <span id="brandCountBadge" style="font-size:11.5px;background:#dcfce7;color:#166534;padding:3px 10px;border-radius:99px;font-weight:600;"></span>
+  </div>
+
+  <!-- 브랜드 필터 칩 -->
+  <div class="brand-chips-bar" id="brandChipsBar">
+    <button class="brand-chip active" id="chip-전체" onclick="selectBrand('전체')">🌐 전체</button>
+    <!-- JS로 동적 추가 -->
+  </div>
+
+  <!-- AI 프로바이더 선택 + 모델 선택 + 초기화 -->
+  <div class="model-bar">
+    <!-- AI 프로바이더 선택 (숨김) -->
+    <div class="provider-group" style="display:none">
+      <button class="provider-btn active-gemini" id="providerGeminiBtn" onclick="switchProvider('gemini')">
+        <span class="provider-dot"></span> Gemini
+      </button>
+      <button class="provider-btn" id="providerOpenaiBtn" onclick="switchProvider('openai')">
+        <span class="provider-dot"></span> OpenAI
+      </button>
+    </div>
+
+    <!-- 모델 선택 (숨김) -->
+    <select class="model-select" id="modelSelect" style="display:none">
+      <!-- Gemini 그룹 -->
+      <optgroup label="── Gemini 모델 ──" id="geminiOptGroup">
+        <option value="gemini-2.5-flash">Gemini 2.5 Flash ✨ (권장)</option>
+        <option value="gemini-2.5-pro">Gemini 2.5 Pro 🔥 (최고품질)</option>
+        <option value="gemini-2.5-flash-lite-preview-06-17">Gemini 2.5 Flash Lite (경량)</option>
+        <option value="gemini-2.0-flash">Gemini 2.0 Flash (안정)</option>
+        <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite (초경량)</option>
+      </optgroup>
+      <!-- OpenAI 그룹 (초기 숨김) -->
+      <optgroup label="── OpenAI 모델 ──" id="openaiOptGroup" style="display:none">
+        <option value="gpt-4o-mini">gpt-4o-mini 💚 (권장·저렴)</option>
+        <option value="gpt-4o">gpt-4o ⚡ (고성능)</option>
+        <option value="gpt-4-turbo">gpt-4-turbo 🔥 (최고품질)</option>
+        <option value="gpt-3.5-turbo">gpt-3.5-turbo (초경량)</option>
+      </optgroup>
+    </select>
+
+    <button class="clear-btn" id="clearBtn" style="display:none"><i class="fas fa-trash-alt"></i> 초기화</button>
+  </div>
+
+  <!-- 채팅 영역 -->
+  <div class="chat-area" id="chatArea">
+    <div class="welcome" id="welcomeMsg">
+      <div class="welcome-icon">🏪</div>
+      <h2>AI 가맹 컨설팅 챗봇</h2>
+      <p class="sub">전체 브랜드 데이터를 학습하여<br><b>창업 비용·매장 위치·브랜드 비교</b> 등<br>무엇이든 답변해 드립니다.</p>
+      <p class="loading-brands" id="welcomeLoadingText">
+        <i class="fas fa-circle-notch fa-spin"></i> 브랜드 데이터 학습 중...
+      </p>
+      <div class="suggestion-chips" id="suggestionChips" style="display:none">
+        <button class="chip" onclick="sendChip('어떤 브랜드가 있나요?')">📋 브랜드 목록</button>
+        <button class="chip" onclick="sendChip('창업 비용이 가장 저렴한 브랜드는?')">💰 비용 비교</button>
+        <button class="chip" onclick="sendChip('닭요리 브랜드 추천해줘')">🍗 브랜드 추천</button>
+        <button class="chip" onclick="sendChip('가맹 절차가 어떻게 되나요?')">📝 가맹 절차</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 입력 영역 -->
+  <div class="input-area">
+    <div class="input-wrap">
+      <textarea id="msgInput" placeholder="궁금한 점을 물어보세요... (Shift+Enter 줄바꿈)" rows="1" disabled></textarea>
+      <button class="send-btn" id="sendBtn" disabled>
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+    <div class="input-hint">Enter 전송 &nbsp;·&nbsp; Shift+Enter 줄바꿈</div>
+  </div>
+
+</div>
+
+<script>
+  // ═══════════════════════════════════════════
+  //   AI 가맹 컨설팅 챗봇 — 전체 브랜드 데이터 통합
+  //   ✅ Gemini + OpenAI 듀얼 AI 지원
+  // ═══════════════════════════════════════════
+  let geminiApiKey  = '';   // Gemini API 키
+  let openaiApiKey  = '';   // OpenAI API 키
+  let aiProvider    = 'gemini';  // 현재 선택된 AI: 'gemini' | 'openai'
+  let chatHistory   = [];
+  let isLoading     = false;
+  let selectedBrand = '전체';
+  let allPosters       = [];
+  let franchisePosters = [];  // ✅ 프랜차이즈 브랜드만 (franchise_csv + store_info_url 둘 다 있는 브랜드)
+  let chatbotDB     = [];
+  let brandCtxMap   = {};   // { posterId: { franchiseParsed, storeParsed, storeRows, franchiseRows, knowledge } }
+  let globalCtx     = null; // 전체 통합 컨텍스트
+
+  // ── 프랜차이즈 브랜드 판별 ──
+  // franchise_csv(가맹정보)와 store_info_url(매장정보) 둘 다 입력된 브랜드만 프랜차이즈로 취급
+  function isFranchiseBrand(poster) {
+    const hasFranchise = poster.franchise_csv && poster.franchise_csv.trim() !== '' && poster.franchise_csv.startsWith('http');
+    const hasStore     = poster.store_info_url && poster.store_info_url.trim() !== '' && poster.store_info_url.startsWith('http');
+    return hasFranchise && hasStore;
+  }
+
+  const GEMINI_FALLBACK = [
+    'gemini-2.5-flash',
+    'gemini-2.5-pro',
+    'gemini-2.0-flash',
+    'gemini-2.5-flash-lite-preview-06-17',
+    'gemini-2.0-flash-lite'
+  ];
+  const OPENAI_FALLBACK = [
+    'gpt-4o-mini',
+    'gpt-4o',
+    'gpt-3.5-turbo'
+  ];
+
+  // ── 요소 참조 ──
+  const chatArea       = document.getElementById('chatArea');
+  const welcomeMsg     = document.getElementById('welcomeMsg');
+  const msgInput       = document.getElementById('msgInput');
+  const sendBtn        = document.getElementById('sendBtn');
+  const clearBtn       = document.getElementById('clearBtn');
+  const modelSelect    = document.getElementById('modelSelect');
+  const statusDot      = document.getElementById('statusDot');
+  const statusText     = document.getElementById('statusText');
+  const dataLoadingBar = document.getElementById('dataLoadingBar');
+  const aiStatusBar    = document.getElementById('aiStatusBar');
+  const aiStatusText   = document.getElementById('aiStatusText');
+  const brandCountBadge= document.getElementById('brandCountBadge');
+  const brandChipsBar  = document.getElementById('brandChipsBar');
+  const welcomeLoading = document.getElementById('welcomeLoadingText');
+  const suggestionChips= document.getElementById('suggestionChips');
+
+  // ── CSV 유틸 (index.html과 동일) ──
+  function toGvizCsvUrl(url) {
+    const m = url.match(/\/spreadsheets\/d\/([^/]+)/);
+    if (!m) return null;
+    const sheetId = m[1];
+    const gidMatch = url.match(/[?&]gid=(\d+)/);
+    const gid = gidMatch ? gidMatch[1] : '0';
+    return `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
+  }
+  async function fetchCsvText(url) {
+    if (!url || !url.startsWith('http')) return url || '';
+    const isGSheet = url.includes('docs.google.com/spreadsheets');
+    const gviz = isGSheet ? toGvizCsvUrl(url) : null;
+    const candidates = [];
+    if (gviz) {
+      candidates.push(gviz);
+      candidates.push('https://corsproxy.io/?' + encodeURIComponent(gviz));
+      candidates.push('https://api.allorigins.win/raw?url=' + encodeURIComponent(gviz));
+    }
+    candidates.push(url);
+    candidates.push('https://corsproxy.io/?' + encodeURIComponent(url));
+    candidates.push('https://api.allorigins.win/raw?url=' + encodeURIComponent(url));
+    for (const c of candidates) {
+      try {
+        const r = await fetch(c, { signal: AbortSignal.timeout(12000), redirect: 'follow' });
+        if (r.ok) {
+          const t = await r.text();
+          if (t && !t.trim().startsWith('<!DOCTYPE') && !t.trim().startsWith('<html')) return t;
+        }
+      } catch(e) {}
+    }
+    return '';
+  }
+  function parseCsvRaw(text) {
+    const rows = [];
+    let row = [], cell = '', inQ = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (inQ) {
+        if (c==='"' && text[i+1]==='"') { cell+='"'; i++; }
+        else if (c==='"') inQ=false;
+        else cell+=c;
+      } else {
+        if (c==='"') inQ=true;
+        else if (c===',' || c==='\t') { row.push(cell.trim()); cell=''; }
+        else if (c==='\n'||c==='\r') {
+          if (c==='\r'&&text[i+1]==='\n') i++;
+          row.push(cell.trim());
+          if (row.some(v=>v!=='')) rows.push(row);
+          row=[]; cell='';
+        } else cell+=c;
+      }
+    }
+    if (cell||row.length) { row.push(cell.trim()); if(row.some(v=>v!=='')) rows.push(row); }
+    return rows;
+  }
+  function parseFranchiseCsv(raw) {
+    const rows = parseCsvRaw(raw);
+    if (!rows.length) return '';
+    const header = rows[0];
+    return rows.slice(1).map(r => {
+      return header.map((h,i) => `${h}: ${r[i]||''}`).join(' | ');
+    }).join('\n');
+  }
+  function parseStoreCsv(raw) {
+    const rows = parseCsvRaw(raw);
+    if (!rows.length) return '';
+    return rows.slice(1).map(r => {
+      let line = `• ${r[1]||''}`;
+      if (r[2]) line += ` | 주소: ${r[2]}`;
+      if (r[3]) line += ` | 전화: ${r[3]}`;
+      return line;
+    }).join('\n');
+  }
+
+  // ── DB에서 Gemini + OpenAI API 키 모두 로드 ──
+  async function loadApiKey() {
+    try {
+      const res  = await fetch('tables/site_config?limit=200');
+      const data = await res.json();
+      const rows = data.data || [];
+
+      // Gemini 키
+      const gRec = rows.find(r => r.config_type==='setting' && r.label==='gemini_api_key' && r.config_value);
+      if (gRec?.config_value) geminiApiKey = gRec.config_value;
+      else geminiApiKey = localStorage.getItem('gemini_api_key') || '';
+
+      // OpenAI 키
+      const oRec = rows.find(r => r.config_type==='setting' && r.label==='openai_api_key' && r.config_value);
+      if (oRec?.config_value) openaiApiKey = oRec.config_value;
+      else openaiApiKey = localStorage.getItem('openai_api_key') || '';
+
+      // ── 챗봇 기본 UI 설정 로드 ──
+      const uiRec = rows.find(r => r.config_type==='setting' && r.label==='chatbot_ui_config');
+      if (uiRec?.config_value) {
+        try { applyChatbotUiConfig(JSON.parse(uiRec.config_value)); } catch(e) {}
+      }
+
+    } catch(e) {
+      geminiApiKey = localStorage.getItem('gemini_api_key') || '';
+      openaiApiKey = localStorage.getItem('openai_api_key') || '';
+    }
+  }
+
+  // ── 챗봇 UI 설정 적용 (DB에서 로드한 값으로) ──
+  function applyChatbotUiConfig(cfg) {
+    if (!cfg) return;
+
+    // 기본 프로바이더 설정
+    const prov = cfg.default_provider || 'gemini';
+    switchProvider(prov);
+
+    // 기본 모델 설정
+    const mdl = cfg.default_model;
+    if (mdl && modelSelect) {
+      const opt = modelSelect.querySelector(`option[value="${mdl}"]`);
+      if (opt) modelSelect.value = mdl;
+    }
+
+    // 프로바이더 선택 버튼 표시/숨김
+    const providerGroup = document.querySelector('.provider-group');
+    if (providerGroup) {
+      providerGroup.style.display = cfg.show_provider === false ? 'none' : '';
+    }
+
+    // 모델 선택 드롭다운 표시/숨김
+    if (modelSelect) {
+      modelSelect.style.display = cfg.show_model_select === false ? 'none' : '';
+    }
+
+    // 초기화 버튼 표시/숨김
+    if (clearBtn) {
+      clearBtn.style.display = cfg.show_clear_btn === false ? 'none' : '';
+    }
+
+    // model-bar 자체가 모두 숨겨질 경우 처리
+    const modelBar = document.querySelector('.model-bar');
+    if (modelBar) {
+      const allHidden = cfg.show_provider === false && cfg.show_model_select === false && cfg.show_clear_btn === false;
+      modelBar.style.display = allHidden ? 'none' : '';
+    }
+
+    updateStatusBar();
+  }
+
+  // ── AI 프로바이더 전환 ──
+  function switchProvider(provider) {
+    aiProvider = provider;
+    const gBtn  = document.getElementById('providerGeminiBtn');
+    const oBtn  = document.getElementById('providerOpenaiBtn');
+    const gGrp  = document.getElementById('geminiOptGroup');
+    const oGrp  = document.getElementById('openaiOptGroup');
+
+    if (provider === 'openai') {
+      // UI: OpenAI 활성
+      gBtn.className = 'provider-btn';
+      oBtn.className = 'provider-btn active-openai';
+      // 모델: OpenAI 목록 표시
+      gGrp.style.display = 'none';
+      oGrp.style.display = '';
+      modelSelect.value = 'gpt-4o-mini';
+    } else {
+      // UI: Gemini 활성
+      gBtn.className = 'provider-btn active-gemini';
+      oBtn.className = 'provider-btn';
+      // 모델: Gemini 목록 표시
+      gGrp.style.display = '';
+      oGrp.style.display = 'none';
+      modelSelect.value = 'gemini-2.5-flash';
+    }
+
+    // 상태바 업데이트
+    updateStatusBar();
+
+    const provLabel = provider === 'openai' ? 'OpenAI' : 'Gemini';
+    showToast(`🔄 AI 전환: ${provLabel}`);
+  }
+
+  // ── 현재 활성 API 키 반환 ──
+  function getActiveApiKey() {
+    return aiProvider === 'openai' ? openaiApiKey : geminiApiKey;
+  }
+
+  // ── 상태바 업데이트 ──
+  function updateStatusBar() {
+    const hasKey = !!getActiveApiKey();
+    const model  = modelSelect.value;
+    const provider = aiProvider === 'openai' ? 'OpenAI' : 'Gemini';
+
+    if (hasKey) {
+      statusDot.classList.add('on');
+      statusDot.style.background = aiProvider === 'openai' ? '#16a34a' : '#4ade80';
+      statusText.textContent = `${provider} · ${model} 연결됨`;
+      aiStatusText.textContent = `✅ ${provider} 연결됨 · ${model}`;
+    } else {
+      statusDot.classList.remove('on');
+      statusDot.style.background = '#f59e0b';
+      statusText.textContent = `데이터 기반 답변 모드 (${provider} 키 미설정)`;
+      aiStatusText.textContent = `⚠️ ${provider} API 키 미설정 · 데이터 기반 답변`;
+    }
+  }
+
+  // ── 브랜드별 컨텍스트 로드 ──
+  async function loadBrandContext(poster) {
+    if (brandCtxMap[poster.id]) return;
+    const ctx = { franchiseParsed:'', storeParsed:'', storeRows:[], franchiseRows:[], knowledge:'' };
+    try {
+      const f = poster.franchise_csv || '';
+      const fRaw = f.startsWith('http') ? await fetchCsvText(f) : f;
+      if (fRaw.trim()) {
+        ctx.franchiseParsed = parseFranchiseCsv(fRaw);
+        ctx.franchiseRows   = parseCsvRaw(fRaw).slice(1);
+      }
+    } catch(e) {}
+    try {
+      const s = poster.store_info_url || '';
+      const sRaw = s.startsWith('http') ? await fetchCsvText(s) : s;
+      if (sRaw.trim()) {
+        ctx.storeParsed = parseStoreCsv(sRaw);
+        ctx.storeRows   = parseCsvRaw(sRaw).slice(1);
+      }
+    } catch(e) {}
+    const rules = [
+      ...chatbotDB.filter(d => d.brand_name === poster.brand_name),
+      ...chatbotDB.filter(d => d.brand_name === '공통')
+    ];
+    if (rules.length) ctx.knowledge = rules.map(r=>`Q: ${r.keywords}\nA: ${r.response}`).join('\n\n');
+    brandCtxMap[poster.id] = ctx;
+  }
+
+  // ── 전체 데이터 초기화 ──
+  async function initAllData() {
+    setLoadingText('포스터 데이터 불러오는 중...');
+    try {
+      const [pRes, cRes] = await Promise.all([
+        fetch('tables/poster_settings?limit=100&sort=order_idx'),
+        fetch('tables/chatbot_data?limit=500')
+      ]);
+      if (pRes.ok) { const d = await pRes.json(); allPosters = d.data||[]; }
+      if (cRes.ok) { const d = await cRes.json(); chatbotDB  = d.data||[]; }
+    } catch(e) {}
+
+    // ✅ 프랜차이즈 브랜드 필터링 (franchise_csv + store_info_url 둘 다 있는 브랜드만)
+    franchisePosters = allPosters.filter(isFranchiseBrand);
+    const nonFranchiseCount = allPosters.length - franchisePosters.length;
+
+    setLoadingText(`프랜차이즈 브랜드 ${franchisePosters.length}개 데이터 분석 중... (비가맹 ${nonFranchiseCount}개 제외)`);
+    await Promise.allSettled(franchisePosters.map(p => loadBrandContext(p)));
+
+    // 전체 통합 컨텍스트 빌드 (프랜차이즈 브랜드만 포함)
+    globalCtx = { brands: franchisePosters.map(p => {
+      const c = brandCtxMap[p.id] || {};
+      return {
+        id: p.id, name: p.brand_name,
+        phone: p.phone_number||'', site: p.target_link||'',
+        keywords: p.search_keywords||'',
+        franchiseParsed: c.franchiseParsed||'', franchiseRows: c.franchiseRows||[],
+        storeParsed: c.storeParsed||'',         storeRows:    c.storeRows||[],
+        knowledge:   c.knowledge||''
+      };
+    })};
+
+    // 브랜드 칩 렌더
+    renderBrandChips();
+
+    // UI 업데이트
+    dataLoadingBar.classList.add('hidden');
+    aiStatusBar.classList.remove('hidden');
+    const nonFrCnt = allPosters.length - franchisePosters.length;
+    brandCountBadge.textContent = `🏪 프랜차이즈 ${franchisePosters.length}개 브랜드 학습 완료`;
+
+    updateStatusBar();
+
+    // 웰컴 메시지 업데이트
+    welcomeLoading.style.display = 'none';
+    suggestionChips.style.display = '';
+    let subHtml = `<b>프랜차이즈 ${franchisePosters.length}개 브랜드</b> 데이터 학습 완료!<br>창업 비용·매장 위치·브랜드 비교 등<br>무엇이든 물어보세요. 😊`;
+    if (nonFrCnt > 0) {
+      subHtml += `<br><span style="font-size:11px;color:#94a3b8;margin-top:4px;display:block">※ 가맹정보·매장정보 미등록 ${nonFrCnt}개 브랜드는 학습에서 제외됨</span>`;
+    }
+    welcomeMsg.querySelector('.sub').innerHTML = subHtml;
+
+    msgInput.disabled = false;
+    sendBtn.disabled  = false;
+    msgInput.placeholder = '궁금한 점을 물어보세요...';
+    msgInput.focus();
+  }
+
+  function setLoadingText(t) {
+    document.getElementById('dataLoadingText').textContent = t;
+  }
+
+  // ── 브랜드 칩 렌더 (프랜차이즈 브랜드만 표시) ──
+  function renderBrandChips() {
+    // 전체 버튼은 이미 있으므로 프랜차이즈 브랜드만 추가
+    franchisePosters.forEach(p => {
+      const btn = document.createElement('button');
+      btn.className = 'brand-chip';
+      btn.id = `chip-${p.brand_name}`;
+      btn.textContent = p.brand_name;
+      btn.onclick = () => selectBrand(p.brand_name);
+      brandChipsBar.appendChild(btn);
+    });
+
+    // 프랜차이즈 브랜드가 없을 경우 안내 표시
+    if (franchisePosters.length === 0) {
+      const notice = document.createElement('span');
+      notice.style.cssText = 'font-size:12px;color:#94a3b8;padding:5px 8px;white-space:nowrap;';
+      notice.textContent = '⚠️ 가맹정보·매장정보가 등록된 브랜드가 없습니다';
+      brandChipsBar.appendChild(notice);
+    }
+  }
+
+  function selectBrand(name) {
+    selectedBrand = name;
+    document.querySelectorAll('.brand-chip').forEach(b => b.classList.remove('active'));
+    const active = document.getElementById(`chip-${name}`);
+    if (active) active.classList.add('active');
+    // 시스템 메시지
+    const msg = name === '전체'
+      ? `🌐 전체 프랜차이즈 모드 — ${franchisePosters.length}개 프랜차이즈 브랜드에 대해 물어보세요!`
+      : (() => {
+          const p = franchisePosters.find(p=>p.brand_name===name);
+          const c = p ? (brandCtxMap[p.id]||{}) : {};
+          const badges = [];
+          if (c.franchiseParsed) badges.push(`💰 가맹비용`);
+          if (c.storeParsed)     badges.push(`📍 매장 ${c.storeRows?.length||0}곳`);
+          if (c.knowledge)       badges.push(`📚 Q&A`);
+          return `🏷️ <b>${name}</b> 전용 모드${badges.length?' · '+badges.join(' · '):''}`;
+        })();
+    appendSystem(msg);
+    renderQuickChips(name);
+    msgInput.focus();
+  }
+
+  // ── 빠른 질문 칩 (채팅 내 하단) ──
+  function renderQuickChips(brand) {
+    // 채팅 아래 칩은 직접 입력 유도만 사용 (필요시 확장)
+  }
+
+  // ── 시스템 프롬프트 빌드 (프랜차이즈 브랜드만 포함) ──
+  function buildSystemPrompt() {
+    if (!globalCtx) return '당신은 프랜차이즈 가맹 창업 전문 AI 컨설턴트입니다. 친절하게 안내해주세요.';
+    const isAll = selectedBrand === '전체';
+    // globalCtx.brands는 이미 프랜차이즈 브랜드만 포함됨
+    const brands = isAll ? globalCtx.brands : globalCtx.brands.filter(b=>b.name===selectedBrand);
+
+    let p = `당신은 프랜차이즈 가맹 창업 전문 AI 컨설턴트입니다.
+아래에 등록된 ${brands.length}개 프랜차이즈 브랜드의 실제 데이터를 바탕으로 정확하고 친절하게 답변하세요.
+(모든 브랜드는 가맹정보와 매장정보가 등록된 정식 프랜차이즈 브랜드입니다.)
+
+━━━ 필수 원칙 ━━━
+1. 등록된 실제 데이터를 우선 사용하고, 없으면 일반 창업 지식으로 보완
+2. 가맹 비용은 항목별로 정확히 나열 (단위: 만원)
+3. 매장 위치는 매장명·주소·전화번호 포함
+4. 브랜드 비교 질문에 적극적으로 답변
+5. 마크다운(**굵게**, ## 헤더) 없이 자연스럽게 답변
+6. 답변 끝에 불필요한 면책 문구 금지
+7. 창업을 고려 중인 예비 창업자를 위한 실용적 안내
+
+`;
+
+    if (!isAll && brands.length > 0) {
+      const b = brands[0];
+      p += `━━━ 브랜드: ${b.name} ━━━\n`;
+      if (b.phone) p += `전화: ${b.phone}\n`;
+      if (b.site)  p += `사이트: ${b.site}\n`;
+      if (b.franchiseParsed) p += `\n[가맹비용]\n${b.franchiseParsed}\n`;
+      if (b.storeParsed)     p += `\n[매장정보 (${b.storeRows.length}개점)]\n${b.storeParsed.substring(0,1500)}\n`;
+      if (b.knowledge)       p += `\n[Q&A 지식]\n${b.knowledge.substring(0,3000)}\n`;
+    } else {
+      p += `━━━ 등록 브랜드 목록 (${brands.length}개) ━━━\n`;
+      brands.forEach((b,i) => {
+        p += `${i+1}. ${b.name}`;
+        if (b.phone) p += ` | 전화: ${b.phone}`;
+        if (b.site)  p += ` | 사이트: ${b.site}`;
+        p += '\n';
+      });
+      p += '\n━━━ 브랜드별 상세 데이터 ━━━\n';
+      brands.forEach(b => {
+        p += `\n◆ ${b.name}`;
+        if (b.keywords) p += ` (키워드: ${b.keywords})`;
+        if (b.franchiseParsed) p += `\n  [가맹비용] ${b.franchiseParsed.substring(0,500)}`;
+        if (b.storeParsed)     p += `\n  [매장수] ${b.storeRows.length}개점`;
+        if (b.knowledge)       p += `\n  [Q&A] ${b.knowledge.substring(0,400)}`;
+        p += '\n';
+      });
+      // 공통 지식
+      const common = chatbotDB.filter(d=>d.brand_name==='공통');
+      if (common.length) {
+        p += '\n━━━ 공통 Q&A 지식 ━━━\n';
+        common.forEach(d => { p += `Q: ${d.keywords}\nA: ${d.response}\n`; });
+      }
+    }
+    return p;
+  }
+
+  // ── Gemini API 호출 ──
+  async function callGemini(userMsg) {
+    if (!geminiApiKey) return '';
+    const sysPrompt = buildSystemPrompt();
+    const contents = [
+      { role:'user',  parts:[{text:sysPrompt}] },
+      { role:'model', parts:[{text:'네, 알겠습니다. 정확하고 친절하게 안내해 드리겠습니다.'}] },
+      ...chatHistory,
+      { role:'user',  parts:[{text:userMsg}] }
+    ];
+    const payload = {
+      contents,
+      generationConfig: { temperature:0.7, maxOutputTokens:1500 },
+      safetySettings: [
+        { category:'HARM_CATEGORY_HARASSMENT',        threshold:'BLOCK_ONLY_HIGH' },
+        { category:'HARM_CATEGORY_HATE_SPEECH',       threshold:'BLOCK_ONLY_HIGH' },
+        { category:'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold:'BLOCK_ONLY_HIGH' },
+        { category:'HARM_CATEGORY_DANGEROUS_CONTENT', threshold:'BLOCK_ONLY_HIGH' }
+      ]
+    };
+    const tryOrder = [modelSelect.value, ...GEMINI_FALLBACK.filter(m=>m!==modelSelect.value)];
+    for (const model of tryOrder) {
+      try {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${geminiApiKey}`,
+          { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload), signal:AbortSignal.timeout(25000) }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          const text = data?.candidates?.[0]?.content?.parts?.[0]?.text||'';
+          if (text) {
+            if (model !== modelSelect.value) {
+              if (Array.from(modelSelect.options).some(o=>o.value===model)) modelSelect.value=model;
+              showToast(`🔄 ${model} 모델로 자동 전환됨`);
+            }
+            return text;
+          }
+        }
+        if (res.status===401||res.status===403||res.status===429) break;
+      } catch(e) {}
+    }
+    return '';
+  }
+
+  // ── OpenAI API 호출 ──
+  async function callOpenAI(userMsg) {
+    if (!openaiApiKey) return '';
+    const sysPrompt = buildSystemPrompt();
+
+    // 히스토리를 OpenAI 형식으로 변환
+    const historyMsgs = chatHistory.map(h => ({
+      role: h.role === 'model' ? 'assistant' : 'user',
+      content: h.parts?.[0]?.text || ''
+    }));
+
+    const messages = [
+      { role: 'system', content: sysPrompt },
+      ...historyMsgs,
+      { role: 'user', content: userMsg }
+    ];
+
+    const payload = {
+      model: modelSelect.value,
+      messages,
+      temperature: 0.7,
+      max_tokens: 1500
+    };
+
+    const tryOrder = [modelSelect.value, ...OPENAI_FALLBACK.filter(m=>m!==modelSelect.value)];
+    for (const model of tryOrder) {
+      try {
+        payload.model = model;
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${openaiApiKey}`
+          },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(30000)
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const text = data?.choices?.[0]?.message?.content || '';
+          if (text) {
+            if (model !== modelSelect.value) {
+              if (Array.from(modelSelect.options).some(o=>o.value===model)) modelSelect.value=model;
+              showToast(`🔄 ${model} 모델로 자동 전환됨`);
+            }
+            return text;
+          }
+        }
+        if (res.status===401||res.status===403||res.status===429) {
+          if (res.status===401) showToast('❌ OpenAI API 키가 올바르지 않습니다.');
+          if (res.status===429) showToast('⚠️ OpenAI API 사용량 초과. 잠시 후 다시 시도하세요.');
+          break;
+        }
+      } catch(e) {}
+    }
+    return '';
+  }
+
+  // ── 통합 AI 호출 (프로바이더 분기) ──
+  async function callAI(userMsg) {
+    if (aiProvider === 'openai') return callOpenAI(userMsg);
+    return callGemini(userMsg);
+  }
+
+  // ── 룰 기반 폴백 ──
+  function ruleBasedAnswer(msg) {
+    const m = msg.toLowerCase();
+    if (!globalCtx) return '데이터를 불러오는 중입니다. 잠시 후 다시 시도해주세요.';
+    const brands = selectedBrand==='전체' ? globalCtx.brands : globalCtx.brands.filter(b=>b.name===selectedBrand);
+
+    // 브랜드 목록 (프랜차이즈만)
+    if (/브랜드|어떤.*있|목록|리스트|업체/.test(m)) {
+      const list = globalCtx.brands.map((b,i)=>`${i+1}. <b>${b.name}</b>${b.phone?' · '+b.phone:''}`).join('<br>');
+      return `📋 <b>프랜차이즈 브랜드 목록 (${globalCtx.brands.length}개)</b><br><br>${list}`;
+    }
+    // 특정 브랜드 검색
+    for (const b of brands) {
+      if (brands.length>1 && !m.includes(b.name.toLowerCase())) continue;
+      if (/매장|위치|어디|주소|찾/.test(m) && b.storeRows.length) {
+        const list = b.storeRows.slice(0,4).map(r=>`📍 <b>${r[1]||''}</b>${r[2]?'<br>&nbsp;&nbsp;'+r[2]:''}${r[3]?'<br>&nbsp;&nbsp;<a href="tel:'+r[3]+'" style="color:#4f46e6">'+r[3]+'</a>':''}`).join('<br><br>');
+        return `📍 <b>${b.name} 매장</b> (총 ${b.storeRows.length}개)<br><br>${list}`;
+      }
+      if (/비용|가맹비|창업|얼마|교육비/.test(m) && b.franchiseRows.length) {
+        let total=0;
+        const list = b.franchiseRows.map(r=>{
+          const n=parseFloat((r[2]||'').replace(/[^0-9.]/g,''));
+          if(!isNaN(n)&&n>0) total+=n;
+          return `💰 <b>${r[0]||''}</b>: ${r[2]||''}${!isNaN(n)&&n>0?'만원':''}`;
+        }).join('<br>');
+        return `💰 <b>${b.name} 가맹/창업 비용</b><br><br>${list}${total>0?'<br><br>📊 합계 약 <b>'+total.toLocaleString()+'만원</b>':''}`;
+      }
+      if (/전화|연락|번호|문의/.test(m) && b.phone)
+        return `📞 <b>${b.name}</b> 연락처: <a href="tel:${b.phone}" style="color:#4f46e5;font-weight:700">${b.phone}</a>`;
+    }
+    // 공통 지식
+    for (const d of chatbotDB.filter(d=>d.brand_name==='공통')) {
+      if (d.keywords.split(',').some(k=>m.includes(k.trim().toLowerCase()))) return d.response;
+    }
+    return `죄송합니다. 해당 질문에 대한 정보를 찾지 못했습니다.<br><br>💡 이렇게 물어보세요:<br>• "어떤 브랜드가 있나요?"<br>• "(브랜드명) 창업 비용은?"<br>• "(브랜드명) 매장 위치 알려줘"`;
+  }
+
+  // ── 메시지 전송 ──
+  async function sendMessage() {
+    if (isLoading) return;
+    const text = msgInput.value.trim();
+    if (!text) return;
+
+    if (welcomeMsg) welcomeMsg.style.display = 'none';
+    appendMessage('user', text);
+    chatHistory.push({ role:'user', parts:[{text}] });
+    msgInput.value = '';
+    msgInput.style.height = 'auto';
+    sendBtn.disabled = true;
+    isLoading = true;
+
+    const tid = appendTyping();
+    try {
+      let answer = '';
+      if (getActiveApiKey()) {
+        answer = await callAI(text);
+        if (answer) {
+          // 히스토리는 Gemini 형식으로 통일 저장 (callOpenAI에서 변환)
+          chatHistory.push({ role:'model', parts:[{text:answer}] });
+          if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+          answer = answer
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+            .replace(/\*(.*?)\*/g, '$1')
+            .replace(/### (.*?)(\n|$)/g, '<b style="font-size:14px;color:#1e293b;display:block;margin-top:8px">$1</b>')
+            .replace(/\n/g, '<br>');
+        }
+      }
+      if (!answer) answer = ruleBasedAnswer(text);
+      removeTyping(tid);
+      appendMessage('ai', answer);
+    } catch(e) {
+      removeTyping(tid);
+      appendMessage('ai', ruleBasedAnswer(text));
+    } finally {
+      isLoading = false;
+      sendBtn.disabled = false;
+      msgInput.focus();
+      scrollBottom();
+    }
+  }
+
+  function sendChip(text) { msgInput.value=text; sendMessage(); }
+
+  // ── DOM 헬퍼 ──
+  function appendMessage(role, html) {
+    const row = document.createElement('div');
+    row.className = `msg-row ${role}`;
+    const avatar = document.createElement('div');
+    avatar.className = `msg-avatar ${role}`;
+    avatar.textContent = role==='ai' ? '🤖' : '👤';
+    const wrap = document.createElement('div');
+    const bubble = document.createElement('div');
+    bubble.className = `bubble ${role}`;
+    bubble.innerHTML = role==='ai' ? html : escapeHtml(html).replace(/\n/g,'<br>');
+    const time = document.createElement('div');
+    time.className = 'bubble-time';
+    time.textContent = new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+    wrap.appendChild(bubble); wrap.appendChild(time);
+    row.appendChild(avatar); row.appendChild(wrap);
+    chatArea.appendChild(row);
+    scrollBottom();
+  }
+  function appendSystem(html) {
+    const el = document.createElement('div');
+    el.className = 'system-msg';
+    el.innerHTML = html;
+    chatArea.appendChild(el);
+    scrollBottom();
+  }
+  let tcnt=0;
+  function appendTyping() {
+    const id='t-'+(++tcnt);
+    const row=document.createElement('div');
+    row.className='msg-row ai'; row.id=id;
+    row.innerHTML=`<div class="msg-avatar ai">🤖</div><div class="bubble ai"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+    chatArea.appendChild(row); scrollBottom();
+    return id;
+  }
+  function removeTyping(id) { document.getElementById(id)?.remove(); }
+  function scrollBottom() { setTimeout(()=>{ chatArea.scrollTop=chatArea.scrollHeight; },40); }
+  function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function showToast(msg,d=2500) {
+    const el=document.createElement('div'); el.className='toast'; el.textContent=msg;
+    document.body.appendChild(el); setTimeout(()=>el.remove(),d);
+  }
+
+  // ── 이벤트 ──
+  sendBtn.addEventListener('click', sendMessage);
+  msgInput.addEventListener('keydown', e => {
+    if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+  msgInput.addEventListener('input', () => {
+    msgInput.style.height='auto';
+    msgInput.style.height=Math.min(msgInput.scrollHeight,110)+'px';
+  });
+  clearBtn.addEventListener('click', () => {
+    if (!confirm('대화 내역을 초기화할까요?')) return;
+    chatHistory=[];
+    chatArea.innerHTML='';
+    chatArea.appendChild(welcomeMsg);
+    welcomeMsg.style.display='';
+    showToast('🗑️ 대화가 초기화되었습니다');
+  });
+  modelSelect.addEventListener('change', () => {
+    updateStatusBar();
+  });
+
+  // ── 시작 ──
+  (async () => {
+    await loadApiKey();
+    await initAllData();
+  })();
+</script>
+
+</body>
+</html>

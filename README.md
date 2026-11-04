@@ -10,7 +10,8 @@ localStorage에만 저장되며 다른 방문자와 공유되지 않습니다. �
 회원 데이터 수집을 위한 운영 서버는 별도 배포가 필요합니다.
 로컬 실행에서는 아래 Python 서버와 SQLite를 사용합니다.
 
-`main`에 push하면 GitHub Actions가 검증 후 화면을 자동 배포합니다.
+`python build_pages.py`로 `docs/`를 갱신한 뒤 `main`에 push하면
+GitHub Pages가 해당 폴더를 자동 게시합니다.
 이미지 업로드 키는 브라우저의 `imgbb_api_key` 설정값을 사용합니다.
 
 ## 로컬 실행 (홍보야)
