@@ -21,7 +21,14 @@ assert.equal(author.normalize({...input,email:'private@example.com',password:'se
 assert.equal(author.normalize({...input,password:'secret'}).password,undefined);
 const validPng = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
 assert.equal(author.normalize({...input,image:validPng}).image,validPng);
+const deco = author.normalize({...input,coverImage:validPng,theme:'amber',bgStyle:'dots',btnShape:'pill',badgeText:'🌿 오늘 수확 직거래 오픈!'});
+assert.equal(deco.coverImage,validPng);
+assert.equal(deco.theme,'amber');
+assert.equal(deco.bgStyle,'dots');
+assert.equal(deco.btnShape,'pill');
+assert.equal(deco.badgeText,'🌿 오늘 수확 직거래 오픈!');
 assert.throws(()=>author.normalize({...input,image:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD='}));
 const hugePng = 'data:image/png;base64,' + Buffer.alloc(600 * 1024 + 32, 1).toString('base64');
 assert.throws(()=>author.normalize({...input,image:hugePng}));
-console.log('PASS: independent-browser snapshot, Unicode, products, channels, invalid links, PNG<=600KB validation, private field exclusion');
+assert.throws(()=>author.normalize({...input,coverImage:hugePng}));
+console.log('PASS: independent-browser snapshot, Unicode, products, channels, cover+deco options, invalid links, PNG<=600KB validation, private field exclusion');

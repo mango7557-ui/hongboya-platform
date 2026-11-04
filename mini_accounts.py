@@ -56,12 +56,15 @@ def clean_profile(value):
             return raw
         return url(raw)
     result = {key: text(key, limit) for key, limit in
-              [('name', 60), ('bio', 400), ('region', 60), ('handle', 40)]}
+              [('name', 60), ('bio', 400), ('region', 60), ('handle', 40), ('badgeText', 40)]}
     if not result['name']:
         raise ValueError('활동명을 입력하세요.')
     result['role'] = text('role', 20) if value.get('role') in ('producer', 'maker', 'creative', 'local') else 'local'
-    result['theme'] = text('theme', 20) if value.get('theme') in ('coral', 'forest', 'violet', 'ocean') else 'coral'
+    result['theme'] = text('theme', 20) if value.get('theme') in ('coral', 'forest', 'violet', 'ocean', 'amber', 'rose') else 'coral'
+    result['bgStyle'] = text('bgStyle', 20) if value.get('bgStyle') in ('clean', 'dots', 'grid', 'soft') else 'clean'
+    result['btnShape'] = text('btnShape', 20) if value.get('btnShape') in ('rounded', 'pill', 'sharp') else 'rounded'
     result['image'] = image_url(value.get('image', ''))
+    result['coverImage'] = image_url(value.get('coverImage', ''))
     for collection, limit in [('links', 8), ('products', 12)]:
         entries = value.get(collection, [])
         if not isinstance(entries, list) or len(entries) > limit:

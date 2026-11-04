@@ -23,3 +23,23 @@ html[data-theme="dark"] .bio{color:#b6bfb5}
 .url-sub-label{margin:10px 0 0;font-size:11px;color:var(--muted)}
 html[data-theme="dark"] .profile-upload-box{background:#161c19;border-color:var(--line)}
 html[data-theme="dark"] .camera-btn{background:var(--accent);border-color:var(--accent);color:#fff}
+.cover-upload-thumb{width:110px;height:56px;border-radius:10px;object-fit:cover;border:2px solid var(--accent);background:#f1f3e9;flex-shrink:0}
+.cover-presets{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px}
+.preset-label{font-size:11px;color:var(--muted);font-weight:700;margin-right:2px}
+.preset-chip{padding:5px 10px;border-radius:999px;font-size:11px;font-weight:700;background:#fff;border:1px solid var(--line)}
+.deco-box{margin:16px 0;padding:16px;border:1px solid var(--line);border-radius:16px;background:#fafbf7}
+.deco-box h2{font-size:17px;margin:0}
+.mini-home.amber{--brand:#d97706}
+.mini-home.rose{--brand:#e11d48}
+.home-cover{position:relative;height:132px;margin:0 -24px 0;background:linear-gradient(135deg,var(--brand),#1f2937);overflow:hidden;opacity:1}
+.home-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.home-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.28));pointer-events:none}
+.welcome-sticker{display:inline-flex;align-items:center;gap:6px;margin:10px auto 2px;padding:5px 13px;border-radius:999px;background:var(--brand);color:#fff;font-size:11px;font-weight:800;box-shadow:0 6px 16px rgba(0,0,0,.14);max-width:100%}
+.mini-home.bg-dots{background-image:radial-gradient(rgba(120,130,115,.18) 1.2px,transparent 1.2px);background-size:16px 16px}
+.mini-home.bg-grid{background-image:linear-gradient(to right,rgba(120,130,115,.1) 1px,transparent 1px),linear-gradient(to bottom,rgba(120,130,115,.1) 1px,transparent 1px);background-size:20px 20px}
+.mini-home.bg-soft{background-image:radial-gradient(circle at top right,rgba(238,98,72,.12),transparent 55%),radial-gradient(circle at bottom left,rgba(65,99,69,.12),transparent 55%)}
+.mini-home.shape-pill .home-links a,.mini-home.shape-pill .product a{border-radius:999px}
+.mini-home.shape-pill .product{border-radius:20px}
+.mini-home.shape-sharp .home-links a,.mini-home.shape-sharp .product a,.mini-home.shape-sharp .product{border-radius:4px}
+html[data-theme="dark"] .deco-box{background:#161c19;border-color:var(--line)}
+html[data-theme="dark"] .preset-chip{background:#1b211e;border-color:var(--line);color:var(--ink)}

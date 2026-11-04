@@ -43,7 +43,40 @@
   </div>
   <label class="url-sub-label">또는 이미지 주소 직접 입력<input name="image" type="text" placeholder="https://... (선택 · 파일 업로드 시 자동 입력됨)"></label>
  </div>
- <label>나의 색<select name="theme"><option value="coral">코랄 · 따뜻한 시작</option><option value="forest">포레스트 · 자연의 정성</option><option value="violet">바이올렛 · 새로운 영감</option><option value="ocean">오션 · 로컬의 발견</option></select></label>
+ <div class="profile-upload-box cover-upload-box">
+  <div class="profile-upload-head">
+   <span>테마 배경 이미지 (미니홈피 상단 커버) <small>(PNG 자동 변환 · 600KB 이하)</small></span>
+   <span id="cover-upload-meta" class="pill">기본 테마 컬러</span>
+  </div>
+  <div class="profile-upload-controls">
+   <img id="cover-upload-thumb" class="cover-upload-thumb" alt="테마 배경 미리보기" hidden>
+   <div class="profile-upload-buttons">
+    <label class="file-button upload-btn camera-btn" for="cover-camera-input">📷 배경 촬영<input id="cover-camera-input" type="file" accept="image/*" capture="environment" hidden></label>
+    <label class="file-button upload-btn gallery-btn" for="cover-file-input">🖼️ 배경 이미지 선택<input id="cover-file-input" type="file" accept="image/*" hidden></label>
+    <button type="button" id="cover-clear-btn" data-action="clear-cover" hidden>✕ 배경 지우기</button>
+   </div>
+  </div>
+  <div class="cover-presets" role="group" aria-label="테마 배경 프리셋">
+   <span class="preset-label">추천 배경:</span>
+   <button type="button" class="preset-chip" data-action="cover-preset" data-cover="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80">🌿 초록 들판</button>
+   <button type="button" class="preset-chip" data-action="cover-preset" data-cover="https://images.unsplash.com/photo-1452860606245-08befc0ff44b?auto=format&fit=crop&w=900&q=80">🏺 공방 작업실</button>
+   <button type="button" class="preset-chip" data-action="cover-preset" data-cover="https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=80">✦ 크리에이티브</button>
+   <button type="button" class="preset-chip" data-action="cover-preset" data-cover="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80">☕ 로컬 카페</button>
+   <button type="button" class="preset-chip" data-action="cover-preset" data-cover="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80">🌅 바다 노을</button>
+  </div>
+  <label class="url-sub-label">또는 테마 배경 이미지 주소 직접 입력<input name="coverImage" type="text" placeholder="https://... (선택 · 배경 업로드/프리셋 선택 가능)"></label>
+ </div>
+ <div class="deco-box">
+  <div class="section-head"><h2>🎨 미니홈피 꾸미기</h2><span class="pill">STYLE CUSTOM</span></div>
+  <div class="two">
+   <label>나의 포인트 색<select name="theme"><option value="coral">코랄 · 따뜻한 시작</option><option value="forest">포레스트 · 자연의 정성</option><option value="violet">바이올렛 · 새로운 영감</option><option value="ocean">오션 · 로컬의 발견</option><option value="amber">선셋 골드 · 풍요로운 수확</option><option value="rose">로즈 베리 · 감성 아틀리에</option></select></label>
+   <label>배경 분위기 (패턴)<select name="bgStyle"><option value="clean">클린 · 깔끔한 기본</option><option value="dots">도트 · 아기자기한 감성</option><option value="grid">그리드 · 공방 노트 스타일</option><option value="soft">소프트 · 은은한 그라데이션</option></select></label>
+  </div>
+  <div class="two">
+   <label>버튼 · 카드 모양<select name="btnShape"><option value="rounded">라운드 · 부드러운 모서리</option><option value="pill">캡슐형 · 동글동글 필 버튼</option><option value="sharp">모던 · 단정한 스퀘어</option></select></label>
+   <label>상단 환영 스티커 문구<input name="badgeText" maxlength="40" placeholder="예: 🌿 오늘 수확한 제철 농산물 직거래 오픈!"></label>
+  </div>
+ </div>
  <div class="section-head"><h2>나의 쇼핑몰 & SNS</h2><button type="button" data-action="add-link">+ 링크 추가</button></div><p class="muted">쇼핑몰, 인스타그램, 유튜브, 블로그, 문의 채널의 주소를 연결하세요.</p><div id="link-fields"></div>
  <div class="section-head"><h2>미니샵 상품</h2><button type="button" data-action="add-product">+ 상품 추가</button></div><p class="muted">상품 버튼은 연결한 판매·예약 페이지로 이동합니다. 결제는 해당 판매처에서 진행돼요.</p><div id="product-fields"></div>
  <div class="actions"><button class="primary" type="submit">변경 내용 저장</button><button type="button" data-action="backup">백업 다운로드</button><label class="file-button">백업 불러오기<input id="import-file" type="file" accept="application/json" hidden></label></div><p id="form-error" role="alert"></p></form>

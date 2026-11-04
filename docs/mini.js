@@ -5,7 +5,7 @@
  const storageKey = 'hongboya-mini-v1:' + new URL('.', location.href).pathname;
  const roles = {producer:'🌾 생산자',maker:'🛠 제조사 · 메이커',creative:'✦ 크리에이티브',local:'📍 로컬 크리에이터'};
  let server = false, ready = false, profile = null, userId = '', login = false, sharedUrl = '', publicProfile = null;
- const blank = () => ({name:'',bio:'',region:'',image:'',role:'local',theme:'coral',links:[],products:[]});
+ const blank = () => ({name:'',bio:'',region:'',image:'',coverImage:'',badgeText:'',bgStyle:'clean',btnShape:'rounded',role:'local',theme:'coral',links:[],products:[]});
  const MAX_PROFILE_PNG_BYTES = 600 * 1024;
  const pngDataUrlBytes = value => {
    const m = /^data:image\/png;base64,([A-Za-z0-9+/=]+)$/.exec(String(value || '').trim());
@@ -25,8 +25,8 @@
    const raw = String(value).trim();
    if (raw.startsWith('data:')) {
      const bytes = pngDataUrlBytes(raw);
-     if (bytes <= 0) throw Error('프로필 업로드 이미지는 PNG 형식이어야 합니다.');
-     if (bytes > MAX_PROFILE_PNG_BYTES) throw Error('프로필 이미지는 600KB 이하여야 합니다.');
+     if (bytes <= 0) throw Error('업로드 이미지는 PNG 형식이어야 합니다.');
+     if (bytes > MAX_PROFILE_PNG_BYTES) throw Error('업로드 이미지는 600KB 이하여야 합니다.');
      return raw;
    }
    return safeURL(raw);
@@ -34,11 +34,14 @@
  function normalize(raw) {
    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw Error('미니홈피 정보가 올바르지 않습니다.');
    const p = blank();
-   for (const [key,max] of [['name',60],['bio',400],['region',60]]) p[key] = String(raw[key] || '').trim().slice(0,max);
+   for (const [key,max] of [['name',60],['bio',400],['region',60],['badgeText',40]]) p[key] = String(raw[key] || '').trim().slice(0,max);
    if (!p.name) throw Error('활동명을 입력하세요.');
     p.role = Object.hasOwn(roles,raw.role) ? raw.role : 'local';
-   p.theme = ['coral','forest','violet','ocean'].includes(raw.theme) ? raw.theme : 'coral';
+   p.theme = ['coral','forest','violet','ocean','amber','rose'].includes(raw.theme) ? raw.theme : 'coral';
+   p.bgStyle = ['clean','dots','grid','soft'].includes(raw.bgStyle) ? raw.bgStyle : 'clean';
+   p.btnShape = ['rounded','pill','sharp'].includes(raw.btnShape) ? raw.btnShape : 'rounded';
    p.image = safeImageURL(raw.image);
+   p.coverImage = safeImageURL(raw.coverImage);
    for (const [key,max] of [['links',8],['products',12]]) {
      if (!Array.isArray(raw[key] || []) || (raw[key] || []).length > max) throw Error('링크는 8개, 상품은 12개까지 등록할 수 있습니다.');
      p[key] = (raw[key] || []).map(row => {
@@ -51,20 +54,26 @@
    }
    return p;
  }
- function encode(p) {const result=btoa(Array.from(new TextEncoder().encode(JSON.stringify(normalize(p))), b=>String.fromCharCode(b)).join('')).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');if(result.length>1200000)throw Error('공유 주소가 너무 깁니다. 소개나 링크 길이를 줄여주세요.');return result;}
+ function encode(p) {const result=btoa(Array.from(new TextEncoder().encode(JSON.stringify(normalize(p))), b=>String.fromCharCode(b)).join('')).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');if(result.length>2000000)throw Error('공유 주소가 너무 깁니다. 소개나 링크 길이를 줄여주세요.');return result;}
  function decode(s) {
-   if (s.length > 1200000) throw Error('공유 링크가 너무 깁니다.');
+   if (s.length > 2000000) throw Error('공유 링크가 너무 깁니다.');
    return normalize(JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0)))));
  }
  // Pure helpers are also used by the cross-browser sharing tests.
  window.HongboyaMini = {normalize,encode,decode,safeURL,safeImageURL,pngDataUrlBytes,MAX_PROFILE_PNG_BYTES};
  function element(tag, text, cls) { const el=document.createElement(tag); if(text !== undefined)el.textContent=text; if(cls)el.className=cls; return el; }
  function outbound(title, url, cls) {const a=element('a',title,cls);a.href=safeURL(url);a.target='_blank';a.rel='noopener noreferrer';return a;}
- function image(url, alt, cls) {const img=element('img',undefined,cls);img.src=cls==='avatar'?safeImageURL(url):safeURL(url);img.alt=alt;img.referrerPolicy='no-referrer';img.loading='lazy';img.addEventListener('error',()=>img.replaceWith(element('div','✦',cls || 'product-art')));return img;}
+ function image(url, alt, cls) {const img=element('img',undefined,cls);img.src=['avatar','cover-img'].includes(cls)?safeImageURL(url):safeURL(url);img.alt=alt;img.referrerPolicy='no-referrer';img.loading='lazy';img.addEventListener('error',()=>img.replaceWith(element('div','✦',cls || 'product-art')));return img;}
  function render(p, target) {
-   target.replaceChildren();target.className='mini-home '+p.theme;
-   target.append(element('div','','home-cover'));
+   target.replaceChildren();
+   const bgCls=p.bgStyle && p.bgStyle!=='clean'?` bg-${p.bgStyle}`:'';
+   const shapeCls=p.btnShape && p.btnShape!=='rounded'?` shape-${p.btnShape}`:'';
+   target.className=`mini-home ${p.theme || 'coral'}${bgCls}${shapeCls}`;
+   const cover=element('div','','home-cover');
+   if(p.coverImage){try{cover.append(image(p.coverImage,(p.name||'미니홈피')+' 테마 배경','cover-img'));}catch{}}
+   target.append(cover);
    try{target.append(p.image ? image(p.image,p.name,'avatar') : element('div',roles[p.role]?.split(' ')[0] || '✦','avatar'));}catch{target.append(element('div','✦','avatar'));}
+   if(p.badgeText){const stickerWrap=element('div');stickerWrap.append(element('span',p.badgeText,'welcome-sticker'));target.append(stickerWrap);}
    target.append(element('span',(roles[p.role] || roles.local)+(p.region?' · '+p.region:''),'pill'),element('h1',p.name || '나의 미니홈피'),element('p',p.bio || '내가 만든 가치와 이야기를 소개해보세요.','bio'));
    const links=element('div',undefined,'home-links');
    for(const row of p.links) if(row.title && row.url) {try{links.append(outbound(row.title+' ↗',row.url));}catch{}}
@@ -109,7 +118,28 @@
      meta.textContent=bytes>0?`PNG · ${(bytes/1024).toFixed(1)}KB / 600KB 이하`:'외부 이미지 URL';
    }
  }
- async function resizeImageFileToPng(file){
+ function syncCoverUploadUI(){
+   const thumb=$('cover-upload-thumb'),meta=$('cover-upload-meta'),clearBtn=$('cover-clear-btn'),f=$('profile-form');
+   if(!profile)return;
+   const coverVal=profile.coverImage || '';
+   if(f?.elements?.coverImage){
+     f.elements.coverImage.value=coverVal.startsWith('data:image/png;base64,')?'':coverVal;
+     f.elements.coverImage.placeholder=coverVal.startsWith('data:image/png;base64,')?'업로드된 PNG 배경 사용 중 (URL 입력 시 대체)':'https://... (선택 · 배경 업로드/프리셋 선택 가능)';
+   }
+   if(!coverVal){
+     if(thumb){thumb.hidden=true;thumb.removeAttribute?.('src');}
+     if(meta)meta.textContent='기본 테마 컬러';
+     if(clearBtn)clearBtn.hidden=true;
+     return;
+   }
+   if(thumb){thumb.src=coverVal;thumb.hidden=false;}
+   if(clearBtn)clearBtn.hidden=false;
+   if(meta){
+     const bytes=pngDataUrlBytes(coverVal);
+     meta.textContent=bytes>0?`PNG · ${(bytes/1024).toFixed(1)}KB / 600KB 이하`:'테마 배경 이미지 적용됨';
+   }
+ }
+ async function resizeImageFileToPng(file,mode='avatar'){
    if(!file)throw Error('이미지 파일을 선택해주세요.');
    if(file.type && !file.type.startsWith('image/'))throw Error('이미지 파일만 업로드할 수 있습니다.');
    const dataUrl=await new Promise((resolve,reject)=>{
@@ -124,8 +154,31 @@
      el.onerror=()=>reject(Error('지원하지 않거나 손상된 이미지입니다.'));
      el.src=dataUrl;
    });
-   const srcW=img.naturalWidth || img.width || 512;
-   const srcH=img.naturalHeight || img.height || 512;
+   const srcW=img.naturalWidth || img.width || 640;
+   const srcH=img.naturalHeight || img.height || 640;
+   if(mode==='cover'){
+     const ratio=16/9;
+     let cropW=srcW,cropH=Math.round(srcW/ratio);
+     if(cropH>srcH){cropH=srcH;cropW=Math.round(srcH*ratio);}
+     const sx=Math.max(0,Math.floor((srcW-cropW)/2));
+     const sy=Math.max(0,Math.floor((srcH-cropH)/2));
+     const widths=[960,800,680,580,500,420,360,300,240];
+     for(const targetW of widths){
+       const w=Math.min(targetW,Math.max(160,cropW));
+       const h=Math.max(90,Math.round(w/ratio));
+       const canvas=document.createElement('canvas');
+       canvas.width=w;canvas.height=h;
+       const ctx=canvas.getContext('2d');
+       ctx.clearRect(0,0,w,h);
+       ctx.drawImage(img,sx,sy,cropW,cropH,0,0,w,h);
+       const pngUrl=canvas.toDataURL('image/png');
+       const bytes=pngDataUrlBytes(pngUrl);
+       if(bytes>0 && bytes<=MAX_PROFILE_PNG_BYTES){
+         return {dataUrl:pngUrl,bytes,size:`${w}×${h}`};
+       }
+     }
+     throw Error('배경 이미지를 600KB 이하 PNG로 변환할 수 없습니다.');
+   }
    const side=Math.min(srcW,srcH);
    const sx=Math.max(0,Math.floor((srcW-side)/2));
    const sy=Math.max(0,Math.floor((srcH-side)/2));
@@ -140,14 +193,15 @@
      const pngUrl=canvas.toDataURL('image/png');
      const bytes=pngDataUrlBytes(pngUrl);
      if(bytes>0 && bytes<=MAX_PROFILE_PNG_BYTES){
-       return {dataUrl:pngUrl,bytes,size};
+       return {dataUrl:pngUrl,bytes,size:`${size}×${size}`};
      }
    }
    throw Error('이미지를 600KB 이하 PNG로 변환할 수 없습니다. 다른 이미지를 선택해주세요.');
  }
  function fillEditor(){
-   const f=$('profile-form');for(const key of ['name','role','region','bio','image','theme'])if(f.elements[key])f.elements[key].value=profile[key] || '';
+   const f=$('profile-form');for(const key of ['name','role','region','bio','image','coverImage','theme','bgStyle','btnShape','badgeText'])if(f.elements[key])f.elements[key].value=profile[key] || '';
    syncAvatarUploadUI();
+   syncCoverUploadUI();
    fields('links');fields('products');render(profile,$('preview'));$('form-error').textContent='';
  }
  function fields(key){
@@ -209,6 +263,8 @@
      case 'add-link':if(profile.links.length>=8)throw Error('링크는 8개까지 등록할 수 있습니다.');profile.links.push({title:'',url:''});fields('links');dirty();break;
      case 'add-product':if(profile.products.length>=12)throw Error('상품은 12개까지 등록할 수 있습니다.');profile.products.push({title:'',url:'',price:'',image:'',description:''});fields('products');dirty();break;
      case 'clear-avatar':profile.image='';syncAvatarUploadUI();dirty();toast('프로필 이미지를 지웠어요.');break;
+     case 'clear-cover':profile.coverImage='';syncCoverUploadUI();dirty();toast('테마 배경 이미지를 지웠어요.');break;
+     case 'cover-preset':profile.coverImage=safeImageURL(b.dataset.cover||'');syncCoverUploadUI();dirty();toast('추천 테마 배경을 적용했어요.');break;
      case 'share':await share();break;case 'copy':await copy(sharedUrl);break;case 'native':await native(sharedUrl,profile);break;
      case 'copy-public':{const u=new URL('mini.html',location.href);u.hash='home='+encode(publicProfile);await copy(location.search.includes('u=')?location.href:u.href);break;}
      case 'native-public':{const u=new URL('mini.html',location.href);u.hash='home='+encode(publicProfile);await native(location.search.includes('u=')?location.href:u.href,publicProfile);break;}
@@ -221,11 +277,11 @@
    const meta=$('avatar-upload-meta');
    try{
      if(meta)meta.textContent='PNG 변환·리사이징 중…';
-     const {dataUrl,bytes,size}=await resizeImageFileToPng(file);
+     const {dataUrl,bytes,size}=await resizeImageFileToPng(file,'avatar');
      profile.image=dataUrl;
      syncAvatarUploadUI();
      dirty();
-     toast(`PNG(${size}×${size}px · ${(bytes/1024).toFixed(1)}KB)로 자동 변환되었어요.`);
+     toast(`프로필 PNG(${size}px · ${(bytes/1024).toFixed(1)}KB)로 자동 변환되었어요.`);
    }catch(error){
      syncAvatarUploadUI();
      toast(error.message);
@@ -233,9 +289,29 @@
      e.target.value='';
    }
  }
+ async function handleCoverInput(e){
+   const file=e.target.files?.[0];
+   if(!file)return;
+   const meta=$('cover-upload-meta');
+   try{
+     if(meta)meta.textContent='배경 PNG 변환·리사이징 중…';
+     const {dataUrl,bytes,size}=await resizeImageFileToPng(file,'cover');
+     profile.coverImage=dataUrl;
+     syncCoverUploadUI();
+     dirty();
+     toast(`테마 배경 PNG(${size}px · ${(bytes/1024).toFixed(1)}KB)로 자동 변환되었어요.`);
+   }catch(error){
+     syncCoverUploadUI();
+     toast(error.message);
+   }finally{
+     e.target.value='';
+   }
+ }
  $('avatar-camera-input')?.addEventListener?.('change',handleAvatarInput);
  $('avatar-file-input')?.addEventListener?.('change',handleAvatarInput);
- $('profile-form').addEventListener('input',e=>{if(['name','role','region','bio','image','theme'].includes(e.target.name)){profile[e.target.name]=e.target.value;if(e.target.name==='image')syncAvatarUploadUI();dirty();}});
+ $('cover-camera-input')?.addEventListener?.('change',handleCoverInput);
+ $('cover-file-input')?.addEventListener?.('change',handleCoverInput);
+ $('profile-form').addEventListener('input',e=>{if(['name','role','region','bio','image','coverImage','theme','bgStyle','btnShape','badgeText'].includes(e.target.name)){profile[e.target.name]=e.target.value;if(e.target.name==='image')syncAvatarUploadUI();if(e.target.name==='coverImage')syncCoverUploadUI();dirty();}});
  $('profile-form').addEventListener('submit',async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;try{await save();$('form-error').textContent='';toast('미니홈피를 저장했어요.');}catch(error){$('form-error').textContent=error.message;}finally{b.disabled=false;}});
  $('signup-form').addEventListener('submit',async e=>{
    e.preventDefault();const f=e.target,b=$('join-submit');b.disabled=true;
