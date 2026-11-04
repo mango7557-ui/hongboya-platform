@@ -11,3 +11,15 @@ html[data-theme="dark"] .sample-products span,html[data-theme="dark"] .entry,htm
 html[data-theme="dark"] .floating,html[data-theme="dark"] .notice{background:#222923;border-color:#2f3932;color:#cfe0c5}
 html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea{background:#151a17;border-color:#2f3833;color:var(--ink)}
 html[data-theme="dark"] .bio{color:#b6bfb5}
+.profile-upload-box{margin:14px 0;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#fafbf7}
+.profile-upload-head{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:700;margin-bottom:10px}
+.profile-upload-head small{font-weight:500;color:var(--muted);font-size:11px}
+.profile-upload-head .pill{margin-top:0}
+.profile-upload-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.avatar-upload-thumb{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);background:#f1f3e9;flex-shrink:0}
+.profile-upload-buttons{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.upload-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:10px;font-size:12px;font-weight:700}
+.camera-btn{background:var(--accent);border-color:var(--accent);color:#fff}
+.url-sub-label{margin:10px 0 0;font-size:11px;color:var(--muted)}
+html[data-theme="dark"] .profile-upload-box{background:#161c19;border-color:var(--line)}
+html[data-theme="dark"] .camera-btn{background:var(--accent);border-color:var(--accent);color:#fff}

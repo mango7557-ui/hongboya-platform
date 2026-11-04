@@ -27,7 +27,23 @@
 <section id="studio" class="wrap" hidden><div class="section-head"><div><p class="eyebrow">MY CREATOR STUDIO</p><h1>나만의 미니홈피 스튜디오</h1><p id="save-mode" class="muted"></p></div><div class="actions"><button data-action="logout">로그아웃 / 시작 화면</button><button class="primary" data-action="share">공유 링크 만들기 ↗</button></div></div>
  <div class="studio-grid"><form id="profile-form" class="panel"><div class="section-head"><h2>프로필 & 테마</h2><span id="save-status" role="status">편집 중</span></div>
  <label>활동명 / 브랜드명<input name="name" maxlength="60" required placeholder="예: 초록의 작은 농장"></label><div class="two"><label>나의 분야<select name="role"><option value="producer">🌾 생산자</option><option value="maker">🛠 제조사 · 메이커</option><option value="creative">✦ 크리에이티브</option><option value="local">📍 로컬 크리에이터</option></select></label><label>활동 지역<input name="region" maxlength="60" placeholder="예: 전남 해남"></label></div>
- <label>나를 소개하는 이야기<textarea name="bio" maxlength="400" rows="3" placeholder="어떤 가치를 만들고 있나요?"></textarea></label><label>프로필 이미지 주소<input name="image" type="url" maxlength="1000" placeholder="https://... (선택)"></label><label>나의 색<select name="theme"><option value="coral">코랄 · 따뜻한 시작</option><option value="forest">포레스트 · 자연의 정성</option><option value="violet">바이올렛 · 새로운 영감</option><option value="ocean">오션 · 로컬의 발견</option></select></label>
+ <label>나를 소개하는 이야기<textarea name="bio" maxlength="400" rows="3" placeholder="어떤 가치를 만들고 있나요?"></textarea></label>
+ <div class="profile-upload-box">
+  <div class="profile-upload-head">
+   <span>프로필 이미지 <small>(PNG 자동 변환 · 600KB 이하 자동 리사이징)</small></span>
+   <span id="avatar-upload-meta" class="pill">미등록</span>
+  </div>
+  <div class="profile-upload-controls">
+   <img id="avatar-upload-thumb" class="avatar-upload-thumb" alt="프로필 미리보기" hidden>
+   <div class="profile-upload-buttons">
+    <label class="file-button upload-btn camera-btn" for="avatar-camera-input">📷 카메라 촬영<input id="avatar-camera-input" type="file" accept="image/*" capture="environment" hidden></label>
+    <label class="file-button upload-btn gallery-btn" for="avatar-file-input">🖼️ 이미지 선택<input id="avatar-file-input" type="file" accept="image/*" hidden></label>
+    <button type="button" id="avatar-clear-btn" data-action="clear-avatar" hidden>✕ 이미지 지우기</button>
+   </div>
+  </div>
+  <label class="url-sub-label">또는 이미지 주소 직접 입력<input name="image" type="text" placeholder="https://... (선택 · 파일 업로드 시 자동 입력됨)"></label>
+ </div>
+ <label>나의 색<select name="theme"><option value="coral">코랄 · 따뜻한 시작</option><option value="forest">포레스트 · 자연의 정성</option><option value="violet">바이올렛 · 새로운 영감</option><option value="ocean">오션 · 로컬의 발견</option></select></label>
  <div class="section-head"><h2>나의 쇼핑몰 & SNS</h2><button type="button" data-action="add-link">+ 링크 추가</button></div><p class="muted">쇼핑몰, 인스타그램, 유튜브, 블로그, 문의 채널의 주소를 연결하세요.</p><div id="link-fields"></div>
  <div class="section-head"><h2>미니샵 상품</h2><button type="button" data-action="add-product">+ 상품 추가</button></div><p class="muted">상품 버튼은 연결한 판매·예약 페이지로 이동합니다. 결제는 해당 판매처에서 진행돼요.</p><div id="product-fields"></div>
  <div class="actions"><button class="primary" type="submit">변경 내용 저장</button><button type="button" data-action="backup">백업 다운로드</button><label class="file-button">백업 불러오기<input id="import-file" type="file" accept="application/json" hidden></label></div><p id="form-error" role="alert"></p></form>

@@ -19,4 +19,9 @@ assert.throws(()=>author.normalize({...input,links:[{title:'unsafe',url:'javascr
 assert.throws(()=>author.normalize({...input,products:Array(13).fill(input.products[0])}));
 assert.equal(author.normalize({...input,email:'private@example.com',password:'secret'}).email,undefined);
 assert.equal(author.normalize({...input,password:'secret'}).password,undefined);
-console.log('PASS: independent-browser snapshot, Unicode, products, channels, invalid links, private field exclusion');
+const validPng = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+assert.equal(author.normalize({...input,image:validPng}).image,validPng);
+assert.throws(()=>author.normalize({...input,image:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD='}));
+const hugePng = 'data:image/png;base64,' + Buffer.alloc(600 * 1024 + 32, 1).toString('base64');
+assert.throws(()=>author.normalize({...input,image:hugePng}));
+console.log('PASS: independent-browser snapshot, Unicode, products, channels, invalid links, PNG<=600KB validation, private field exclusion');

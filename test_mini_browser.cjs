@@ -21,6 +21,15 @@ const base = process.argv[2] || 'http://127.0.0.1:8011/';
      if(!staticMode){await page.locator('[name=email]').fill(`browser-${Date.now()}@example.com`);await page.locator('[name=password]').fill('test-password-123');}
      await page.locator('#join-submit').click();
      await page.locator('#studio').waitFor({state:'visible'});
+     assert.equal(await page.locator('label[for="avatar-camera-input"]').isVisible(),true);
+     assert.equal(await page.locator('label[for="avatar-file-input"]').isVisible(),true);
+     const svgBytes=Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000"><rect width="1400" height="1000" fill="#ee6248"/><circle cx="700" cy="500" r="350" fill="#faf9f5"/></svg>');
+     await page.locator('#avatar-file-input').setInputFiles({name:'camera-shot.svg',mimeType:'image/svg+xml',buffer:svgBytes});
+     await page.waitForFunction(()=>document.getElementById('avatar-upload-meta').textContent.startsWith('PNG ·'));
+     const avatarSrc=await page.locator('#preview img.avatar').getAttribute('src');
+     assert.ok(avatarSrc.startsWith('data:image/png;base64,'));
+     const pngSize=Buffer.from(avatarSrc.split(',')[1],'base64').length;
+     assert.ok(pngSize>0 && pngSize<=600*1024,`PNG size ${pngSize} must be <= 600KB`);
      await page.locator('[data-action=add-link]').click();
      const inputs=page.locator('#link-fields input');
      await inputs.nth(0).fill('내 쇼핑몰');await inputs.nth(1).fill('https://example.com/shop');

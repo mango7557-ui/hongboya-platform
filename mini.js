@@ -6,11 +6,30 @@
  const roles = {producer:'🌾 생산자',maker:'🛠 제조사 · 메이커',creative:'✦ 크리에이티브',local:'📍 로컬 크리에이터'};
  let server = false, ready = false, profile = null, userId = '', login = false, sharedUrl = '', publicProfile = null;
  const blank = () => ({name:'',bio:'',region:'',image:'',role:'local',theme:'coral',links:[],products:[]});
+ const MAX_PROFILE_PNG_BYTES = 600 * 1024;
+ const pngDataUrlBytes = value => {
+   const m = /^data:image\/png;base64,([A-Za-z0-9+/=]+)$/.exec(String(value || '').trim());
+   if (!m) return -1;
+   const b64 = m[1];
+   const pad = b64.endsWith('==') ? 2 : (b64.endsWith('=') ? 1 : 0);
+   return Math.floor((b64.length * 3) / 4) - pad;
+ };
  const safeURL = value => {
    if (!value) return '';
    const url = new URL(String(value));
    if (!['https:','http:'].includes(url.protocol) || url.username || url.password || String(value).length > 1000) throw Error('https:// 또는 http://로 시작하는 링크를 입력하세요.');
    return url.href;
+ };
+ const safeImageURL = value => {
+   if (!value) return '';
+   const raw = String(value).trim();
+   if (raw.startsWith('data:')) {
+     const bytes = pngDataUrlBytes(raw);
+     if (bytes <= 0) throw Error('프로필 업로드 이미지는 PNG 형식이어야 합니다.');
+     if (bytes > MAX_PROFILE_PNG_BYTES) throw Error('프로필 이미지는 600KB 이하여야 합니다.');
+     return raw;
+   }
+   return safeURL(raw);
  };
  function normalize(raw) {
    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw Error('미니홈피 정보가 올바르지 않습니다.');
@@ -19,7 +38,7 @@
    if (!p.name) throw Error('활동명을 입력하세요.');
     p.role = Object.hasOwn(roles,raw.role) ? raw.role : 'local';
    p.theme = ['coral','forest','violet','ocean'].includes(raw.theme) ? raw.theme : 'coral';
-   p.image = safeURL(raw.image);
+   p.image = safeImageURL(raw.image);
    for (const [key,max] of [['links',8],['products',12]]) {
      if (!Array.isArray(raw[key] || []) || (raw[key] || []).length > max) throw Error('링크는 8개, 상품은 12개까지 등록할 수 있습니다.');
      p[key] = (raw[key] || []).map(row => {
@@ -32,16 +51,16 @@
    }
    return p;
  }
- function encode(p) {const result=btoa(Array.from(new TextEncoder().encode(JSON.stringify(normalize(p))), b=>String.fromCharCode(b)).join('')).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');if(result.length>40000)throw Error('공유 주소가 너무 깁니다. 소개나 링크 길이를 줄여주세요.');return result;}
+ function encode(p) {const result=btoa(Array.from(new TextEncoder().encode(JSON.stringify(normalize(p))), b=>String.fromCharCode(b)).join('')).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');if(result.length>1200000)throw Error('공유 주소가 너무 깁니다. 소개나 링크 길이를 줄여주세요.');return result;}
  function decode(s) {
-   if (s.length > 40000) throw Error('공유 링크가 너무 깁니다.');
+   if (s.length > 1200000) throw Error('공유 링크가 너무 깁니다.');
    return normalize(JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0)))));
  }
  // Pure helpers are also used by the cross-browser sharing tests.
- window.HongboyaMini = {normalize,encode,decode,safeURL};
+ window.HongboyaMini = {normalize,encode,decode,safeURL,safeImageURL,pngDataUrlBytes,MAX_PROFILE_PNG_BYTES};
  function element(tag, text, cls) { const el=document.createElement(tag); if(text !== undefined)el.textContent=text; if(cls)el.className=cls; return el; }
  function outbound(title, url, cls) {const a=element('a',title,cls);a.href=safeURL(url);a.target='_blank';a.rel='noopener noreferrer';return a;}
- function image(url, alt, cls) {const img=element('img',undefined,cls);img.src=safeURL(url);img.alt=alt;img.referrerPolicy='no-referrer';img.loading='lazy';img.addEventListener('error',()=>img.replaceWith(element('div','✦',cls || 'product-art')));return img;}
+ function image(url, alt, cls) {const img=element('img',undefined,cls);img.src=cls==='avatar'?safeImageURL(url):safeURL(url);img.alt=alt;img.referrerPolicy='no-referrer';img.loading='lazy';img.addEventListener('error',()=>img.replaceWith(element('div','✦',cls || 'product-art')));return img;}
  function render(p, target) {
    target.replaceChildren();target.className='mini-home '+p.theme;
    target.append(element('div','','home-cover'));
@@ -69,8 +88,66 @@
    const res=await fetch('api/mini/'+path,{method,credentials:'same-origin',headers:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(12000)});
    const data=await res.json();if(!res.ok)throw Error(data.error || '요청을 처리하지 못했습니다.');return data;
  }
+ function syncAvatarUploadUI(){
+   const thumb=$('avatar-upload-thumb'),meta=$('avatar-upload-meta'),clearBtn=$('avatar-clear-btn'),f=$('profile-form');
+   if(!profile)return;
+   const imgVal=profile.image || '';
+   if(f?.elements?.image){
+     f.elements.image.value=imgVal.startsWith('data:image/png;base64,')?'':imgVal;
+     f.elements.image.placeholder=imgVal.startsWith('data:image/png;base64,')?'업로드된 PNG 이미지 사용 중 (URL 입력 시 대체)':'https://... (선택)';
+   }
+   if(!imgVal){
+     if(thumb){thumb.hidden=true;thumb.removeAttribute?.('src');}
+     if(meta)meta.textContent='미등록';
+     if(clearBtn)clearBtn.hidden=true;
+     return;
+   }
+   if(thumb){thumb.src=imgVal;thumb.hidden=false;}
+   if(clearBtn)clearBtn.hidden=false;
+   if(meta){
+     const bytes=pngDataUrlBytes(imgVal);
+     meta.textContent=bytes>0?`PNG · ${(bytes/1024).toFixed(1)}KB / 600KB 이하`:'외부 이미지 URL';
+   }
+ }
+ async function resizeImageFileToPng(file){
+   if(!file)throw Error('이미지 파일을 선택해주세요.');
+   if(file.type && !file.type.startsWith('image/'))throw Error('이미지 파일만 업로드할 수 있습니다.');
+   const dataUrl=await new Promise((resolve,reject)=>{
+     const reader=new FileReader();
+     reader.onload=()=>resolve(String(reader.result||''));
+     reader.onerror=()=>reject(Error('이미지를 읽지 못했습니다.'));
+     reader.readAsDataURL(file);
+   });
+   const img=await new Promise((resolve,reject)=>{
+     const el=new Image();
+     el.onload=()=>resolve(el);
+     el.onerror=()=>reject(Error('지원하지 않거나 손상된 이미지입니다.'));
+     el.src=dataUrl;
+   });
+   const srcW=img.naturalWidth || img.width || 512;
+   const srcH=img.naturalHeight || img.height || 512;
+   const side=Math.min(srcW,srcH);
+   const sx=Math.max(0,Math.floor((srcW-side)/2));
+   const sy=Math.max(0,Math.floor((srcH-side)/2));
+   const steps=[640,512,420,360,300,256,220,180,150,120,96,72];
+   for(const target of steps){
+     const size=Math.min(target,Math.max(64,side));
+     const canvas=document.createElement('canvas');
+     canvas.width=size;canvas.height=size;
+     const ctx=canvas.getContext('2d');
+     ctx.clearRect(0,0,size,size);
+     ctx.drawImage(img,sx,sy,side,side,0,0,size,size);
+     const pngUrl=canvas.toDataURL('image/png');
+     const bytes=pngDataUrlBytes(pngUrl);
+     if(bytes>0 && bytes<=MAX_PROFILE_PNG_BYTES){
+       return {dataUrl:pngUrl,bytes,size};
+     }
+   }
+   throw Error('이미지를 600KB 이하 PNG로 변환할 수 없습니다. 다른 이미지를 선택해주세요.');
+ }
  function fillEditor(){
-   const f=$('profile-form');for(const key of ['name','role','region','bio','image','theme'])f.elements[key].value=profile[key] || '';
+   const f=$('profile-form');for(const key of ['name','role','region','bio','image','theme'])if(f.elements[key])f.elements[key].value=profile[key] || '';
+   syncAvatarUploadUI();
    fields('links');fields('products');render(profile,$('preview'));$('form-error').textContent='';
  }
  function fields(key){
@@ -131,13 +208,34 @@
      case 'example':await publicPage(example);break;
      case 'add-link':if(profile.links.length>=8)throw Error('링크는 8개까지 등록할 수 있습니다.');profile.links.push({title:'',url:''});fields('links');dirty();break;
      case 'add-product':if(profile.products.length>=12)throw Error('상품은 12개까지 등록할 수 있습니다.');profile.products.push({title:'',url:'',price:'',image:'',description:''});fields('products');dirty();break;
+     case 'clear-avatar':profile.image='';syncAvatarUploadUI();dirty();toast('프로필 이미지를 지웠어요.');break;
      case 'share':await share();break;case 'copy':await copy(sharedUrl);break;case 'native':await native(sharedUrl,profile);break;
      case 'copy-public':{const u=new URL('mini.html',location.href);u.hash='home='+encode(publicProfile);await copy(location.search.includes('u=')?location.href:u.href);break;}
      case 'native-public':{const u=new URL('mini.html',location.href);u.hash='home='+encode(publicProfile);await native(location.search.includes('u=')?location.href:u.href,publicProfile);break;}
      case 'backup':backup();break;case 'logout':if(server)await api('logout','POST',{});profile=null;userId='';show('landing');break;
    }}catch(error){toast(error.message);}
  });
- $('profile-form').addEventListener('input',e=>{if(['name','role','region','bio','image','theme'].includes(e.target.name)){profile[e.target.name]=e.target.value;dirty();}});
+ async function handleAvatarInput(e){
+   const file=e.target.files?.[0];
+   if(!file)return;
+   const meta=$('avatar-upload-meta');
+   try{
+     if(meta)meta.textContent='PNG 변환·리사이징 중…';
+     const {dataUrl,bytes,size}=await resizeImageFileToPng(file);
+     profile.image=dataUrl;
+     syncAvatarUploadUI();
+     dirty();
+     toast(`PNG(${size}×${size}px · ${(bytes/1024).toFixed(1)}KB)로 자동 변환되었어요.`);
+   }catch(error){
+     syncAvatarUploadUI();
+     toast(error.message);
+   }finally{
+     e.target.value='';
+   }
+ }
+ $('avatar-camera-input')?.addEventListener?.('change',handleAvatarInput);
+ $('avatar-file-input')?.addEventListener?.('change',handleAvatarInput);
+ $('profile-form').addEventListener('input',e=>{if(['name','role','region','bio','image','theme'].includes(e.target.name)){profile[e.target.name]=e.target.value;if(e.target.name==='image')syncAvatarUploadUI();dirty();}});
  $('profile-form').addEventListener('submit',async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;try{await save();$('form-error').textContent='';toast('미니홈피를 저장했어요.');}catch(error){$('form-error').textContent=error.message;}finally{b.disabled=false;}});
  $('signup-form').addEventListener('submit',async e=>{
    e.preventDefault();const f=e.target,b=$('join-submit');b.disabled=true;
@@ -147,7 +245,7 @@
      $('onboarding').close();await dashboard();toast(login?'로그인했어요.':'나의 미니홈피와 미니샵이 만들어졌어요!');
    }catch(error){$('join-error').textContent=error.message;}finally{b.disabled=false;}
  });
- $('import-file').addEventListener('change',async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>50000)throw Error('백업 파일이 너무 큽니다.');const imported=normalize(JSON.parse(await file.text()));if(!confirm('현재 편집 내용을 백업 파일 내용으로 바꿀까요?'))return;profile=imported;fillEditor();dirty();toast('백업을 불러왔어요. 저장 버튼을 눌러 적용하세요.');}catch(error){toast(error.message);}finally{e.target.value='';}});
+ $('import-file').addEventListener('change',async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>900000)throw Error('백업 파일이 너무 큽니다.');const imported=normalize(JSON.parse(await file.text()));if(!confirm('현재 편집 내용을 백업 파일 내용으로 바꿀까요?'))return;profile=imported;fillEditor();dirty();toast('백업을 불러왔어요. 저장 버튼을 눌러 적용하세요.');}catch(error){toast(error.message);}finally{e.target.value='';}});
  async function init(){
    try{server=(await api('status')).accounts===true;}catch{server=false;}
    ready=true;

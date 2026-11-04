@@ -6,7 +6,10 @@ import secrets
 import sqlite3
 import time
 from http.cookies import SimpleCookie
+import base64
 from urllib.parse import urlsplit
+
+MAX_PROFILE_PNG_BYTES = 600 * 1024
 
 
 def database(path):
@@ -36,13 +39,29 @@ def clean_profile(value):
         if len(raw) > 1000:
             raise ValueError('링크가 너무 깁니다.')
         return raw
+    def image_url(raw):
+        raw = str(raw).strip()
+        if not raw:
+            return ''
+        if raw.startswith('data:'):
+            if not raw.startswith('data:image/png;base64,'):
+                raise ValueError('프로필 업로드 이미지는 PNG 형식만 허용됩니다.')
+            b64 = raw.split(',', 1)[1]
+            try:
+                decoded = base64.b64decode(b64, validate=True)
+            except Exception as exc:
+                raise ValueError('올바른 PNG 이미지 데이터가 아닙니다.') from exc
+            if not decoded.startswith(b'\x89PNG\r\n\x1a\n') or len(decoded) > MAX_PROFILE_PNG_BYTES:
+                raise ValueError('프로필 이미지는 600KB 이하의 PNG여야 합니다.')
+            return raw
+        return url(raw)
     result = {key: text(key, limit) for key, limit in
               [('name', 60), ('bio', 400), ('region', 60), ('handle', 40)]}
     if not result['name']:
         raise ValueError('활동명을 입력하세요.')
     result['role'] = text('role', 20) if value.get('role') in ('producer', 'maker', 'creative', 'local') else 'local'
     result['theme'] = text('theme', 20) if value.get('theme') in ('coral', 'forest', 'violet', 'ocean') else 'coral'
-    result['image'] = url(value.get('image', ''))
+    result['image'] = image_url(value.get('image', ''))
     for collection, limit in [('links', 8), ('products', 12)]:
         entries = value.get(collection, [])
         if not isinstance(entries, list) or len(entries) > limit:
