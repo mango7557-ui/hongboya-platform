@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <!--
+    ============================================================
+     ★ OG / SNS 공유 메타태그
+       - 카카오봇·SNS 크롤러는 JS를 실행하지 않으므로,
+         JS 로드 전 기본값을 먼저 두고,
+         JS가 실행되면 <meta> 태그의 content를 교체합니다.
+       - 실제 배포 시 서버에서 brand_id를 파싱해
+         SSR로 주입하면 완벽하지만, 현재는 JS 방식으로 최대한 대응합니다.
+    ============================================================
+    -->
+    <meta id="og-title"       property="og:title"       content="전국 생태계 지도로 잇다, 홍보야넷!">
+    <meta id="og-description" property="og:description" content="홍보야! 당신의 가치를 사고파는 플랫폼!">
+    <meta id="og-image"       property="og:image"       content="https://www.genspark.ai/api/files/s/psKgmWYr">
+    <meta id="og-image-w"     property="og:image:width" content="800">
+    <meta id="og-image-h"     property="og:image:height" content="600">
+    <meta id="og-url"         property="og:url"         content="">
+    <meta id="og-type"        property="og:type"        content="website">
+    <meta id="og-site-name"   property="og:site_name"   content="홍보야넷">
+    <meta id="tw-card"        name="twitter:card"        content="summary_large_image">
+    <meta id="tw-title"       name="twitter:title"       content="전국 생태계 지도로 잇다, 홍보야넷!">
+    <meta id="tw-description" name="twitter:description" content="홍보야! 당신의 가치를 사고파는 플랫폼!">
+    <meta id="tw-image"       name="twitter:image"       content="https://www.genspark.ai/api/files/s/psKgmWYr">
+
+    <title id="page-title">전국 생태계 지도로 잇다, 홍보야넷!</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, sans-serif;
+            min-height: 100vh;
+            background: #0f0e1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ── 로딩 ── */
+        #loading-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            min-height: 100vh;
+            color: #fff;
+        }
+        .spinner {
+            width: 44px; height: 44px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top-color: #a78bfa;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeUp {
+            from { opacity:0; transform: translateY(30px); }
+            to   { opacity:1; transform: translateY(0); }
+        }
+
+        /* ── 메인 래퍼 ── */
+        #brand-card {
+            display: none;
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            flex-direction: column;
+            animation: fadeUp 0.4s ease;
+        }
+
+        /* ── 상단 히어로 (포스터 블러 배경) ── */
+        .hero-bg {
+            position: relative;
+            width: 100%;
+            background: linear-gradient(160deg, #1e1b4b 0%, #4c1d95 60%, #6d28d9 100%);
+            overflow: hidden;
+        }
+        .hero-bg-blur {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            filter: blur(28px) brightness(0.3) saturate(1.4);
+            transform: scale(1.1);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            padding: 20px 20px 0;
+        }
+
+        /* ── 이벤트 배지 ── */
+        .event-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.13);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 40px;
+            padding: 7px 16px;
+            color: #e9d5ff;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            margin-bottom: 18px;
+        }
+
+        /* ── 포스터 이미지 ── */
+        .poster-img-outer {
+            width: 100%;
+            border-radius: 20px 20px 0 0;
+            overflow: hidden;
+            background: #1e1b4b;
+            box-shadow: 0 -4px 30px rgba(0,0,0,0.4);
+        }
+        .poster-img-outer img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+        .poster-img-placeholder {
+            width: 100%;
+            aspect-ratio: 3/4;
+            background: linear-gradient(135deg, #312e81, #4c1d95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .poster-img-placeholder span {
+            font-size: 72px;
+            font-weight: 900;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* ── 카드 바디 ── */
+        .card-body {
+            background: #fff;
+            padding: 22px 20px 28px;
+        }
+
+        /* ── 브랜드 헤더 ── */
+        .brand-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+        .brand-thumb {
+            width: 64px; height: 64px;
+            border-radius: 14px;
+            object-fit: cover;
+            border: 2px solid #e0e7ff;
+            flex-shrink: 0;
+        }
+        .brand-thumb-ph {
+            width: 64px; height: 64px;
+            border-radius: 14px;
+            background: linear-gradient(135deg,#6366f1,#8b5cf6);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; color: #fff; font-size: 26px; font-weight: 900;
+        }
+        .brand-info { flex: 1; min-width: 0; }
+        .brand-badge-label {
+            font-size: 10px; font-weight: 800;
+            color: #6366f1; letter-spacing: 0.08em;
+            text-transform: uppercase; margin-bottom: 4px;
+        }
+        .brand-name {
+            font-size: 23px; font-weight: 900;
+            color: #1e1b4b; line-height: 1.2;
+        }
+        .brand-phone {
+            display: flex; align-items: center; gap: 6px;
+            margin-top: 6px; font-size: 13px;
+            color: #475569; font-weight: 600;
+        }
+        .brand-phone i { color: #10b981; font-size: 11px; }
+
+        /* ── 해시태그 ── */
+        .hashtag-row {
+            display: flex; flex-wrap: wrap;
+            gap: 6px; margin-bottom: 18px;
+        }
+        .tag {
+            background: #f1f5f9; color: #6366f1;
+            font-size: 12px; font-weight: 700;
+            padding: 4px 11px; border-radius: 20px;
+            border: 1px solid #e0e7ff;
+        }
+
+        /* ── 설명 박스 ── */
+        .desc-box {
+            background: linear-gradient(135deg,#f8faff,#f5f3ff);
+            border: 1px solid #e0e7ff; border-radius: 14px;
+            padding: 14px 16px; margin-bottom: 18px;
+        }
+        .desc-box p {
+            font-size: 13px; color: #475569; line-height: 1.75;
+        }
+
+        /* ── URL 미리보기 ── */
+        .url-bar {
+            display: flex; align-items: center; gap: 8px;
+            padding: 9px 14px; background: #f8fafc;
+            border: 1px solid #e2e8f0; border-radius: 10px;
+            margin-bottom: 18px;
+        }
+        .url-bar i  { color: #6366f1; font-size: 12px; flex-shrink: 0; }
+        .url-bar span {
+            font-size: 11px; color: #94a3b8;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+
+        /* ── 버튼 ── */
+        .btn {
+            display: flex; align-items: center; justify-content: center;
+            gap: 9px; width: 100%; padding: 15px 16px;
+            border-radius: 16px; font-size: 15px; font-weight: 800;
+            border: none; cursor: pointer; text-decoration: none;
+            transition: transform .15s, opacity .15s, box-shadow .15s;
+            margin-bottom: 10px;
+        }
+        .btn:hover  { opacity: .9; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+        .btn:active { transform: translateY(0); opacity: 1; }
+        .btn-primary  { background: linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; }
+        .btn-kakao    { background: #FEE500; color: #3C1E1E; }
+        .btn-call     { background: linear-gradient(135deg,#10b981,#059669); color:#fff; }
+        .btn-consult  { background: linear-gradient(135deg,#f59e0b,#d97706); color:#fff; }
+        .btn-copy     { background: #f8fafc; color: #475569; border: 1.5px solid #e2e8f0 !important; font-size:14px; }
+
+        .btn-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; margin-bottom: 10px;
+        }
+        .btn-grid .btn { margin-bottom: 0; }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+            margin: 16px 0;
+        }
+
+        /* ── 푸터 ── */
+        .share-footer {
+            text-align: center; padding: 16px 20px 32px;
+            background: #fff; border-top: 1px solid #f1f5f9;
+            font-size: 11px; color: #94a3b8;
+        }
+        .share-footer a { color: #6366f1; font-weight: 700; text-decoration: none; }
+
+        /* ── 에러 ── */
+        #error-card {
+            display: none; background: #fff; border-radius: 24px;
+            padding: 48px 32px; text-align: center;
+            max-width: 360px; width: 90%; margin: auto;
+            animation: fadeUp .4s ease;
+        }
+        #error-card .err-icon { font-size: 52px; margin-bottom: 14px; }
+        #error-card h2 { font-size: 18px; color: #1e293b; margin-bottom: 8px; font-weight: 800; }
+        #error-card p  { font-size: 13px; color: #64748b; line-height: 1.7; }
+
+        /* ── 토스트 ── */
+        #share-toast {
+            display: none; position: fixed;
+            bottom: 32px; left: 50%; transform: translateX(-50%);
+            background: #1e293b; color: #fff;
+            padding: 12px 24px; border-radius: 40px;
+            font-size: 13px; font-weight: 700; z-index: 9999;
+            white-space: nowrap; box-shadow: 0 8px 28px rgba(0,0,0,.35);
+            animation: fadeUp .3s ease;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── 로딩 ── -->
+<div id="loading-screen">
+    <div class="spinner"></div>
+    <span style="font-size:14px;color:#c4b5fd;font-weight:600;">브랜드 정보를 불러오는 중...</span>
+</div>
+
+<!-- ── 브랜드 공유 카드 ── -->
+<div id="brand-card">
+
+    <!-- 히어로 배경 + 포스터 -->
+    <div class="hero-bg">
+        <div class="hero-bg-blur" id="hero-bg-blur"></div>
+        <div class="hero-content">
+            <div class="event-badge">
+                <i class="fa-solid fa-star" style="color:#fbbf24;font-size:10px;"></i>
+                IFS 2026 박람회 참여 업체
+            </div>
+            <div class="poster-img-outer" id="poster-img-outer"></div>
+        </div>
+    </div>
+
+    <!-- 카드 바디 -->
+    <div class="card-body">
+
+        <!-- 브랜드 헤더 -->
+        <div class="brand-header">
+            <div id="brand-thumb-wrap"></div>
+            <div class="brand-info">
+                <div class="brand-badge-label">IFS 2026 참여 브랜드</div>
+                <div class="brand-name" id="card-brand-name">브랜드명</div>
+                <div class="brand-phone" id="card-phone" style="display:none;">
+                    <i class="fa-solid fa-phone"></i>
+                    <span id="card-phone-text"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 해시태그 -->
+        <div class="hashtag-row" id="hashtag-row"></div>
+
+        <!-- 설명 -->
+        <div class="desc-box">
+            <p id="card-desc">IFS 2026 박람회 참여 브랜드의 가맹 창업 정보를 확인하세요.</p>
+        </div>
+
+        <!-- URL 미리보기 -->
+        <div class="url-bar">
+            <i class="fa-solid fa-link"></i>
+            <span id="url-preview-text"></span>
+        </div>
+
+        <!-- 메인: 갤러리 이동 -->
+        <a id="btn-enter" class="btn btn-primary" href="#">
+            <i class="fa-solid fa-store"></i>
+            <span>갤러리에서 브랜드 보기</span>
+            <i class="fa-solid fa-arrow-right" style="margin-left:auto;font-size:12px;opacity:.7;"></i>
+        </a>
+
+        <!-- 가맹 / 매장 -->
+        <div class="btn-grid">
+            <button class="btn" onclick="openFranchise()"
+                style="background:#f0fdf4;color:#166534;border:1.5px solid #bbf7d0;font-size:14px;">
+                <i class="fa-solid fa-file-contract"></i> 가맹정보
+            </button>
+            <button class="btn" onclick="openStore()"
+                style="background:#eff6ff;color:#1d4ed8;border:1.5px solid #bfdbfe;font-size:14px;">
+                <i class="fa-solid fa-map-location-dot"></i> 매장위치
+            </button>
+        </div>
+
+        <!-- 전화 (있을 때만) -->
+        <a id="btn-call" class="btn btn-call" href="#" style="display:none;">
+            <i class="fa-solid fa-phone"></i>
+            <span id="btn-call-text">전화 문의하기</span>
+        </a>
+
+        <div class="divider"></div>
+
+        <!-- 공유 버튼들 -->
+        <div class="btn-grid">
+            <button class="btn btn-kakao" onclick="shareKakao()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#3C1E1E">
+                    <path d="M12 3C6.477 3 2 6.477 2 10.5c0 2.667 1.595 5.01 4.015 6.393L5.027 20.5l4.328-2.82A11.5 11.5 0 0012 18c5.523 0 10-3.477 10-7.5S17.523 3 12 3z"/>
+                </svg>
+                카카오톡
+            </button>
+            <button class="btn" onclick="shareNative()" style="background:#f8fafc;color:#475569;border:1.5px solid #e2e8f0;">
+                <i class="fa-solid fa-arrow-up-from-bracket"></i> 앱 공유
+            </button>
+            <button class="btn btn-copy" onclick="copyLink()" style="background:#f8fafc;color:#475569;border:1.5px solid #e2e8f0;">
+                <i class="fa-solid fa-copy"></i> 링크 복사
+            </button>
+        </div>
+        <!-- 카카오톡 공유 안내 -->
+        <div id="kakao-guide" style="display:none;margin:8px 0 0;padding:12px 14px;
+            background:#fffbea;border:1.5px solid #FEE500;border-radius:12px;
+            font-size:12px;color:#92400e;line-height:1.7;">
+            📋 <strong>링크가 복사되었습니다!</strong><br>
+            카카오톡 채팅방에서 <strong>붙여넣기(길게 누르기)</strong>하여 공유하세요.
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 상담 신청 -->
+        <a id="btn-consult" class="btn btn-consult" href="#">
+            <i class="fa-solid fa-file-signature"></i>
+            <span>창업 상담 신청하기</span>
+        </a>
+
+    </div><!-- /card-body -->
+
+    <div class="share-footer">
+        이 페이지는 <a id="footer-link" href="index.html">IFS 2026 박람회</a> 공식 참여 업체 안내 페이지입니다.
+    </div>
+
+</div><!-- /brand-card -->
+
+<!-- ── 에러 ── -->
+<div id="error-card">
+    <div class="err-icon">😥</div>
+    <h2>브랜드를 찾을 수 없습니다</h2>
+    <p>링크가 만료되었거나 잘못된 접근입니다.<br><br>
+        <a href="index.html" style="color:#6366f1;font-weight:700;text-decoration:none;">
+            ← 갤러리로 돌아가기
+        </a>
+    </p>
+</div>
+
+<!-- ── 토스트 ── -->
+<div id="share-toast"></div>
+
+<!-- 카카오 SDK -->
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" integrity="sha384-TiCmbV6AunZ7N021S1/Ojg2a2H2FgrB9G1U/yKTD/R2aA/e8XQ1aY7H1qE07Hbm7" crossorigin="anonymous"></script>
+
+<script>
+/* ===================================================
+   전역 상태
+=================================================== */
+let posterData   = null;
+let sharePageUrl = '';
+let indexBaseUrl = '';
+
+/* ===================================================
+   메인 초기화
+=================================================== */
+(async () => {
+    const params  = new URLSearchParams(window.location.search);
+    const brandId = params.get('brand_id');
+    const mode    = params.get('mode') || 'share';
+
+    // admin 모드 → admin.html 리다이렉트
+    if (mode === 'admin') {
+        window.location.replace(
+            window.location.href.replace('share.html','admin.html').replace('mode=admin','')
+        );
+        return;
+    }
+
+    if (!brandId) { showError(); return; }
+
+    try {
+        // 카카오 앱키 로드
+        const configRes = await fetch('tables/site_config');
+        if (configRes.ok) {
+            const cfgData = await configRes.json();
+            const kakaoRec = (cfgData.data || []).find(r => r.config_type === 'setting' && r.label === 'kakao_app_key');
+            if (kakaoRec && kakaoRec.config_value) {
+                window.KAKAO_APP_KEY = kakaoRec.config_value;
+                if (window.Kakao && !window.Kakao.isInitialized()) {
+                    window.Kakao.init(window.KAKAO_APP_KEY);
+                }
+            }
+        }
+
+        const res = await fetch(`tables/poster_settings/${brandId}`);
+        if (!res.ok) { showError(); return; }
+        const poster = await res.json();
+        posterData = poster;
+
+        const name     = (poster.brand_name   || '브랜드').trim();
+        const imgUrl   = (poster.image_url    || '').trim();
+        const phone    = (poster.phone_number || '').trim();
+        const keywords = (poster.search_keywords || '').trim();
+
+        /* ─ URL 계산 ─ */
+        const pageBase   = window.location.href.split('?')[0];
+        indexBaseUrl     = pageBase.replace('share.html', 'index.html');
+        sharePageUrl     = `${pageBase}?brand_id=${brandId}`;
+
+        const ogImg = imgUrl
+            ? imgUrl
+            : `https://placehold.co/800x600/6366f1/ffffff?text=${encodeURIComponent(name)}`;
+
+        /* ─ OG 메타 교체 (JS 실행 환경용) ─ */
+        setMeta('og-title',       `IFS 2026 박람회 참여 업체 - ${name}`);
+        setMeta('og-description', `${name}의 가맹 창업 정보를 확인하세요! IFS 2026 박람회 참여 브랜드입니다.`);
+        setMeta('og-image',       ogImg);
+        setMeta('og-url',         sharePageUrl);
+        setMeta('tw-title',       `IFS 2026 박람회 참여 업체 - ${name}`);
+        setMeta('tw-description', `${name}의 가맹 창업 정보를 확인해보세요!`);
+        setMeta('tw-image',       ogImg);
+        document.getElementById('page-title').textContent = `IFS 2026 박람회 - ${name}`;
+
+        /* ─ 히어로 블러 배경 ─ */
+        if (imgUrl) {
+            document.getElementById('hero-bg-blur').style.backgroundImage = `url('${imgUrl}')`;
+        }
+
+        /* ─ 포스터 이미지 (크게) ─ */
+        const imgOuter = document.getElementById('poster-img-outer');
+        if (imgUrl) {
+            const img   = document.createElement('img');
+            img.src     = imgUrl;
+            img.alt     = `${name} 포스터`;
+            img.onerror = () => { imgOuter.innerHTML = placeholderHTML(name); };
+            imgOuter.appendChild(img);
+        } else {
+            imgOuter.innerHTML = placeholderHTML(name);
+        }
+
+        /* ─ 브랜드 섬네일 ─ */
+        const thumbWrap = document.getElementById('brand-thumb-wrap');
+        if (imgUrl) {
+            const t     = document.createElement('img');
+            t.src       = imgUrl;
+            t.alt       = name;
+            t.className = 'brand-thumb';
+            t.onerror   = () => { thumbWrap.innerHTML = `<div class="brand-thumb-ph">${name.slice(0,1)}</div>`; };
+            thumbWrap.appendChild(t);
+        } else {
+            thumbWrap.innerHTML = `<div class="brand-thumb-ph">${name.slice(0,1)}</div>`;
+        }
+
+        /* ─ 브랜드명 ─ */
+        document.getElementById('card-brand-name').textContent = name;
+
+        /* ─ 전화번호 ─ */
+        if (phone) {
+            document.getElementById('card-phone').style.display = 'flex';
+            document.getElementById('card-phone-text').textContent = phone;
+            const btnCall = document.getElementById('btn-call');
+            btnCall.href  = `tel:${phone}`;
+            btnCall.style.display = 'flex';
+            document.getElementById('btn-call-text').textContent = `${phone} 전화 문의`;
+        }
+
+        /* ─ 해시태그 ─ */
+        const tagRow = document.getElementById('hashtag-row');
+        if (keywords) {
+            keywords.split(/[,\s]+/)
+                .map(t => t.replace(/^#/, '').trim())
+                .filter(t => t.length > 0)
+                .forEach(t => {
+                    const s = document.createElement('span');
+                    s.className   = 'tag';
+                    s.textContent = `#${t}`;
+                    tagRow.appendChild(s);
+                });
+        }
+        if (!tagRow.children.length) tagRow.style.display = 'none';
+
+        /* ─ 설명 텍스트 ─ */
+        document.getElementById('card-desc').textContent =
+            `${name}의 가맹 창업 정보를 지금 확인하세요.\n📅 IFS 2026 박람회 공식 참여 브랜드입니다.`;
+
+        /* ─ URL 미리보기 ─ */
+        document.getElementById('url-preview-text').textContent = sharePageUrl;
+
+        /* ─ 버튼 링크 ─ */
+        document.getElementById('btn-enter').href   = `${indexBaseUrl}?poster_id=${brandId}`;
+        document.getElementById('btn-consult').href = `${indexBaseUrl}?poster_id=${brandId}`;
+        document.getElementById('footer-link').href  = indexBaseUrl;
+
+        /* ─ 초기화 완료 ─ */
+
+        /* ─ 화면 전환 ─ */
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('brand-card').style.display     = 'flex';
+
+    } catch(e) {
+        console.error(e);
+        showError();
+    }
+})();
+
+/* ===================================================
+   가맹/매장 이동
+=================================================== */
+function openFranchise() {
+    if (!posterData) return;
+    window.location.href = `${indexBaseUrl}?poster_id=${posterData.id}&open=franchise`;
+}
+function openStore() {
+    if (!posterData) return;
+    window.location.href = `${indexBaseUrl}?poster_id=${posterData.id}&open=store`;
+}
+
+/* ===================================================
+   카카오톡 공유: Kakao SDK 사용 (없으면 폴백)
+=================================================== */
+async function shareKakao() {
+    if (!sharePageUrl || !posterData) return;
+    const name = posterData.brand_name || '브랜드';
+    const imgUrl = posterData.image_url || '';
+
+    // 카카오 SDK 초기화된 경우
+    if (window.Kakao && window.Kakao.isInitialized()) {
+        const img = imgUrl && imgUrl.startsWith('http') ? imgUrl : 'https://placehold.co/800x400/6366f1/ffffff?text=' + encodeURIComponent(name);
+        window.Kakao.Share.sendDefault({
+            objectType: 'feed',
+            content: {
+                title: `IFS 2026 박람회 참여 업체 - ${name}`,
+                description: `${name}의 가맹 창업 정보를 확인해보세요!`,
+                imageUrl: img,
+                link: { mobileWebUrl: sharePageUrl, webUrl: sharePageUrl }
+            },
+            buttons: [{
+                title: '브랜드 정보 보기',
+                link: { mobileWebUrl: sharePageUrl, webUrl: sharePageUrl }
+            }]
+        });
+        return;
+    }
+
+    // 1) 링크 복사
+    try {
+        await navigator.clipboard.writeText(sharePageUrl);
+    } catch(e) {
+        const ta = document.createElement('textarea');
+        ta.value = sharePageUrl; ta.style.cssText = 'position:fixed;opacity:0;';
+        document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+    }
+    // 2) 안내 박스 표시
+    const guide = document.getElementById('kakao-guide');
+    if (guide) guide.style.display = 'block';
+    showToast('📋 링크 복사 완료! 카카오톡에 붙여넣기 하세요.');
+    // 3) 모바일: 카카오톡 앱 열기 시도
+    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+    if (isMobile) {
+        setTimeout(() => { window.location.href = 'kakaotalk://launch'; }, 400);
+    }
+}
+
+/* ===================================================
+   네이티브 공유
+=================================================== */
+async function shareNative() {
+    if (!sharePageUrl || !posterData) return;
+    
+    if (navigator.share) {
+        try {
+            const name = posterData.brand_name || '브랜드';
+            await navigator.share({
+                title: `IFS 2026 박람회 참여 업체 - ${name}`,
+                text: `${name}의 가맹 창업 정보를 확인해보세요!`,
+                url: sharePageUrl
+            });
+        } catch(err) { /* 무시 */ }
+    } else {
+        copyLink(); // 지원 안 하면 링크 복사로 폴백
+    }
+}
+
+/* ===================================================
+   링크 복사
+=================================================== */
+async function copyLink() {
+    try {
+        await navigator.clipboard.writeText(sharePageUrl);
+    } catch(e) {
+        const ta = document.createElement('textarea');
+        ta.value = sharePageUrl;
+        ta.style.cssText = 'position:fixed;opacity:0;';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+    }
+    showToast('✅ 링크가 복사되었습니다! 카카오톡이나 SNS에 붙여넣기 하세요.');
+}
+
+/* ===================================================
+   헬퍼
+=================================================== */
+function showToast(msg) {
+    const t = document.getElementById('share-toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    clearTimeout(t._t);
+    t._t = setTimeout(() => { t.style.display = 'none'; }, 3000);
+}
+
+function showError() {
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('error-card').style.display = 'block';
+}
+
+function setMeta(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.setAttribute('content', value);
+}
+
+function placeholderHTML(name) {
+    return `<div class="poster-img-placeholder"><span>${(name||'브').slice(0,2)}</span></div>`;
+}
+</script>
+</body>
+</html>
