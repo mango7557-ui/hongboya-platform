@@ -11,10 +11,10 @@ def main():
     pages = list(ROOT.glob('*.html'))
     for page in pages:
         html = page.read_text(encoding='utf-8')
-        if page.name != 'mini.html' and './web-preview.js' not in html:
+        if page.name not in ('mini.html', 'index.html') and './web-preview.js' not in html:
             html = html.replace('<head>', '<head>\n    <script src="./web-preview.js"></script>', 1)
         (OUTPUT / page.name).write_text(html, encoding='utf-8')
-    for name in ('web-preview.js', 'sw.js', 'mini.js', 'mini.css'):
+    for name in ('web-preview.js', 'sw.js', 'mini.js', 'mini.css', 'home.js', 'home.css'):
         shutil.copy2(ROOT / name, OUTPUT / name)
     (OUTPUT / '.nojekyll').touch()
     print(f'Built {len(pages)} HTML pages for GitHub Pages')

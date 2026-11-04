@@ -177,12 +177,7 @@
 
     window.buildHongboShareUrl = (poster) => {
         if (!poster) return location.href;
-        const pagePath = location.pathname;
-        const shareBase = pagePath.includes('index.html')
-            ? location.origin + pagePath.replace('index.html', 'share.html')
-            : pagePath.includes('share.html')
-                ? location.origin + pagePath
-                : location.origin + pagePath.replace(/\/?$/, '/share.html');
+        const shareBase = new URL('share.html', location.href).href.split('?')[0].split('#')[0];
         const pack = window.encodeHongboSharePack(poster);
         const idParam = encodeURIComponent(poster.id || 'item');
         return pack

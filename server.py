@@ -15,7 +15,7 @@ TABLES = {
     'poster_settings', 'site_config', 'chatbot_data', 'consultation_requests',
     'franchise_store_rows', 'banners', 'events', 'member_registrations',
 }
-PUBLIC_FILES = {p.name for p in ROOT.glob('*.html')} | {'sw.js', 'web-preview.js', 'mini.js', 'mini.css'}
+PUBLIC_FILES = {p.name for p in ROOT.glob('*.html')} | {'sw.js', 'web-preview.js', 'mini.js', 'mini.css', 'home.js', 'home.css'}
 
 
 def connect(database):

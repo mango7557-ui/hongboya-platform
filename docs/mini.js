@@ -140,7 +140,7 @@
    ready=true;
    $('mode-notice').textContent=server?'계정 저장 모드 · 가입하면 나의 미니홈피와 미니샵이 자동으로 생성됩니다.':'기기 저장 모드 · 지금 만들고 공유할 수 있어요. 계정 동기화와 고정 주소는 회원 서버 연결이 필요합니다.';
    const params=new URLSearchParams(location.search),hash=new URLSearchParams(location.hash.slice(1));
-   try{if(hash.has('home'))await publicPage(decode(hash.get('home')));else if(params.has('u')){if(!server)throw Error('이 미니홈피의 계정 서버에 연결할 수 없습니다.');await publicPage(await api('public/'+encodeURIComponent(params.get('u'))));}else if(params.has('start'))openJoin();}catch(error){show('public-view');$('public-home').replaceChildren(element('h2','미니홈피를 열 수 없어요'),element('p',error.message));}
+    try{if(hash.has('home'))await publicPage(decode(hash.get('home')));else if(params.has('u')){if(!server)throw Error('이 미니홈피의 계정 서버에 연결할 수 없습니다.');await publicPage(await api('public/'+encodeURIComponent(params.get('u'))));}else if(params.has('start'))openJoin();else if(params.has('studio'))await dashboard();}catch(error){show('public-view');$('public-home').replaceChildren(element('h2','미니홈피를 열 수 없어요'),element('p',error.message));}
  }
  init();
 })();
