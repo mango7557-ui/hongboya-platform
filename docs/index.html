@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <script src="./web-preview.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>전국 생태계 지도로 잇다, 홍보야넷!</title>
+    <title>홍보야(HONGBOYA) · 생산자·제조사·크리에이터 셀프 홍보 & SNS 직거래 플랫폼</title>
     <link rel="icon" type="image/png" href="https://www.genspark.ai/api/files/s/L6fGSb1x">
     <link rel="apple-touch-icon" href="https://www.genspark.ai/api/files/s/L6fGSb1x">
-    <meta property="og:title" content="전국 생태계 지도로 잇다, 홍보야넷!">
-    <meta property="og:description" content="홍보야! 당신의 가치를 사고파는 플랫폼!">
+    <meta property="og:title" content="홍보야 · 내 아이템 셀프 홍보 & 쇼핑몰·SNS 직거래 플랫폼">
+    <meta property="og:description" content="농사짓는 생산자, 물건 만드는 제조사, 무형 콘텐츠 크리에이티브, 모든 로컬 크리에이터가 내 쇼핑몰과 SNS를 연동해 직거래하는 플랫폼">
     <meta property="og:image" content="https://www.genspark.ai/api/files/s/psKgmWYr">
+    <script src="./web-preview.js"></script>
     
     <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -1048,13 +1048,17 @@
         </div>
 
         <!-- 검색창 및 내정보 아이콘 영역: 우측 배치 -->
-        <div class="flex shrink-0 justify-end items-center gap-3 md:gap-4 md:flex-1">
+        <div class="flex shrink-0 justify-end items-center gap-2 md:gap-3 md:flex-1">
+            <!-- 셀프 홍보 & 직거래 링크 만들기 -->
+            <button onclick="openCreatorStudioModal()" class="flex bg-gradient-to-r from-hongbo-600 to-orange-500 hover:from-hongbo-700 hover:to-orange-600 text-white rounded-full h-[38px] px-4 md:px-5 items-center justify-center gap-1.5 font-extrabold text-[13px] md:text-[14px] shadow-sm transition-all whitespace-nowrap">
+                <i class="fa-solid fa-wand-magic-sparkles text-yellow-200"></i> 내 아이템 홍보·링크 만들기
+            </button>
             <!-- 지도 영역: 태블릿/PC 전용 -->
-            <a href="register-bot.html" class="hidden md:flex bg-hongbo-50 hover:bg-hongbo-100 text-hongbo-700 border border-hongbo-200 rounded-full h-[38px] px-5 items-center justify-center gap-2 font-bold text-[14px] shadow-sm transition-colors whitespace-nowrap">
-                <i class="fa-solid fa-robot text-hongbo-500 text-lg"></i> AI 회원가입
+            <a href="register-bot.html" class="hidden xl:flex bg-hongbo-50 hover:bg-hongbo-100 text-hongbo-700 border border-hongbo-200 rounded-full h-[38px] px-4 items-center justify-center gap-2 font-bold text-[13px] shadow-sm transition-colors whitespace-nowrap">
+                <i class="fa-solid fa-robot text-hongbo-500 text-base"></i> AI 회원가입
             </a>
-            <button onclick="switchTab('map')" class="hidden md:flex bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 rounded-full h-[38px] px-5 items-center justify-center gap-2 font-bold text-[14px] shadow-sm transition-colors whitespace-nowrap">
-                <i class="fa-solid fa-map-location-dot text-[#ef4444] text-lg"></i> 지도에서 업체 찾기
+            <button onclick="switchTab('map')" class="hidden lg:flex bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 rounded-full h-[38px] px-4 items-center justify-center gap-2 font-bold text-[13px] shadow-sm transition-colors whitespace-nowrap">
+                <i class="fa-solid fa-map-location-dot text-[#ef4444] text-base"></i> 지도에서 찾기
             </button>
             
             <!-- 검색창 (PC 전용) -->
@@ -1123,19 +1127,24 @@
             </div>
 
             <!-- 메인 메뉴 (하단 네비게이션 대체) -->
-            <div class="sidebar-header-btn px-3 py-2.5 mb-4 flex items-center gap-2 rounded-lg sidebar-active-bg cursor-pointer transition-colors" onclick="activateSidebarHeader(this)">
+            <div class="sidebar-header-btn px-3 py-2.5 mb-3 flex items-center gap-2 rounded-lg sidebar-active-bg cursor-pointer transition-colors" onclick="activateSidebarHeader(this)">
                 <img src="https://www.genspark.ai/api/files/s/L6fGSb1x" alt="회원사 홍보해줘 Icon" class="w-9 h-9 object-contain">
-                <h2 class="text-[20px] font-extrabold tracking-tight text-hongbo-600"><span class="text-red-600">홍</span>보야~! 홍보해줘~!</h2>
+                <h2 class="text-[20px] font-extrabold tracking-tight text-hongbo-600"><span class="text-red-600">홍</span>보야~! 직거래해줘~!</h2>
+            </div>
+            <div class="px-1.5 mb-4">
+                <button onclick="openCreatorStudioModal()" class="w-full py-3 px-3 rounded-xl bg-gradient-to-r from-hongbo-600 to-orange-500 hover:from-hongbo-700 hover:to-orange-600 text-white font-extrabold text-[15px] shadow-md flex items-center justify-center gap-2 transition-all">
+                    <i class="fa-solid fa-link"></i> 내 쇼핑몰·SNS 홍보링크 만들기
+                </button>
             </div>
             <ul class="space-y-1 mb-8" id="sidebar-main-nav">
                 <li>
                     <a href="#" onclick="event.preventDefault(); switchTab('home', this)" data-tab="home" class="sidebar-nav-item flex items-center px-3 py-2.5 rounded-lg bg-hongbo-50 text-hongbo-700 font-bold transition-colors text-[20px]">
-                        <i class="fa-solid fa-house w-6 text-center mr-2 text-hongbo-500 text-[20px]"></i>회원사 홍보해줘~!
+                        <i class="fa-solid fa-house w-6 text-center mr-2 text-hongbo-500 text-[20px]"></i>셀프 홍보 · 직거래 홈
                     </a>
                 </li>
                 <li>
                     <a href="#" onclick="event.preventDefault(); switchTab('franchise', this)" data-tab="franchise" class="sidebar-nav-item flex items-center px-3 py-2.5 rounded-lg bg-transparent text-gray-700 font-bold hover:bg-white hover:shadow-sm hover:text-hongbo-600 transition-all text-[20px]">
-                        <i class="fa-solid fa-store w-6 text-center mr-2 text-gray-400 text-[20px]"></i>프랜차이즈 정보
+                        <i class="fa-solid fa-store w-6 text-center mr-2 text-gray-400 text-[20px]"></i>전체 아이템 · 브랜드관
                     </a>
                 </li>
                 <li>
@@ -1301,6 +1310,73 @@
 
             <!-- 홈 탭 -->
     <div id="tab-home" class="tab-pane active pt-4">
+        <!-- ★ 홍보야 핵심 정체성: 생산자·제조사·크리에이티브·로컬 크리에이터 셀프 홍보 & 직거래 허브 -->
+        <section id="creator-direct-hub" class="px-4 lg:px-2 mb-6">
+            <div class="rounded-3xl bg-gradient-to-br from-[#7f1d1d] via-[#dc2626] to-[#ea580c] text-white p-5 sm:p-7 shadow-xl relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 w-52 h-52 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+                <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+                    <div class="max-w-2xl">
+                        <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-extrabold mb-3 border border-white/25">
+                            <i class="fa-solid fa-bullhorn text-yellow-300"></i>
+                            <span>내 아이템을 스스로 홍보하고 직거래하는 플랫폼 · 홍보야</span>
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black leading-tight tracking-tight break-keep">
+                            생산자 · 제조사 · 크리에이티브 · 로컬 크리에이터의<br class="hidden sm:inline">
+                            <span class="text-yellow-200 underline decoration-yellow-300/60">내 쇼핑몰 + 내 SNS 연동 직거래 링크</span>
+                        </h1>
+                        <p class="text-white/90 text-xs sm:text-sm mt-2.5 leading-relaxed break-keep">
+                            내가 농사지은 농수산물, 직접 만든 제조·공방 제품, 무형의 디지털·지식 콘텐츠, 로컬 브랜드까지!
+                            나의 쇼핑몰과 인스타그램·유튜브·블로그·오픈카톡을 하나로 묶은 <strong>홍보야 전용 링크</strong>를 만들어 SNS에 공유하고 수수료 걱정 없이 직거래하세요.
+                        </p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row lg:flex-col gap-2.5 shrink-0">
+                        <button onclick="openCreatorStudioModal()" class="px-5 py-3.5 rounded-2xl bg-white text-hongbo-700 hover:bg-yellow-50 font-black text-sm sm:text-base shadow-lg flex items-center justify-center gap-2 transition-transform active:scale-95">
+                            <i class="fa-solid fa-plus-circle text-hongbo-600 text-lg"></i>
+                            <span>내 아이템 등록 & 홍보링크 만들기</span>
+                        </button>
+                        <button onclick="switchTab('franchise')" class="px-5 py-3 rounded-2xl bg-black/25 hover:bg-black/35 border border-white/30 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors">
+                            <i class="fa-solid fa-table-cells-large"></i>
+                            <span>전체 직거래 갤러리 한눈에 보기</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4대 크리에이터 카테고리 필터 버튼 -->
+                <div class="relative z-10 grid grid-cols-2 sm:grid-cols-5 gap-2 mt-5 pt-4 border-t border-white/20" id="creator-role-tabs">
+                    <button onclick="filterCreatorHub('all')" data-role="all" class="creator-role-btn bg-white text-hongbo-700 font-extrabold text-xs sm:text-sm py-2.5 px-3 rounded-xl shadow flex items-center justify-center gap-1.5 transition-all">
+                        <span>🌟</span><span>전체 크리에이터</span>
+                    </button>
+                    <button onclick="filterCreatorHub('producer')" data-role="producer" class="creator-role-btn bg-white/15 hover:bg-white/25 text-white font-bold text-xs sm:text-sm py-2.5 px-3 rounded-xl border border-white/20 flex items-center justify-center gap-1.5 transition-all">
+                        <span>🌾</span><span>농사 · 생산자</span>
+                    </button>
+                    <button onclick="filterCreatorHub('maker')" data-role="maker" class="creator-role-btn bg-white/15 hover:bg-white/25 text-white font-bold text-xs sm:text-sm py-2.5 px-3 rounded-xl border border-white/20 flex items-center justify-center gap-1.5 transition-all">
+                        <span>🛠️</span><span>제조사 · 메이커</span>
+                    </button>
+                    <button onclick="filterCreatorHub('creative')" data-role="creative" class="creator-role-btn bg-white/15 hover:bg-white/25 text-white font-bold text-xs sm:text-sm py-2.5 px-3 rounded-xl border border-white/20 flex items-center justify-center gap-1.5 transition-all">
+                        <span>🎨</span><span>무형 콘텐츠</span>
+                    </button>
+                    <button onclick="filterCreatorHub('local')" data-role="local" class="creator-role-btn col-span-2 sm:col-span-1 bg-white/15 hover:bg-white/25 text-white font-bold text-xs sm:text-sm py-2.5 px-3 rounded-xl border border-white/20 flex items-center justify-center gap-1.5 transition-all">
+                        <span>📍</span><span>로컬 크리에이터</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 크리에이터 직거래 카드 그리드 (내 쇼핑몰 + 내 SNS + 공유링크 바로 복사) -->
+            <div class="mt-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-3 px-1">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-hongbo-600"></span>
+                        <h2 class="text-base sm:text-lg font-extrabold text-gray-800" id="creator-hub-title">실시간 셀프 홍보 & 쇼핑몰·SNS 직거래 아이템</h2>
+                        <span id="creator-hub-count" class="text-xs font-extrabold bg-hongbo-100 text-hongbo-700 px-2.5 py-0.5 rounded-full">0개</span>
+                    </div>
+                    <button onclick="openCreatorStudioModal()" class="text-xs sm:text-sm font-extrabold text-hongbo-600 hover:text-hongbo-700 flex items-center gap-1">
+                        <i class="fa-solid fa-link"></i> 내 홍보야 직거래 링크 즉시 생성 →
+                    </button>
+                </div>
+                <div id="creator-hub-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+            </div>
+        </section>
+
         <!-- 상단 배너 영역: 좌우 꽉 차게 컨테이너 바깥으로 빼냄 -->
         <div class="w-full">
             <!-- 메인 상단 배너 슬라이더 (A4 가로 비율) -->
@@ -2728,8 +2804,42 @@
                     ? `window.location.href='tel:${poster.phone_number}'`
                     : `alert('${altText} - 등록된 전화번호가 없습니다.')`;
 
+                const creatorRoleLabels = {
+                    producer: { icon: '🌾', text: '생산자 직거래', bg: '#ecfdf5', color: '#047857' },
+                    maker:    { icon: '🛠️', text: '제조사·메이커', bg: '#eff6ff', color: '#1d4ed8' },
+                    creative: { icon: '🎨', text: '크리에이티브 콘텐츠', bg: '#fdf4ff', color: '#7e22ce' },
+                    local:    { icon: '📍', text: '로컬 크리에이터', bg: '#fff7ed', color: '#c2410c' }
+                };
+                const roleMeta = creatorRoleLabels[poster.creator_type] || null;
+                const snsQuickLinks = [
+                    { url: poster.sns_instagram, icon: 'fa-brands fa-instagram', label: '인스타', color: '#e11d48', bg: '#fff1f2' },
+                    { url: poster.sns_youtube,   icon: 'fa-brands fa-youtube',   label: '유튜브', color: '#dc2626', bg: '#fef2f2' },
+                    { url: poster.sns_blog,      icon: 'fa-solid fa-pen-nib',    label: '블로그·글', color: '#16a34a', bg: '#f0fdf4' },
+                    { url: poster.sns_kakao,     icon: 'fa-solid fa-comment-dots', label: '오픈카톡', color: '#ca8a04', bg: '#fefce8' }
+                ].filter(s => s.url && String(s.url).trim());
+
                 wrapper.innerHTML = `
+                    <div style="background:#fff;padding:12px 14px 10px;border-bottom:1px solid #f1f5f9;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:4px;">
+                            <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;background:${roleMeta ? roleMeta.bg : '#fef2f2'};color:${roleMeta ? roleMeta.color : '#dc2626'};">
+                                ${roleMeta ? `${roleMeta.icon} ${roleMeta.text}` : `🏷️ ${poster.category || '셀프 홍보 아이템'}`}
+                            </span>
+                            ${poster.price_info ? `<span style="font-size:11px;font-weight:800;color:#dc2626;background:#fef2f2;padding:3px 8px;border-radius:8px;">${poster.price_info}</span>` : ''}
+                        </div>
+                        <div style="font-size:15px;font-weight:900;color:#111827;line-height:1.35;">${poster.brand_name || ''}</div>
+                        ${poster.creator_name ? `<div style="font-size:12px;color:#64748b;font-weight:600;margin-top:2px;">${poster.creator_name}</div>` : ''}
+                        ${poster.item_summary ? `<p style="font-size:12px;color:#475569;line-height:1.5;margin-top:6px;">${poster.item_summary}</p>` : ''}
+                    </div>
                     ${imageHtml}
+                    ${snsQuickLinks.length ? `
+                    <div style="background:#fff;padding:10px 12px 2px;display:flex;flex-wrap:wrap;gap:6px;">
+                        ${snsQuickLinks.map(s => `
+                            <a href="${String(s.url).replace(/"/g,'&quot;')}" target="_blank" rel="noopener"
+                               style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:800;text-decoration:none;background:${s.bg};color:${s.color};">
+                                <i class="${s.icon}"></i><span>${s.label}</span>
+                            </a>
+                        `).join('')}
+                    </div>` : ''}
                     ${(() => {
                         const fv    = poster.franchise_csv  || '';
                         const sv    = poster.store_info_url || '';
@@ -2746,19 +2856,19 @@
 
                         // ── 버튼 정의 (태그·레이블·아이콘·색상·링크) ──
                         const defs = [];
-                        if (hasFranchise) {
-                            const isExt = fv.startsWith('http') && !fv.includes('output=csv') && !fv.includes('format=csv') && !fv.includes('gviz/tq') && !/\.csv(\?|$)/i.test(fv);
-                            defs.push({ tag:'button', label:'가맹정보', icon:'fa-file-contract', color:'text-gray-500', extColor:'text-hongbo-500', isExt, onclick:`openFranchiseModal('${poster.id}')` });
-                        }
-                        if (hasStore) {
-                            const isExt = sv.startsWith('http') && !sv.includes('output=csv') && !sv.includes('format=csv') && !sv.includes('gviz/tq') && !/\.csv(\?|$)/i.test(sv);
-                            defs.push({ tag:'button', label:'매장정보', icon:'fa-store', color:'text-gray-500', extColor:'text-indigo-500', isExt, onclick:`openStoreModal('${poster.id}')` });
+                        if (hasShop) {
+                            defs.push({ tag:'a', label:'내 쇼핑몰 직거래', icon:'fa-cart-shopping', color:'text-hongbo-600', extColor:'text-hongbo-500', isExt:true, href:shopV });
                         }
                         if (hasHomepage) {
-                            defs.push({ tag:'a', label:'홈페이지', icon:'fa-house', color:'text-gray-500', extColor:'text-gray-400', isExt:true, href:poster.target_link });
+                            defs.push({ tag:'a', label:'공식 채널·홈', icon:'fa-house', color:'text-gray-600', extColor:'text-gray-400', isExt:true, href:poster.target_link });
                         }
-                        if (hasShop) {
-                            defs.push({ tag:'a', label:'쇼핑몰', icon:'fa-cart-shopping', color:'text-hongbo-400', extColor:'text-hongbo-400', isExt:true, href:shopV });
+                        if (hasFranchise) {
+                            const isExt = fv.startsWith('http') && !fv.includes('output=csv') && !fv.includes('format=csv') && !fv.includes('gviz/tq') && !/\.csv(\?|$)/i.test(fv);
+                            defs.push({ tag:'button', label:'상세·가맹정보', icon:'fa-file-contract', color:'text-gray-500', extColor:'text-hongbo-500', isExt, onclick:`openFranchiseModal('${poster.id}')` });
+                        }
+                        if (hasStore) {
+                            const isExt = sv.startsWith('http') && !sv.includes('output=csv') && !sv.includes('format=csv') && !fv.includes('gviz/tq') && !/\.csv(\?|$)/i.test(sv);
+                            defs.push({ tag:'button', label:'오프라인 매장', icon:'fa-store', color:'text-gray-500', extColor:'text-indigo-500', isExt, onclick:`openStoreModal('${poster.id}')` });
                         }
 
                         const count = defs.length;
@@ -2924,7 +3034,20 @@
 
                 if (posterRes.ok) {
                     const result     = await posterRes.json();
-                    allPostersData   = result.data;
+                    allPostersData   = (result.data && result.data.length > 0)
+                        ? result.data
+                        : (window.HONGBOYA_DEFAULT_POSTERS ? [...window.HONGBOYA_DEFAULT_POSTERS] : []);
+                    if ((!result.data || result.data.length === 0) && allPostersData.length > 0) {
+                        for (const seed of allPostersData) {
+                            try {
+                                await fetch('tables/poster_settings', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(seed)
+                                });
+                            } catch (e) {}
+                        }
+                    }
 
                     // ② 관리자 설정값(shuffle_mode, kakao_app_key) 확인
                     let serverShuffle = true;  // 기본값: 랜덤 ON
@@ -3006,6 +3129,9 @@
 
                     renderPosters(posters);
                     renderFranchiseInfoSection(allPostersData);
+                    if (typeof renderCreatorHubSection === 'function') {
+                        renderCreatorHubSection(allPostersData);
+                    }
                 }
             } catch (error) {
                 console.error('포스터 데이터를 불러오는 중 오류가 발생했습니다:', error);
@@ -5052,15 +5178,18 @@
             document.getElementById('store-main-map-container').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        // ── 공유하기 ──
+        // ── 공유하기 (직거래 홍보야 전용 링크 생성) ──
         async function shareContent(posterId, brandName, imageUrl) {
+            const posterObj = allPostersData.find(p => p.id === posterId) || { id: posterId, brand_name: brandName, image_url: imageUrl };
             const pagePath  = window.location.pathname;
             const shareBase = pagePath.includes('index.html')
                 ? window.location.origin + pagePath.replace('index.html', 'share.html')
                 : window.location.origin + pagePath.replace(/\/?$/, '/share.html');
-            const shareUrl   = `${shareBase}?brand_id=${encodeURIComponent(posterId)}`;
-            const shareTitle = `프랜차이즈 박람회 - ${brandName}`;
-            const shareText  = `${brandName}의 가맹 창업 정보를 확인해보세요!`;
+            const shareUrl   = window.buildHongboShareUrl
+                ? window.buildHongboShareUrl(posterObj)
+                : `${shareBase}?brand_id=${encodeURIComponent(posterId)}`;
+            const shareTitle = `[홍보야 직거래] ${brandName}`;
+            const shareText  = posterObj.item_summary || `${brandName}의 쇼핑몰과 SNS를 연결한 홍보야 직거래 링크입니다!`;
             const ua = navigator.userAgent;
             const isKakaoInApp = /KAKAOTALK/i.test(ua);
             const isAndroid    = /Android/i.test(ua);
@@ -5127,7 +5256,7 @@
                 <div style="display:flex;align-items:center;gap:14px;padding:16px 20px 14px;border-bottom:1px solid #f1f5f9;">
                     ${imgTag}
                     <div style="flex:1;min-width:0;">
-                        <div style="font-size:10px;color:#ea580c;font-weight:800;letter-spacing:0.08em;">프랜차이즈 박람회</div>
+                        <div style="font-size:10px;color:#ea580c;font-weight:800;letter-spacing:0.08em;">홍보야 · 쇼핑몰 & SNS 직거래 링크</div>
                         <div style="font-size:19px;font-weight:900;color:#1e1b4b;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${brandName.replace(/</g,'&lt;')}</div>
                         ${hasPhone ? `<div style="font-size:12px;color:#64748b;margin-top:3px;"><i class="fa-solid fa-phone" style="color:#ea580c;font-size:10px;margin-right:4px;"></i>${phoneNum}</div>` : ''}
                     </div>
@@ -5141,7 +5270,7 @@
                                background:linear-gradient(135deg,#ef4444,#fb923c);color:#fff;
                                text-decoration:none;width:100%;box-shadow:0 4px 20px rgba(99,102,241,0.3);">
                         <i class="fa-solid fa-share-nodes"></i>
-                        브랜드 공유 페이지 열기
+                        내 홍보야 직거래 링크 열기 (쇼핑몰·SNS 통합)
                         <i class="fa-solid fa-arrow-right" style="margin-left:auto;font-size:12px;opacity:0.7;"></i>
                     </a>
                 </div>
@@ -11149,6 +11278,422 @@
                     });
                 }
             }
+        </script>
+
+        <!-- ══ ★ 내 아이템 셀프 홍보 & 쇼핑몰·SNS 직거래 링크 생성 스튜디오 모달 ══ -->
+        <div id="creator-studio-modal" class="hidden fixed inset-0 z-[1000] bg-black/65 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5">
+            <div class="bg-white w-full max-w-2xl max-h-[92vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-orange-100">
+                <!-- 모달 헤더 -->
+                <div class="bg-gradient-to-r from-[#991b1b] via-[#dc2626] to-[#ea580c] text-white px-5 py-4 flex items-center justify-between shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-wand-magic-sparkles text-yellow-200"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-black text-base sm:text-lg leading-tight">내 아이템 셀프 홍보 & 직거래 링크 스튜디오</h3>
+                            <p class="text-[11px] sm:text-xs text-orange-100 mt-0.5">내 쇼핑몰과 SNS를 연동해 SNS 공유용 직거래 링크를 즉시 만드세요</p>
+                        </div>
+                    </div>
+                    <button onclick="closeCreatorStudioModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- 폼 본문 -->
+                <form id="creator-studio-form" onsubmit="submitCreatorStudioItem(event)" class="p-5 overflow-y-auto space-y-4 flex-1">
+                    <!-- 1. 크리에이터 유형 선택 -->
+                    <div>
+                        <label class="block text-xs font-extrabold text-gray-700 mb-2">1. 나의 크리에이터 유형 선택 <span class="text-red-500">*</span></label>
+                        <input type="hidden" id="cs-creator-type" value="producer">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="cs-type-selector">
+                            <button type="button" onclick="selectStudioCreatorType('producer')" data-type="producer" class="cs-type-btn py-2.5 px-3 rounded-xl border-2 border-hongbo-600 bg-hongbo-50 text-hongbo-700 font-extrabold text-xs flex flex-col items-center gap-1">
+                                <span class="text-lg">🌾</span>
+                                <span>농사 · 생산자</span>
+                            </button>
+                            <button type="button" onclick="selectStudioCreatorType('maker')" data-type="maker" class="cs-type-btn py-2.5 px-3 rounded-xl border border-gray-200 bg-white text-gray-700 font-bold text-xs flex flex-col items-center gap-1">
+                                <span class="text-lg">🛠️</span>
+                                <span>제조사 · 메이커</span>
+                            </button>
+                            <button type="button" onclick="selectStudioCreatorType('creative')" data-type="creative" class="cs-type-btn py-2.5 px-3 rounded-xl border border-gray-200 bg-white text-gray-700 font-bold text-xs flex flex-col items-center gap-1">
+                                <span class="text-lg">🎨</span>
+                                <span>무형 콘텐츠</span>
+                            </button>
+                            <button type="button" onclick="selectStudioCreatorType('local')" data-type="local" class="cs-type-btn py-2.5 px-3 rounded-xl border border-gray-200 bg-white text-gray-700 font-bold text-xs flex flex-col items-center gap-1">
+                                <span class="text-lg">📍</span>
+                                <span>로컬 크리에이터</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 2. 아이템명 & 크리에이터명 -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-extrabold text-gray-700 mb-1">홍보 아이템 / 상품명 <span class="text-red-500">*</span></label>
+                            <input type="text" id="cs-item-title" required maxlength="80" placeholder="예: 해남 꿀고구마 5kg 산지직송" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-hongbo-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-extrabold text-gray-700 mb-1">생산자 / 브랜드 / 크리에이터명 <span class="text-red-500">*</span></label>
+                            <input type="text" id="cs-creator-name" required maxlength="50" placeholder="예: 해남 황토농원 (김민수 농부)" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-hongbo-500 outline-none">
+                        </div>
+                    </div>
+
+                    <!-- 3. 직거래 가격·혜택 & 직통 연락처 -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-extrabold text-gray-700 mb-1">직거래 가격 / 구매 혜택</label>
+                            <input type="text" id="cs-price-info" maxlength="60" placeholder="예: 23,000원 · 농장 직송 무료배송" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-hongbo-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-extrabold text-gray-700 mb-1">직통 전화번호 (선택)</label>
+                            <input type="tel" id="cs-phone-input" maxlength="20" placeholder="예: 010-1234-5678" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-hongbo-500 outline-none">
+                        </div>
+                    </div>
+
+                    <!-- 4. 아이템 한줄·상세 홍보 소개 -->
+                    <div>
+                        <label class="block text-xs font-extrabold text-gray-700 mb-1">아이템 스토리 & 직거래 안내 <span class="text-red-500">*</span></label>
+                        <textarea id="cs-item-summary" required rows="2" maxlength="240" placeholder="내가 직접 키우거나 만든 과정, 직거래 장점, 구매 방법을 적어주세요." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-hongbo-500 outline-none resize-none"></textarea>
+                    </div>
+
+                    <!-- 5. 대표 이미지 URL 또는 샘플 선택 -->
+                    <div>
+                        <label class="block text-xs font-extrabold text-gray-700 mb-1">대표 홍보 이미지 URL <span class="text-gray-400 font-normal">(비워두면 유형별 기본 고화질 이미지 자동 적용)</span></label>
+                        <input type="url" id="cs-image-url" placeholder="https://... (상품 사진 또는 포스터 이미지 주소)" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-hongbo-500 outline-none">
+                    </div>
+
+                    <!-- 6. 나의 쇼핑몰 연동 -->
+                    <div class="p-3.5 rounded-2xl bg-orange-50/70 border border-orange-200 space-y-2.5">
+                        <div class="flex items-center gap-1.5 text-xs font-black text-orange-800">
+                            <i class="fa-solid fa-cart-shopping text-orange-600"></i>
+                            <span>나의 직거래 쇼핑몰 & 판매처 연동</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-600 mb-1">내 쇼핑몰 URL (스마트스토어·자사몰·주문폼)</label>
+                                <input type="url" id="cs-shop-url" placeholder="https://smartstore.naver.com/..." class="w-full px-3 py-2 rounded-xl border border-orange-200 bg-white text-xs focus:border-orange-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-600 mb-1">공식 홈페이지 / 소개 링크 (선택)</label>
+                                <input type="url" id="cs-target-link" placeholder="https://..." class="w-full px-3 py-2 rounded-xl border border-orange-200 bg-white text-xs focus:border-orange-500 outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. 나의 SNS 연동 -->
+                    <div class="p-3.5 rounded-2xl bg-purple-50/60 border border-purple-200 space-y-2.5">
+                        <div class="flex items-center gap-1.5 text-xs font-black text-purple-900">
+                            <i class="fa-solid fa-share-nodes text-purple-600"></i>
+                            <span>나의 SNS 채널 연동 (입력한 채널만 내 홍보 링크에 자동 표시)</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-purple-100">
+                                <i class="fa-brands fa-instagram text-pink-600 text-base w-4 text-center"></i>
+                                <input type="url" id="cs-sns-instagram" placeholder="Instagram 주소 (https://instagram.com/...)" class="w-full text-xs outline-none">
+                            </div>
+                            <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-purple-100">
+                                <i class="fa-brands fa-youtube text-red-600 text-base w-4 text-center"></i>
+                                <input type="url" id="cs-sns-youtube" placeholder="YouTube 채널/영상 주소" class="w-full text-xs outline-none">
+                            </div>
+                            <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-purple-100">
+                                <i class="fa-solid fa-pen-nib text-green-600 text-sm w-4 text-center"></i>
+                                <input type="url" id="cs-sns-blog" placeholder="블로그 / Threads / 브런치 주소" class="w-full text-xs outline-none">
+                            </div>
+                            <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-purple-100">
+                                <i class="fa-solid fa-comment-dots text-yellow-600 text-sm w-4 text-center"></i>
+                                <input type="url" id="cs-sns-kakao" placeholder="오픈카카오톡 / 실시간 문의 링크" class="w-full text-xs outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 8. 검색 해시태그 -->
+                    <div>
+                        <label class="block text-xs font-extrabold text-gray-700 mb-1">홍보 해시태그 <span class="text-gray-400 font-normal">(쉼표로 구분)</span></label>
+                        <input type="text" id="cs-keywords" placeholder="예: #산지직송, #생산자직거래, #핸드메이드, #로컬크리에이터" class="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs focus:border-hongbo-500 outline-none">
+                    </div>
+
+                    <!-- 등록 완료 후 즉시 표시되는 홍보야 공유 링크 결과창 -->
+                    <div id="cs-result-box" class="hidden p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-400 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-black text-emerald-800 flex items-center gap-1.5">
+                                <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                                나의 홍보야 직거래 링크가 생성되었습니다!
+                            </span>
+                            <a id="cs-result-open" href="#" target="_blank" class="text-xs font-extrabold text-emerald-700 underline">새 창에서 열기 ↗</a>
+                        </div>
+                        <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-emerald-200">
+                            <input type="text" id="cs-result-url" readonly class="flex-1 text-xs text-gray-700 outline-none bg-transparent">
+                            <button type="button" onclick="copyStudioShareLink()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shrink-0">
+                                링크 복사
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2.5 pt-2">
+                        <button type="button" onclick="closeCreatorStudioModal()" class="px-5 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50">
+                            닫기
+                        </button>
+                        <button type="submit" id="cs-studio-submit-btn" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-hongbo-600 to-orange-500 hover:from-hongbo-700 hover:to-orange-600 text-white font-black text-sm shadow-lg flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>홍보야에 등록하고 내 직거래 공유링크 만들기</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            let activeCreatorRoleFilter = 'all';
+
+            const CREATOR_ROLE_BADGES = {
+                producer: { emoji: '🌾', name: '농사·생산자', category: '생산자·농축수산 직거래', bg: '#ecfdf5', text: '#047857', border: '#a7f3d0', defaultImg: 'https://images.unsplash.com/photo-1557800636-894a64c1696f?auto=format&fit=crop&w=900&q=80' },
+                maker:    { emoji: '🛠️', name: '제조사·메이커', category: '제조사·수공예·공방 브랜드', bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe', defaultImg: 'https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=900&q=80' },
+                creative: { emoji: '🎨', name: '무형 콘텐츠', category: '크리에이티브·디지털·지식콘텐츠', bg: '#fdf4ff', text: '#7e22ce', border: '#e9d5ff', defaultImg: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=80' },
+                local:    { emoji: '📍', name: '로컬 크리에이터', category: '로컬크리에이터·지역특산·공간', bg: '#fff7ed', text: '#c2410c', border: '#fed7aa', defaultImg: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80' }
+            };
+
+            function getPosterCreatorRole(poster) {
+                if (poster.creator_type && CREATOR_ROLE_BADGES[poster.creator_type]) return poster.creator_type;
+                const combined = `${poster.category || ''} ${poster.search_keywords || ''} ${poster.brand_name || ''}`;
+                if (/생산자|농축수산|농장|과수원|산지|감귤|사과|농부|수산|축산/.test(combined)) return 'producer';
+                if (/제조|수공예|공방|도예|가죽|메이커|수제/.test(combined)) return 'maker';
+                if (/크리에이티브|디지털|콘텐츠|템플릿|디자인|마케팅|소프트웨어|강의/.test(combined)) return 'creative';
+                return 'local';
+            }
+
+            function filterCreatorHub(role) {
+                activeCreatorRoleFilter = role || 'all';
+                document.querySelectorAll('#creator-role-tabs .creator-role-btn').forEach(btn => {
+                    const isMatch = btn.getAttribute('data-role') === activeCreatorRoleFilter;
+                    btn.className = isMatch
+                        ? 'creator-role-btn bg-white text-hongbo-700 font-extrabold text-xs sm:text-sm py-2.5 px-3 rounded-xl shadow flex items-center justify-center gap-1.5 transition-all'
+                        : 'creator-role-btn bg-white/15 hover:bg-white/25 text-white font-bold text-xs sm:text-sm py-2.5 px-3 rounded-xl border border-white/20 flex items-center justify-center gap-1.5 transition-all';
+                });
+                renderCreatorHubSection(allPostersData || []);
+            }
+
+            function renderCreatorHubSection(postersArr) {
+                const grid = document.getElementById('creator-hub-grid');
+                const countEl = document.getElementById('creator-hub-count');
+                if (!grid) return;
+
+                const source = (postersArr && postersArr.length > 0)
+                    ? postersArr
+                    : (window.HONGBOYA_DEFAULT_POSTERS || []);
+
+                const filtered = activeCreatorRoleFilter === 'all'
+                    ? source
+                    : source.filter(p => getPosterCreatorRole(p) === activeCreatorRoleFilter);
+
+                if (countEl) countEl.textContent = `${filtered.length}개 아이템`;
+
+                if (filtered.length === 0) {
+                    grid.innerHTML = `
+                        <div class="col-span-full bg-white rounded-2xl border border-gray-200 p-8 text-center">
+                            <p class="text-gray-500 font-bold text-sm mb-3">이 분야에 첫 번째 직거래 아이템을 등록해보세요!</p>
+                            <button onclick="openCreatorStudioModal('${activeCreatorRoleFilter === 'all' ? 'producer' : activeCreatorRoleFilter}')" class="px-4 py-2.5 rounded-xl bg-hongbo-600 text-white font-extrabold text-xs">
+                                + 내 아이템 등록하기
+                            </button>
+                        </div>`;
+                    return;
+                }
+
+                grid.innerHTML = filtered.slice(0, 9).map(poster => {
+                    const role = getPosterCreatorRole(poster);
+                    const meta = CREATOR_ROLE_BADGES[role] || CREATOR_ROLE_BADGES.local;
+                    const title = (poster.brand_name || '직거래 아이템').replace(/</g, '&lt;');
+                    const creator = (poster.creator_name || poster.category || meta.name).replace(/</g, '&lt;');
+                    const price = (poster.price_info || '직거래 특가 문의').replace(/</g, '&lt;');
+                    const summary = (poster.item_summary || `${title}의 쇼핑몰과 SNS를 연결한 직거래 홍보 카드입니다.`).replace(/</g, '&lt;');
+                    const imgUrl = (poster.image_url || meta.defaultImg).replace(/"/g, '&quot;');
+                    const shopUrl = (poster.shop_url || poster.target_link || '').replace(/"/g, '&quot;');
+                    const safeBrandAttr = (poster.brand_name || '').replace(/'/g, "\\'");
+                    const safeImgAttr = (poster.image_url || '').replace(/'/g, "\\'");
+
+                    const snsButtons = [
+                        { url: poster.sns_instagram, icon: 'fa-brands fa-instagram', label: 'Instagram', color: '#e11d48', bg: '#fff1f2' },
+                        { url: poster.sns_youtube,   icon: 'fa-brands fa-youtube',   label: 'YouTube',   color: '#dc2626', bg: '#fef2f2' },
+                        { url: poster.sns_blog,      icon: 'fa-solid fa-pen-nib',    label: '블로그·글', color: '#16a34a', bg: '#f0fdf4' },
+                        { url: poster.sns_kakao,     icon: 'fa-solid fa-comment-dots', label: '오픈카톡', color: '#ca8a04', bg: '#fefce8' }
+                    ].filter(s => s.url && String(s.url).trim());
+
+                    return `
+                    <article class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-all overflow-hidden flex flex-col">
+                        <div class="relative aspect-[16/10] bg-gray-100 overflow-hidden group cursor-pointer" onclick="shareContent('${poster.id}', '${safeBrandAttr}', '${safeImgAttr}')">
+                            <img src="${imgUrl}" alt="${title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
+                            <span class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-extrabold shadow-sm" style="background:${meta.bg};color:${meta.text};border:1px solid ${meta.border};">
+                                ${meta.emoji} ${meta.name}
+                            </span>
+                            <span class="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-black/75 text-white text-xs font-extrabold backdrop-blur-sm">
+                                ${price}
+                            </span>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+                            <div>
+                                <div class="text-xs font-bold text-gray-500 mb-0.5">${creator}</div>
+                                <h3 class="font-black text-gray-900 text-base leading-snug line-clamp-2">${title}</h3>
+                                <p class="text-xs text-gray-600 mt-1.5 line-clamp-2 leading-relaxed">${summary}</p>
+                            </div>
+
+                            <div class="space-y-2">
+                                ${snsButtons.length ? `
+                                <div class="flex flex-wrap gap-1.5">
+                                    ${snsButtons.map(s => `
+                                        <a href="${String(s.url).replace(/"/g,'&quot;')}" target="_blank" rel="noopener"
+                                           class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-extrabold no-underline"
+                                           style="background:${s.bg};color:${s.color};">
+                                            <i class="${s.icon}"></i><span>${s.label}</span>
+                                        </a>
+                                    `).join('')}
+                                </div>` : ''}
+
+                                <div class="grid grid-cols-2 gap-2 pt-1">
+                                    ${shopUrl ? `
+                                    <a href="${shopUrl}" target="_blank" rel="noopener"
+                                       class="py-2.5 px-3 rounded-xl bg-hongbo-600 hover:bg-hongbo-700 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 no-underline shadow-sm">
+                                        <i class="fa-solid fa-cart-shopping"></i>
+                                        <span>쇼핑몰 직거래</span>
+                                    </a>` : `
+                                    <button onclick="openConsultationModal('${safeBrandAttr}')"
+                                       class="py-2.5 px-3 rounded-xl bg-hongbo-600 hover:bg-hongbo-700 text-white font-extrabold text-xs flex items-center justify-center gap-1.5">
+                                        <i class="fa-solid fa-paper-plane"></i>
+                                        <span>직거래 문의</span>
+                                    </button>`}
+                                    <button onclick="shareContent('${poster.id}', '${safeBrandAttr}', '${safeImgAttr}')"
+                                       class="py-2.5 px-3 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 font-extrabold text-xs flex items-center justify-center gap-1.5">
+                                        <i class="fa-solid fa-share-nodes"></i>
+                                        <span>직거래 링크 공유</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </article>`;
+                }).join('');
+            }
+
+            function selectStudioCreatorType(type) {
+                document.getElementById('cs-creator-type').value = type;
+                document.querySelectorAll('#cs-type-selector .cs-type-btn').forEach(btn => {
+                    const active = btn.getAttribute('data-type') === type;
+                    btn.className = active
+                        ? 'cs-type-btn py-2.5 px-3 rounded-xl border-2 border-hongbo-600 bg-hongbo-50 text-hongbo-700 font-extrabold text-xs flex flex-col items-center gap-1'
+                        : 'cs-type-btn py-2.5 px-3 rounded-xl border border-gray-200 bg-white text-gray-700 font-bold text-xs flex flex-col items-center gap-1';
+                });
+            }
+
+            function openCreatorStudioModal(defaultType) {
+                const modal = document.getElementById('creator-studio-modal');
+                if (!modal) return;
+                if (defaultType && CREATOR_ROLE_BADGES[defaultType]) {
+                    selectStudioCreatorType(defaultType);
+                }
+                document.getElementById('cs-result-box')?.classList.add('hidden');
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeCreatorStudioModal() {
+                const modal = document.getElementById('creator-studio-modal');
+                if (!modal) return;
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            async function submitCreatorStudioItem(event) {
+                event.preventDefault();
+                const submitBtn = document.getElementById('cs-studio-submit-btn');
+                const cType = document.getElementById('cs-creator-type').value || 'producer';
+                const roleMeta = CREATOR_ROLE_BADGES[cType] || CREATOR_ROLE_BADGES.local;
+
+                const brandName   = document.getElementById('cs-item-title').value.trim();
+                const creatorName = document.getElementById('cs-creator-name').value.trim();
+                const priceInfo   = document.getElementById('cs-price-info').value.trim();
+                const phone       = document.getElementById('cs-phone-input').value.trim();
+                const summary     = document.getElementById('cs-item-summary').value.trim();
+                const imageUrl    = document.getElementById('cs-image-url').value.trim() || roleMeta.defaultImg;
+                const shopUrl     = document.getElementById('cs-shop-url').value.trim();
+                const targetLink  = document.getElementById('cs-target-link').value.trim() || shopUrl;
+                const snsInsta    = document.getElementById('cs-sns-instagram').value.trim();
+                const snsYoutube  = document.getElementById('cs-sns-youtube').value.trim();
+                const snsBlog     = document.getElementById('cs-sns-blog').value.trim();
+                const snsKakao    = document.getElementById('cs-sns-kakao').value.trim();
+                const keywordsRaw = document.getElementById('cs-keywords').value.trim();
+
+                if (!brandName || !creatorName || !summary) {
+                    alert('아이템명, 크리에이터명, 아이템 소개를 입력해주세요.');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                const payload = {
+                    brand_name: brandName,
+                    creator_name: creatorName,
+                    creator_type: cType,
+                    category: roleMeta.category,
+                    price_info: priceInfo || '직거래 혜택가',
+                    item_summary: summary,
+                    image_url: imageUrl,
+                    phone_number: phone,
+                    shop_url: shopUrl,
+                    target_link: targetLink,
+                    sns_instagram: snsInsta,
+                    sns_youtube: snsYoutube,
+                    sns_blog: snsBlog,
+                    sns_kakao: snsKakao,
+                    search_keywords: keywordsRaw || `#${brandName.replace(/\s+/g,'')}, #${creatorName.replace(/\s+/g,'')}, #직거래, #홍보야`,
+                    order_idx: 1
+                };
+
+                try {
+                    const res = await fetch('tables/poster_settings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const saved = res.ok ? await res.json() : { ...payload, id: 'item-' + Date.now() };
+                    allPostersData = [saved, ...(allPostersData || [])];
+                    renderPosters(allPostersData);
+                    renderCreatorHubSection(allPostersData);
+
+                    const shareUrl = window.buildHongboShareUrl
+                        ? window.buildHongboShareUrl(saved)
+                        : `${window.location.origin}${window.location.pathname.replace('index.html','')}share.html?brand_id=${encodeURIComponent(saved.id)}`;
+
+                    const resultBox = document.getElementById('cs-result-box');
+                    const resultUrl = document.getElementById('cs-result-url');
+                    const resultOpen = document.getElementById('cs-result-open');
+                    if (resultBox && resultUrl && resultOpen) {
+                        resultUrl.value = shareUrl;
+                        resultOpen.href = shareUrl;
+                        resultBox.classList.remove('hidden');
+                    }
+                    showToast('🎉 직거래 아이템이 등록되고 SNS 공유 링크가 생성되었습니다!');
+                } catch (err) {
+                    console.error(err);
+                    alert('등록 중 오류가 발생했습니다.');
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            }
+
+            async function copyStudioShareLink() {
+                const input = document.getElementById('cs-result-url');
+                if (!input || !input.value) return;
+                try {
+                    await navigator.clipboard.writeText(input.value);
+                } catch (e) {
+                    input.select();
+                    document.execCommand('copy');
+                }
+                showToast('📋 내 홍보야 직거래 링크가 복사되었습니다! SNS에 공유해보세요.');
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                renderCreatorHubSection(window.HONGBOYA_DEFAULT_POSTERS || []);
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('open_studio') === '1') {
+                    setTimeout(() => openCreatorStudioModal(), 250);
+                }
+            });
         </script>
     </body>
 </html>

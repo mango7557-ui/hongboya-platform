@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>관리자 대시보드 - 가맹 상담 내역</title>
+    <title>관리자 대시보드 - 홍보야 셀프 홍보 & 직거래 관리</title>
+    <script src="./web-preview.js"></script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
@@ -6911,6 +6912,12 @@ ${storeInfo ? `\n【매장 현황】\n${storeInfo}` : ''}
                                     <label class="block text-[11px] font-medium text-gray-500 mb-0.5"><i class="fa-solid fa-tag text-indigo-400"></i> 카테고리</label>
                                     <select id="category-input-${poster.id}" onchange="saveCategoryOnly('${poster.id}', this)" class="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500 outline-none bg-white transition-colors">
                                         <option value="">-- 카테고리 선택 --</option>
+                                        <optgroup label="── ★ 홍보야 셀프 홍보 · 직거래 크리에이터 ──">
+                                        <option value="생산자·농축수산 직거래" ${poster.category==='생산자·농축수산 직거래'?'selected':''}>🌾 생산자·농축수산 직거래</option>
+                                        <option value="제조사·수공예·공방 브랜드" ${poster.category==='제조사·수공예·공방 브랜드'?'selected':''}>🛠️ 제조사·수공예·공방 브랜드</option>
+                                        <option value="크리에이티브·디지털·지식콘텐츠" ${poster.category==='크리에이티브·디지털·지식콘텐츠'?'selected':''}>🎨 크리에이티브·디지털·지식콘텐츠</option>
+                                        <option value="로컬크리에이터·지역특산·공간" ${poster.category==='로컬크리에이터·지역특산·공간'?'selected':''}>📍 로컬크리에이터·지역특산·공간</option>
+                                        </optgroup>
                                         <optgroup label="── 외식·F&B 그룹 ──">
                                         <option value="커피·카페·무인카페" ${poster.category==='커피·카페·무인카페'?'selected':''}>☕ 커피·카페·무인카페</option>
                                         <option value="제과제빵·디저트" ${poster.category==='제과제빵·디저트'?'selected':''}>🍰 제과제빵·디저트</option>
@@ -6949,6 +6956,25 @@ ${storeInfo ? `\n【매장 현황】\n${storeInfo}` : ''}
                                 <div>
                                     <label class="block text-[11px] font-medium text-gray-500 mb-0.5"><i class="fa-solid fa-phone"></i> 연결할 전화번호</label>
                                     <input type="text" id="phone-input-${poster.id}" value="${poster.phone_number || ''}" placeholder="02-123-4567" class="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500 outline-none">
+                                </div>
+                                <div class="p-2.5 rounded-lg bg-orange-50/70 border border-orange-200 space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[11px] font-extrabold text-orange-800"><i class="fa-solid fa-share-nodes mr-1"></i>크리에이터 직거래 & SNS 연동</span>
+                                        <button type="button" onclick="navigator.clipboard.writeText(window.buildHongboShareUrl ? window.buildHongboShareUrl(adminPostersData.find(x=>x.id==='${poster.id}')||{id:'${poster.id}',brand_name:'${(poster.brand_name||'').replace(/'/g,"\\'")}'}) : location.origin + '/share.html?brand_id=${poster.id}').then(()=>showToastMsg('📋 직거래 홍보 링크가 복사되었습니다!'))" class="text-[10px] font-bold bg-orange-600 text-white px-2 py-0.5 rounded-full">
+                                            홍보링크 복사
+                                        </button>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-1.5">
+                                        <input type="text" id="creator-name-input-${poster.id}" value="${poster.creator_name || ''}" placeholder="생산자/크리에이터명" class="px-2 py-1 text-xs border border-orange-200 rounded bg-white">
+                                        <input type="text" id="price-info-input-${poster.id}" value="${poster.price_info || ''}" placeholder="직거래 가격·혜택" class="px-2 py-1 text-xs border border-orange-200 rounded bg-white">
+                                    </div>
+                                    <input type="text" id="item-summary-input-${poster.id}" value="${poster.item_summary || ''}" placeholder="아이템 한줄 소개 (직거래 강점)" class="w-full px-2 py-1 text-xs border border-orange-200 rounded bg-white">
+                                    <div class="grid grid-cols-2 gap-1.5">
+                                        <input type="url" id="sns-insta-input-${poster.id}" value="${poster.sns_instagram || ''}" placeholder="Instagram URL" class="px-2 py-1 text-xs border border-orange-200 rounded bg-white">
+                                        <input type="url" id="sns-youtube-input-${poster.id}" value="${poster.sns_youtube || ''}" placeholder="YouTube URL" class="px-2 py-1 text-xs border border-orange-200 rounded bg-white">
+                                        <input type="url" id="sns-blog-input-${poster.id}" value="${poster.sns_blog || ''}" placeholder="블로그/Threads URL" class="px-2 py-1 text-xs border border-orange-200 rounded bg-white">
+                                        <input type="url" id="sns-kakao-input-${poster.id}" value="${poster.sns_kakao || ''}" placeholder="오픈카톡 URL" class="px-2 py-1 text-xs border border-orange-200 rounded bg-white">
+                                    </div>
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-medium text-gray-500 mb-0.5"><i class="fa-solid fa-store"></i> 브랜드명</label>
@@ -7542,7 +7568,15 @@ ${storeInfo ? `\n【매장 현황】\n${storeInfo}` : ''}
                         search_keywords: newKeywords,
                         order_idx: newOrder, 
                         franchise_csv: finalFranchiseCsv,
-                        category: (document.getElementById(`category-input-${id}`)?.value || '')
+                        category: (document.getElementById(`category-input-${id}`)?.value || ''),
+                        shop_url: (document.getElementById(`shop-input-${id}`)?.value || '').trim(),
+                        creator_name: (document.getElementById(`creator-name-input-${id}`)?.value || '').trim(),
+                        price_info: (document.getElementById(`price-info-input-${id}`)?.value || '').trim(),
+                        item_summary: (document.getElementById(`item-summary-input-${id}`)?.value || '').trim(),
+                        sns_instagram: (document.getElementById(`sns-insta-input-${id}`)?.value || '').trim(),
+                        sns_youtube: (document.getElementById(`sns-youtube-input-${id}`)?.value || '').trim(),
+                        sns_blog: (document.getElementById(`sns-blog-input-${id}`)?.value || '').trim(),
+                        sns_kakao: (document.getElementById(`sns-kakao-input-${id}`)?.value || '').trim()
                     })
                 });
 

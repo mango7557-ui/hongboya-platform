@@ -11,7 +11,8 @@ def main():
     pages = list(ROOT.glob('*.html'))
     for page in pages:
         html = page.read_text(encoding='utf-8')
-        html = html.replace('<head>', '<head>\n    <script src="./web-preview.js"></script>', 1)
+        if './web-preview.js' not in html:
+            html = html.replace('<head>', '<head>\n    <script src="./web-preview.js"></script>', 1)
         (OUTPUT / page.name).write_text(html, encoding='utf-8')
     for name in ('web-preview.js', 'sw.js'):
         shutil.copy2(ROOT / name, OUTPUT / name)

@@ -1,34 +1,23 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <script src="./web-preview.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-    <!--
-    ============================================================
-     ★ OG / SNS 공유 메타태그
-       - 카카오봇·SNS 크롤러는 JS를 실행하지 않으므로,
-         JS 로드 전 기본값을 먼저 두고,
-         JS가 실행되면 <meta> 태그의 content를 교체합니다.
-       - 실제 배포 시 서버에서 brand_id를 파싱해
-         SSR로 주입하면 완벽하지만, 현재는 JS 방식으로 최대한 대응합니다.
-    ============================================================
-    -->
-    <meta id="og-title"       property="og:title"       content="전국 생태계 지도로 잇다, 홍보야넷!">
-    <meta id="og-description" property="og:description" content="홍보야! 당신의 가치를 사고파는 플랫폼!">
+    <meta id="og-title"       property="og:title"       content="홍보야 · 크리에이터 & 생산자 직거래 홍보 링크">
+    <meta id="og-description" property="og:description" content="생산자·제조사·크리에이티브·로컬 크리에이터의 쇼핑몰과 SNS를 한 번에 연결하는 셀프 직거래 플랫폼">
     <meta id="og-image"       property="og:image"       content="https://www.genspark.ai/api/files/s/psKgmWYr">
     <meta id="og-image-w"     property="og:image:width" content="800">
     <meta id="og-image-h"     property="og:image:height" content="600">
     <meta id="og-url"         property="og:url"         content="">
     <meta id="og-type"        property="og:type"        content="website">
-    <meta id="og-site-name"   property="og:site_name"   content="홍보야넷">
+    <meta id="og-site-name"   property="og:site_name"   content="홍보야 직거래 플랫폼">
     <meta id="tw-card"        name="twitter:card"        content="summary_large_image">
-    <meta id="tw-title"       name="twitter:title"       content="전국 생태계 지도로 잇다, 홍보야넷!">
-    <meta id="tw-description" name="twitter:description" content="홍보야! 당신의 가치를 사고파는 플랫폼!">
+    <meta id="tw-title"       name="twitter:title"       content="홍보야 · 크리에이터 & 생산자 직거래 홍보 링크">
+    <meta id="tw-description" name="twitter:description" content="생산자·제조사·크리에이티브·로컬 크리에이터의 쇼핑몰과 SNS를 한 번에 연결하는 셀프 직거래 플랫폼">
     <meta id="tw-image"       name="twitter:image"       content="https://www.genspark.ai/api/files/s/psKgmWYr">
 
-    <title id="page-title">전국 생태계 지도로 잇다, 홍보야넷!</title>
+    <title id="page-title">홍보야 · 내 아이템 셀프 홍보 & 직거래 링크</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -39,13 +28,13 @@
         body {
             font-family: 'Noto Sans KR', -apple-system, sans-serif;
             min-height: 100vh;
-            background: #0f0e1a;
+            background: radial-gradient(circle at top, #3b0764 0%, #111827 55%, #090d16 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 0 0 36px;
         }
 
-        /* ── 로딩 ── */
         #loading-screen {
             display: flex;
             flex-direction: column;
@@ -58,31 +47,30 @@
         .spinner {
             width: 44px; height: 44px;
             border: 4px solid rgba(255,255,255,0.2);
-            border-top-color: #a78bfa;
+            border-top-color: #f97316;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeUp {
-            from { opacity:0; transform: translateY(30px); }
+            from { opacity:0; transform: translateY(24px); }
             to   { opacity:1; transform: translateY(0); }
         }
 
-        /* ── 메인 래퍼 ── */
         #brand-card {
             display: none;
             width: 100%;
-            max-width: 480px;
+            max-width: 500px;
             min-height: 100vh;
             flex-direction: column;
-            animation: fadeUp 0.4s ease;
+            animation: fadeUp 0.35s ease;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.45);
         }
 
-        /* ── 상단 히어로 (포스터 블러 배경) ── */
         .hero-bg {
             position: relative;
             width: 100%;
-            background: linear-gradient(160deg, #1e1b4b 0%, #4c1d95 60%, #6d28d9 100%);
+            background: linear-gradient(155deg, #7c2d12 0%, #dc2626 52%, #4338ca 100%);
             overflow: hidden;
         }
         .hero-bg-blur {
@@ -90,33 +78,49 @@
             inset: 0;
             background-size: cover;
             background-position: center;
-            filter: blur(28px) brightness(0.3) saturate(1.4);
-            transform: scale(1.1);
+            filter: blur(28px) brightness(0.35) saturate(1.35);
+            transform: scale(1.12);
         }
         .hero-content {
             position: relative;
             z-index: 1;
-            padding: 20px 20px 0;
+            padding: 18px 18px 0;
         }
 
-        /* ── 이벤트 배지 ── */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
         .event-badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(255,255,255,0.13);
+            background: rgba(255,255,255,0.16);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.22);
-            border-radius: 40px;
-            padding: 7px 16px;
-            color: #e9d5ff;
+            border: 1px solid rgba(255,255,255,0.26);
+            border-radius: 999px;
+            padding: 6px 14px;
+            color: #fff7ed;
             font-size: 12px;
+            font-weight: 800;
+        }
+        .create-own-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(15,23,42,0.55);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: #fff;
+            text-decoration: none;
+            font-size: 11px;
             font-weight: 700;
-            letter-spacing: 0.05em;
-            margin-bottom: 18px;
+            padding: 6px 12px;
+            border-radius: 999px;
         }
 
-        /* ── 포스터 이미지 ── */
         .poster-img-outer {
             width: 100%;
             border-radius: 20px 20px 0 0;
@@ -126,14 +130,14 @@
         }
         .poster-img-outer img {
             width: 100%;
-            height: auto;
+            max-height: 440px;
             display: block;
-            object-fit: contain;
+            object-fit: cover;
         }
         .poster-img-placeholder {
             width: 100%;
-            aspect-ratio: 3/4;
-            background: linear-gradient(135deg, #312e81, #4c1d95);
+            aspect-ratio: 4/3;
+            background: linear-gradient(135deg, #ea580c, #dc2626);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -141,112 +145,185 @@
             gap: 12px;
         }
         .poster-img-placeholder span {
-            font-size: 72px;
+            font-size: 64px;
             font-weight: 900;
-            color: rgba(255,255,255,0.6);
+            color: rgba(255,255,255,0.8);
         }
 
-        /* ── 카드 바디 ── */
         .card-body {
             background: #fff;
-            padding: 22px 20px 28px;
+            padding: 22px 20px 26px;
         }
 
-        /* ── 브랜드 헤더 ── */
         .brand-header {
             display: flex;
             align-items: flex-start;
             gap: 14px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .brand-thumb {
             width: 64px; height: 64px;
-            border-radius: 14px;
+            border-radius: 16px;
             object-fit: cover;
-            border: 2px solid #e0e7ff;
+            border: 2px solid #fed7aa;
             flex-shrink: 0;
         }
         .brand-thumb-ph {
             width: 64px; height: 64px;
-            border-radius: 14px;
-            background: linear-gradient(135deg,#6366f1,#8b5cf6);
+            border-radius: 16px;
+            background: linear-gradient(135deg,#ef4444,#f97316);
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0; color: #fff; font-size: 26px; font-weight: 900;
         }
         .brand-info { flex: 1; min-width: 0; }
         .brand-badge-label {
-            font-size: 10px; font-weight: 800;
-            color: #6366f1; letter-spacing: 0.08em;
-            text-transform: uppercase; margin-bottom: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px; font-weight: 800;
+            color: #c2410c;
+            background: #ffedd5;
+            padding: 3px 10px;
+            border-radius: 999px;
+            margin-bottom: 6px;
         }
         .brand-name {
-            font-size: 23px; font-weight: 900;
-            color: #1e1b4b; line-height: 1.2;
+            font-size: 21px; font-weight: 900;
+            color: #111827; line-height: 1.3;
+            word-break: keep-all;
         }
-        .brand-phone {
-            display: flex; align-items: center; gap: 6px;
-            margin-top: 6px; font-size: 13px;
-            color: #475569; font-weight: 600;
+        .creator-sub {
+            margin-top: 4px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #475569;
         }
-        .brand-phone i { color: #10b981; font-size: 11px; }
+        .price-pill {
+            display: none;
+            margin-top: 8px;
+            background: #fef2f2;
+            border: 1.5px solid #fecaca;
+            color: #dc2626;
+            font-size: 13px;
+            font-weight: 900;
+            padding: 6px 12px;
+            border-radius: 10px;
+        }
 
-        /* ── 해시태그 ── */
         .hashtag-row {
             display: flex; flex-wrap: wrap;
-            gap: 6px; margin-bottom: 18px;
+            gap: 6px; margin-bottom: 14px;
         }
         .tag {
-            background: #f1f5f9; color: #6366f1;
+            background: #fff7ed; color: #c2410c;
             font-size: 12px; font-weight: 700;
             padding: 4px 11px; border-radius: 20px;
-            border: 1px solid #e0e7ff;
+            border: 1px solid #fed7aa;
         }
 
-        /* ── 설명 박스 ── */
         .desc-box {
-            background: linear-gradient(135deg,#f8faff,#f5f3ff);
-            border: 1px solid #e0e7ff; border-radius: 14px;
-            padding: 14px 16px; margin-bottom: 18px;
+            background: linear-gradient(135deg,#fff7ed,#fef2f2);
+            border: 1px solid #fed7aa; border-radius: 14px;
+            padding: 14px 16px; margin-bottom: 16px;
         }
         .desc-box p {
-            font-size: 13px; color: #475569; line-height: 1.75;
+            font-size: 13.5px; color: #334155; line-height: 1.7;
+            white-space: pre-line;
         }
 
-        /* ── URL 미리보기 ── */
-        .url-bar {
-            display: flex; align-items: center; gap: 8px;
-            padding: 9px 14px; background: #f8fafc;
-            border: 1px solid #e2e8f0; border-radius: 10px;
-            margin-bottom: 18px;
-        }
-        .url-bar i  { color: #6366f1; font-size: 12px; flex-shrink: 0; }
-        .url-bar span {
-            font-size: 11px; color: #94a3b8;
-            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        .section-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: #64748b;
+            letter-spacing: 0.04em;
+            margin: 14px 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        /* ── 버튼 ── */
         .btn {
             display: flex; align-items: center; justify-content: center;
             gap: 9px; width: 100%; padding: 15px 16px;
-            border-radius: 16px; font-size: 15px; font-weight: 800;
+            border-radius: 15px; font-size: 15px; font-weight: 800;
             border: none; cursor: pointer; text-decoration: none;
             transition: transform .15s, opacity .15s, box-shadow .15s;
             margin-bottom: 10px;
         }
-        .btn:hover  { opacity: .9; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
-        .btn:active { transform: translateY(0); opacity: 1; }
-        .btn-primary  { background: linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; }
+        .btn:hover  { opacity: .94; transform: translateY(-1px); box-shadow: 0 8px 22px rgba(0,0,0,.12); }
+        .btn:active { transform: translateY(0); }
+
+        .btn-shop {
+            background: linear-gradient(135deg,#ef4444,#f97316);
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(239,68,68,0.28);
+        }
+        .btn-homepage {
+            background: #0f172a;
+            color: #fff;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg,#4f46e5,#7c3aed);
+            color:#fff;
+        }
         .btn-kakao    { background: #FEE500; color: #3C1E1E; }
         .btn-call     { background: linear-gradient(135deg,#10b981,#059669); color:#fff; }
         .btn-consult  { background: linear-gradient(135deg,#f59e0b,#d97706); color:#fff; }
-        .btn-copy     { background: #f8fafc; color: #475569; border: 1.5px solid #e2e8f0 !important; font-size:14px; }
+
+        .sns-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .sns-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 800;
+            text-decoration: none;
+            border: 1.5px solid #e2e8f0;
+            color: #1e293b;
+            background: #f8fafc;
+            transition: all .15s;
+        }
+        .sns-chip:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .url-bar {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 12px; background: #f8fafc;
+            border: 1px solid #e2e8f0; border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        .url-bar i  { color: #ea580c; font-size: 13px; flex-shrink: 0; }
+        .url-bar span {
+            font-size: 11px; color: #64748b;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            flex: 1;
+        }
+        .url-copy-mini {
+            background: #ea580c;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
 
         .btn-grid {
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 10px; margin-bottom: 10px;
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px; margin-bottom: 10px;
         }
-        .btn-grid .btn { margin-bottom: 0; }
+        .btn-grid .btn { margin-bottom: 0; padding: 12px 8px; font-size: 13px; }
 
         .divider {
             height: 1px;
@@ -254,190 +331,218 @@
             margin: 16px 0;
         }
 
-        /* ── 푸터 ── */
         .share-footer {
-            text-align: center; padding: 16px 20px 32px;
+            text-align: center; padding: 18px 20px 28px;
             background: #fff; border-top: 1px solid #f1f5f9;
-            font-size: 11px; color: #94a3b8;
+            font-size: 12px; color: #64748b;
+            border-radius: 0 0 24px 24px;
         }
-        .share-footer a { color: #6366f1; font-weight: 700; text-decoration: none; }
+        .share-footer a { color: #ea580c; font-weight: 800; text-decoration: none; }
 
-        /* ── 에러 ── */
         #error-card {
             display: none; background: #fff; border-radius: 24px;
-            padding: 48px 32px; text-align: center;
-            max-width: 360px; width: 90%; margin: auto;
-            animation: fadeUp .4s ease;
+            padding: 44px 28px; text-align: center;
+            max-width: 380px; width: 92%; margin: auto;
+            animation: fadeUp .35s ease;
         }
-        #error-card .err-icon { font-size: 52px; margin-bottom: 14px; }
+        #error-card .err-icon { font-size: 48px; margin-bottom: 12px; }
         #error-card h2 { font-size: 18px; color: #1e293b; margin-bottom: 8px; font-weight: 800; }
         #error-card p  { font-size: 13px; color: #64748b; line-height: 1.7; }
 
-        /* ── 토스트 ── */
         #share-toast {
             display: none; position: fixed;
-            bottom: 32px; left: 50%; transform: translateX(-50%);
-            background: #1e293b; color: #fff;
-            padding: 12px 24px; border-radius: 40px;
+            bottom: 28px; left: 50%; transform: translateX(-50%);
+            background: #0f172a; color: #fff;
+            padding: 12px 22px; border-radius: 40px;
             font-size: 13px; font-weight: 700; z-index: 9999;
             white-space: nowrap; box-shadow: 0 8px 28px rgba(0,0,0,.35);
-            animation: fadeUp .3s ease;
         }
     </style>
 </head>
 <body>
 
-<!-- ── 로딩 ── -->
 <div id="loading-screen">
     <div class="spinner"></div>
-    <span style="font-size:14px;color:#c4b5fd;font-weight:600;">브랜드 정보를 불러오는 중...</span>
+    <span style="font-size:14px;color:#fed7aa;font-weight:700;">직거래 홍보 링크를 불러오는 중...</span>
 </div>
 
-<!-- ── 브랜드 공유 카드 ── -->
 <div id="brand-card">
 
-    <!-- 히어로 배경 + 포스터 -->
     <div class="hero-bg">
         <div class="hero-bg-blur" id="hero-bg-blur"></div>
         <div class="hero-content">
-            <div class="event-badge">
-                <i class="fa-solid fa-star" style="color:#fbbf24;font-size:10px;"></i>
-                IFS 2026 박람회 참여 업체
+            <div class="top-bar">
+                <div class="event-badge" id="hero-type-badge">
+                    <i class="fa-solid fa-seedling" style="color:#fde047;font-size:11px;"></i>
+                    <span id="hero-type-text">홍보야 직거래 크리에이터</span>
+                </div>
+                <a id="top-create-link" href="index.html?open_studio=1" class="create-own-btn">
+                    <i class="fa-solid fa-plus"></i> 나도 링크 만들기
+                </a>
             </div>
             <div class="poster-img-outer" id="poster-img-outer"></div>
         </div>
     </div>
 
-    <!-- 카드 바디 -->
     <div class="card-body">
 
-        <!-- 브랜드 헤더 -->
         <div class="brand-header">
             <div id="brand-thumb-wrap"></div>
             <div class="brand-info">
-                <div class="brand-badge-label">IFS 2026 참여 브랜드</div>
-                <div class="brand-name" id="card-brand-name">브랜드명</div>
-                <div class="brand-phone" id="card-phone" style="display:none;">
-                    <i class="fa-solid fa-phone"></i>
-                    <span id="card-phone-text"></span>
-                </div>
+                <div class="brand-badge-label" id="card-category-badge">직거래 파트너</div>
+                <div class="brand-name" id="card-brand-name">아이템명</div>
+                <div class="creator-sub" id="card-creator-name"></div>
+                <div class="price-pill" id="card-price-pill"></div>
             </div>
         </div>
 
-        <!-- 해시태그 -->
         <div class="hashtag-row" id="hashtag-row"></div>
 
-        <!-- 설명 -->
         <div class="desc-box">
-            <p id="card-desc">IFS 2026 박람회 참여 브랜드의 가맹 창업 정보를 확인하세요.</p>
+            <p id="card-desc"></p>
         </div>
 
-        <!-- URL 미리보기 -->
-        <div class="url-bar">
-            <i class="fa-solid fa-link"></i>
-            <span id="url-preview-text"></span>
+        <!-- 1순위: 내 쇼핑몰 / 직거래 주문 바로가기 -->
+        <div class="section-label" id="commerce-section-label">
+            <i class="fa-solid fa-bag-shopping" style="color:#ef4444;"></i>
+            직거래 쇼핑몰 & 공식 판매처
         </div>
-
-        <!-- 메인: 갤러리 이동 -->
-        <a id="btn-enter" class="btn btn-primary" href="#">
-            <i class="fa-solid fa-store"></i>
-            <span>갤러리에서 브랜드 보기</span>
-            <i class="fa-solid fa-arrow-right" style="margin-left:auto;font-size:12px;opacity:.7;"></i>
+        <a id="btn-shop-direct" class="btn btn-shop" href="#" target="_blank" rel="noopener" style="display:none;">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span id="btn-shop-direct-text">내 쇼핑몰에서 직거래 구매하기</span>
+            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:auto;font-size:12px;opacity:.85;"></i>
         </a>
 
-        <!-- 가맹 / 매장 -->
-        <div class="btn-grid">
-            <button class="btn" onclick="openFranchise()"
-                style="background:#f0fdf4;color:#166534;border:1.5px solid #bbf7d0;font-size:14px;">
-                <i class="fa-solid fa-file-contract"></i> 가맹정보
-            </button>
-            <button class="btn" onclick="openStore()"
-                style="background:#eff6ff;color:#1d4ed8;border:1.5px solid #bfdbfe;font-size:14px;">
-                <i class="fa-solid fa-map-location-dot"></i> 매장위치
-            </button>
+        <a id="btn-homepage-direct" class="btn btn-homepage" href="#" target="_blank" rel="noopener" style="display:none;">
+            <i class="fa-solid fa-globe"></i>
+            <span id="btn-homepage-direct-text">공식 홈페이지 / 소개 페이지</span>
+            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:auto;font-size:12px;opacity:.8;"></i>
+        </a>
+
+        <!-- 2순위: 크리에이터 SNS 채널 연동 -->
+        <div id="sns-section-wrap" style="display:none;">
+            <div class="section-label">
+                <i class="fa-solid fa-hashtag" style="color:#8b5cf6;"></i>
+                크리에이터 SNS 채널 연동
+            </div>
+            <div class="sns-grid" id="sns-links-grid"></div>
         </div>
 
-        <!-- 전화 (있을 때만) -->
+        <!-- 3순위: 직통 전화 / 문의 -->
         <a id="btn-call" class="btn btn-call" href="#" style="display:none;">
-            <i class="fa-solid fa-phone"></i>
-            <span id="btn-call-text">전화 문의하기</span>
+            <i class="fa-solid fa-phone-volume"></i>
+            <span id="btn-call-text">생산자·판매자 직통 전화 문의</span>
         </a>
+
+        <!-- 프랜차이즈/매장 정보가 있는 경우 보조 노출 -->
+        <div class="btn-grid" id="franchise-store-grid" style="display:none; grid-template-columns:1fr 1fr;">
+            <button class="btn" id="btn-franchise-info" onclick="openFranchise()"
+                style="background:#f0fdf4;color:#166534;border:1.5px solid #bbf7d0;">
+                <i class="fa-solid fa-file-contract"></i> 상세/가맹정보
+            </button>
+            <button class="btn" id="btn-store-info" onclick="openStore()"
+                style="background:#eff6ff;color:#1d4ed8;border:1.5px solid #bfdbfe;">
+                <i class="fa-solid fa-map-location-dot"></i> 오프라인 매장
+            </button>
+        </div>
 
         <div class="divider"></div>
 
-        <!-- 공유 버튼들 -->
+        <!-- 이 직거래 링크를 내 SNS에 공유하기 -->
+        <div class="section-label">
+            <i class="fa-solid fa-share-nodes" style="color:#ea580c;"></i>
+            이 홍보야 직거래 링크를 SNS에 공유하기
+        </div>
+        <div class="url-bar">
+            <i class="fa-solid fa-link"></i>
+            <span id="url-preview-text"></span>
+            <button class="url-copy-mini" onclick="copyLink()">복사</button>
+        </div>
+
         <div class="btn-grid">
             <button class="btn btn-kakao" onclick="shareKakao()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#3C1E1E">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#3C1E1E">
                     <path d="M12 3C6.477 3 2 6.477 2 10.5c0 2.667 1.595 5.01 4.015 6.393L5.027 20.5l4.328-2.82A11.5 11.5 0 0012 18c5.523 0 10-3.477 10-7.5S17.523 3 12 3z"/>
                 </svg>
                 카카오톡
             </button>
-            <button class="btn" onclick="shareNative()" style="background:#f8fafc;color:#475569;border:1.5px solid #e2e8f0;">
-                <i class="fa-solid fa-arrow-up-from-bracket"></i> 앱 공유
+            <button class="btn" onclick="shareNative()" style="background:#f8fafc;color:#334155;border:1.5px solid #e2e8f0;">
+                <i class="fa-solid fa-arrow-up-from-bracket"></i> SNS 공유
             </button>
-            <button class="btn btn-copy" onclick="copyLink()" style="background:#f8fafc;color:#475569;border:1.5px solid #e2e8f0;">
-                <i class="fa-solid fa-copy"></i> 링크 복사
+            <button class="btn" onclick="copyLink()" style="background:#fff7ed;color:#c2410c;border:1.5px solid #fed7aa;">
+                <i class="fa-solid fa-copy"></i> 링크복사
             </button>
         </div>
-        <!-- 카카오톡 공유 안내 -->
         <div id="kakao-guide" style="display:none;margin:8px 0 0;padding:12px 14px;
             background:#fffbea;border:1.5px solid #FEE500;border-radius:12px;
             font-size:12px;color:#92400e;line-height:1.7;">
-            📋 <strong>링크가 복사되었습니다!</strong><br>
-            카카오톡 채팅방에서 <strong>붙여넣기(길게 누르기)</strong>하여 공유하세요.
+            📋 <strong>직거래 홍보 링크가 복사되었습니다!</strong><br>
+            인스타그램 프로필, 카카오톡, 스레드, 블로그에 붙여넣어 직거래를 시작하세요.
         </div>
 
         <div class="divider"></div>
 
-        <!-- 상담 신청 -->
-        <a id="btn-consult" class="btn btn-consult" href="#">
-            <i class="fa-solid fa-file-signature"></i>
-            <span>창업 상담 신청하기</span>
+        <a id="btn-enter" class="btn btn-primary" href="#">
+            <i class="fa-solid fa-store"></i>
+            <span>홍보야 직거래 플랫폼 전체 보기</span>
+            <i class="fa-solid fa-arrow-right" style="margin-left:auto;font-size:12px;opacity:.7;"></i>
         </a>
 
-    </div><!-- /card-body -->
+        <a id="btn-consult" class="btn btn-consult" href="#">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>나도 내 아이템·쇼핑몰·SNS 홍보 링크 만들기</span>
+        </a>
 
-    <div class="share-footer">
-        이 페이지는 <a id="footer-link" href="index.html">IFS 2026 박람회</a> 공식 참여 업체 안내 페이지입니다.
     </div>
 
-</div><!-- /brand-card -->
+    <div class="share-footer">
+        생산자 · 제조사 · 크리에이티브 · 로컬 크리에이터의 직거래 허브 <a id="footer-link" href="index.html">홍보야(HONGBOYA)</a>
+    </div>
 
-<!-- ── 에러 ── -->
+</div>
+
 <div id="error-card">
-    <div class="err-icon">😥</div>
-    <h2>브랜드를 찾을 수 없습니다</h2>
-    <p>링크가 만료되었거나 잘못된 접근입니다.<br><br>
-        <a href="index.html" style="color:#6366f1;font-weight:700;text-decoration:none;">
-            ← 갤러리로 돌아가기
+    <div class="err-icon">🌱</div>
+    <h2>홍보 아이템 정보를 찾을 수 없습니다</h2>
+    <p>링크가 잘못되었거나 삭제된 아이템입니다.<br>홍보야 홈에서 다양한 직거래 아이템을 만나보세요.<br><br>
+        <a href="index.html" style="color:#ea580c;font-weight:800;text-decoration:none;">
+            ← 홍보야 메인으로 이동하기
         </a>
     </p>
 </div>
 
-<!-- ── 토스트 ── -->
 <div id="share-toast"></div>
 
-<!-- 카카오 SDK -->
-<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" integrity="sha384-TiCmbV6AunZ7N021S1/Ojg2a2H2FgrB9G1U/yKTD/R2aA/e8XQ1aY7H1qE07Hbm7" crossorigin="anonymous"></script>
+<script src="./web-preview.js"></script>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" crossorigin="anonymous"></script>
 
 <script>
-/* ===================================================
-   전역 상태
-=================================================== */
 let posterData   = null;
 let sharePageUrl = '';
 let indexBaseUrl = '';
 
-/* ===================================================
-   메인 초기화
-=================================================== */
+const CREATOR_TYPE_META = {
+    producer: { label: '🌾 농축수산 생산자 직거래', badge: '생산자 산지직송', icon: 'fa-seedling' },
+    maker:    { label: '🛠️ 제조사 · 공방 직영',     badge: '제조사 직거래',   icon: 'fa-hammer' },
+    creative: { label: '🎨 무형 콘텐츠 크리에이티브', badge: '크리에이티브 직거래', icon: 'fa-wand-magic-sparkles' },
+    local:    { label: '📍 로컬 크리에이터 직거래',   badge: '로컬 크리에이터', icon: 'fa-location-dot' }
+};
+
+function inferCreatorType(poster) {
+    if (poster.creator_type && CREATOR_TYPE_META[poster.creator_type]) return poster.creator_type;
+    const cat = (poster.category || '') + ' ' + (poster.search_keywords || '');
+    if (/생산자|농축수산|농장|과수원|산지|감귤|사과/.test(cat)) return 'producer';
+    if (/제조|수공예|공방|도예|가죽|공장/.test(cat)) return 'maker';
+    if (/크리에이티브|디지털|템플릿|디자인|마케팅|소프트웨어|교육/.test(cat)) return 'creative';
+    return 'local';
+}
+
 (async () => {
     const params  = new URLSearchParams(window.location.search);
     const brandId = params.get('brand_id');
+    const packStr = params.get('pack');
     const mode    = params.get('mode') || 'share';
 
-    // admin 모드 → admin.html 리다이렉트
     if (mode === 'admin') {
         window.location.replace(
             window.location.href.replace('share.html','admin.html').replace('mode=admin','')
@@ -445,69 +550,108 @@ let indexBaseUrl = '';
         return;
     }
 
-    if (!brandId) { showError(); return; }
+    const packedPoster = window.decodeHongboSharePack ? window.decodeHongboSharePack(packStr) : null;
+
+    if (!brandId && !packedPoster) {
+        showError();
+        return;
+    }
 
     try {
-        // 카카오 앱키 로드
-        const configRes = await fetch('tables/site_config');
-        if (configRes.ok) {
-            const cfgData = await configRes.json();
-            const kakaoRec = (cfgData.data || []).find(r => r.config_type === 'setting' && r.label === 'kakao_app_key');
-            if (kakaoRec && kakaoRec.config_value) {
-                window.KAKAO_APP_KEY = kakaoRec.config_value;
-                if (window.Kakao && !window.Kakao.isInitialized()) {
-                    window.Kakao.init(window.KAKAO_APP_KEY);
+        try {
+            const configRes = await fetch('tables/site_config');
+            if (configRes.ok) {
+                const cfgData = await configRes.json();
+                const kakaoRec = (cfgData.data || []).find(r => r.config_type === 'setting' && r.label === 'kakao_app_key');
+                if (kakaoRec && kakaoRec.config_value) {
+                    window.KAKAO_APP_KEY = kakaoRec.config_value;
+                    if (window.Kakao && !window.Kakao.isInitialized()) {
+                        window.Kakao.init(window.KAKAO_APP_KEY);
+                    }
                 }
             }
+        } catch (e) {}
+
+        let poster = null;
+        if (brandId) {
+            const res = await fetch(`tables/poster_settings/${brandId}`);
+            if (res.ok) {
+                poster = await res.json();
+            }
+        }
+        // 다른 기기/브라우저에서 열었을 때 pack 파라미터로 즉시 복원 + 로컬 DB에도 캐시
+        if (!poster && packedPoster) {
+            poster = packedPoster;
+            try {
+                await fetch('tables/poster_settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(packedPoster)
+                });
+            } catch (e) {}
+        } else if (poster && packedPoster) {
+            poster = { ...packedPoster, ...poster };
         }
 
-        const res = await fetch(`tables/poster_settings/${brandId}`);
-        if (!res.ok) { showError(); return; }
-        const poster = await res.json();
+        if (!poster) {
+            showError();
+            return;
+        }
         posterData = poster;
 
-        const name     = (poster.brand_name   || '브랜드').trim();
-        const imgUrl   = (poster.image_url    || '').trim();
-        const phone    = (poster.phone_number || '').trim();
-        const keywords = (poster.search_keywords || '').trim();
+        const name        = (poster.brand_name   || '나의 홍보 아이템').trim();
+        const creatorName = (poster.creator_name || '').trim();
+        const priceInfo   = (poster.price_info   || '').trim();
+        const summary     = (poster.item_summary || '').trim();
+        const imgUrl      = (poster.image_url    || '').trim();
+        const phone       = (poster.phone_number || '').trim();
+        const keywords    = (poster.search_keywords || '').trim();
+        const shopUrl     = (poster.shop_url     || '').trim();
+        const targetLink  = (poster.target_link  || '').trim();
+        const cType       = inferCreatorType(poster);
+        const typeMeta    = CREATOR_TYPE_META[cType] || CREATOR_TYPE_META.local;
 
-        /* ─ URL 계산 ─ */
-        const pageBase   = window.location.href.split('?')[0];
-        indexBaseUrl     = pageBase.replace('share.html', 'index.html');
-        sharePageUrl     = `${pageBase}?brand_id=${brandId}`;
+        const pageBase = window.location.href.split('?')[0];
+        indexBaseUrl   = pageBase.replace('share.html', 'index.html');
+        sharePageUrl   = window.buildHongboShareUrl
+            ? window.buildHongboShareUrl(poster)
+            : `${pageBase}?brand_id=${encodeURIComponent(poster.id || brandId || '')}`;
 
         const ogImg = imgUrl
             ? imgUrl
-            : `https://placehold.co/800x600/6366f1/ffffff?text=${encodeURIComponent(name)}`;
+            : `https://placehold.co/800x600/ea580c/ffffff?text=${encodeURIComponent(name)}`;
 
-        /* ─ OG 메타 교체 (JS 실행 환경용) ─ */
-        setMeta('og-title',       `IFS 2026 박람회 참여 업체 - ${name}`);
-        setMeta('og-description', `${name}의 가맹 창업 정보를 확인하세요! IFS 2026 박람회 참여 브랜드입니다.`);
+        const descText = summary
+            || `${creatorName ? creatorName + ' · ' : ''}${name}의 공식 쇼핑몰과 SNS를 연결한 홍보야 직거래 페이지입니다.`;
+
+        setMeta('og-title',       `[홍보야 직거래] ${name}`);
+        setMeta('og-description', descText);
         setMeta('og-image',       ogImg);
         setMeta('og-url',         sharePageUrl);
-        setMeta('tw-title',       `IFS 2026 박람회 참여 업체 - ${name}`);
-        setMeta('tw-description', `${name}의 가맹 창업 정보를 확인해보세요!`);
+        setMeta('tw-title',       `[홍보야 직거래] ${name}`);
+        setMeta('tw-description', descText);
         setMeta('tw-image',       ogImg);
-        document.getElementById('page-title').textContent = `IFS 2026 박람회 - ${name}`;
+        document.getElementById('page-title').textContent = `${name} · 홍보야 직거래 링크`;
 
-        /* ─ 히어로 블러 배경 ─ */
+        document.getElementById('hero-type-text').textContent = typeMeta.label;
+        document.getElementById('top-create-link').href = `${indexBaseUrl}?open_studio=1`;
+        document.getElementById('card-category-badge').textContent = poster.category || typeMeta.badge;
+
         if (imgUrl) {
             document.getElementById('hero-bg-blur').style.backgroundImage = `url('${imgUrl}')`;
         }
 
-        /* ─ 포스터 이미지 (크게) ─ */
         const imgOuter = document.getElementById('poster-img-outer');
         if (imgUrl) {
             const img   = document.createElement('img');
             img.src     = imgUrl;
-            img.alt     = `${name} 포스터`;
+            img.alt     = name;
             img.onerror = () => { imgOuter.innerHTML = placeholderHTML(name); };
             imgOuter.appendChild(img);
         } else {
             imgOuter.innerHTML = placeholderHTML(name);
         }
 
-        /* ─ 브랜드 섬네일 ─ */
         const thumbWrap = document.getElementById('brand-thumb-wrap');
         if (imgUrl) {
             const t     = document.createElement('img');
@@ -520,20 +664,20 @@ let indexBaseUrl = '';
             thumbWrap.innerHTML = `<div class="brand-thumb-ph">${name.slice(0,1)}</div>`;
         }
 
-        /* ─ 브랜드명 ─ */
         document.getElementById('card-brand-name').textContent = name;
-
-        /* ─ 전화번호 ─ */
-        if (phone) {
-            document.getElementById('card-phone').style.display = 'flex';
-            document.getElementById('card-phone-text').textContent = phone;
-            const btnCall = document.getElementById('btn-call');
-            btnCall.href  = `tel:${phone}`;
-            btnCall.style.display = 'flex';
-            document.getElementById('btn-call-text').textContent = `${phone} 전화 문의`;
+        const creatorEl = document.getElementById('card-creator-name');
+        if (creatorName) {
+            creatorEl.textContent = `크리에이터 · ${creatorName}`;
+        } else {
+            creatorEl.style.display = 'none';
         }
 
-        /* ─ 해시태그 ─ */
+        const priceEl = document.getElementById('card-price-pill');
+        if (priceInfo) {
+            priceEl.style.display = 'inline-block';
+            priceEl.textContent = `💝 직거래 혜택 · ${priceInfo}`;
+        }
+
         const tagRow = document.getElementById('hashtag-row');
         if (keywords) {
             keywords.split(/[,\s]+/)
@@ -548,21 +692,66 @@ let indexBaseUrl = '';
         }
         if (!tagRow.children.length) tagRow.style.display = 'none';
 
-        /* ─ 설명 텍스트 ─ */
-        document.getElementById('card-desc').textContent =
-            `${name}의 가맹 창업 정보를 지금 확인하세요.\n📅 IFS 2026 박람회 공식 참여 브랜드입니다.`;
+        document.getElementById('card-desc').textContent = descText;
 
-        /* ─ URL 미리보기 ─ */
+        // 쇼핑몰 & 홈페이지 직거래 버튼
+        const btnShop = document.getElementById('btn-shop-direct');
+        const btnHome = document.getElementById('btn-homepage-direct');
+        const primaryCommerceUrl = shopUrl || targetLink;
+        if (primaryCommerceUrl) {
+            btnShop.href = primaryCommerceUrl;
+            btnShop.style.display = 'flex';
+            document.getElementById('btn-shop-direct-text').textContent =
+                shopUrl ? '내 쇼핑몰에서 직거래 구매하기' : '직거래 판매처 바로가기';
+        }
+        if (targetLink && shopUrl && targetLink !== shopUrl) {
+            btnHome.href = targetLink;
+            btnHome.style.display = 'flex';
+        }
+        if (!primaryCommerceUrl) {
+            document.getElementById('commerce-section-label').style.display = 'none';
+        }
+
+        // SNS 연동 버튼 렌더링
+        const snsDefs = [
+            { key: 'sns_instagram', label: 'Instagram', icon: 'fa-brands fa-instagram', color: '#e11d48', bg: '#fff1f2', border: '#fecdd3' },
+            { key: 'sns_youtube',   label: 'YouTube',   icon: 'fa-brands fa-youtube',   color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
+            { key: 'sns_blog',      label: '블로그·Threads', icon: 'fa-solid fa-pen-nib', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
+            { key: 'sns_kakao',     label: '오픈카톡·문의', icon: 'fa-solid fa-comment-dots', color: '#ca8a04', bg: '#fefce8', border: '#fde047' }
+        ].filter(d => poster[d.key] && String(poster[d.key]).trim());
+
+        if (snsDefs.length > 0) {
+            const snsWrap = document.getElementById('sns-section-wrap');
+            const snsGrid = document.getElementById('sns-links-grid');
+            snsWrap.style.display = 'block';
+            snsGrid.innerHTML = snsDefs.map(d => `
+                <a href="${String(poster[d.key]).trim().replace(/"/g, '&quot;')}" target="_blank" rel="noopener"
+                   class="sns-chip" style="background:${d.bg};border-color:${d.border};color:${d.color};">
+                    <i class="${d.icon}" style="font-size:16px;"></i>
+                    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.label}</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:auto;font-size:10px;opacity:.65;"></i>
+                </a>
+            `).join('');
+        }
+
+        if (phone) {
+            const btnCall = document.getElementById('btn-call');
+            btnCall.href  = `tel:${phone}`;
+            btnCall.style.display = 'flex';
+            document.getElementById('btn-call-text').textContent = `${phone} 직거래 전화 문의`;
+        }
+
+        const hasFranchise = !!(poster.franchise_csv && String(poster.franchise_csv).trim());
+        const hasStore = !!(poster.store_info_url && String(poster.store_info_url).trim());
+        if (hasFranchise || hasStore) {
+            document.getElementById('franchise-store-grid').style.display = 'grid';
+        }
+
         document.getElementById('url-preview-text').textContent = sharePageUrl;
-
-        /* ─ 버튼 링크 ─ */
-        document.getElementById('btn-enter').href   = `${indexBaseUrl}?poster_id=${brandId}`;
-        document.getElementById('btn-consult').href = `${indexBaseUrl}?poster_id=${brandId}`;
+        document.getElementById('btn-enter').href   = `${indexBaseUrl}?poster_id=${encodeURIComponent(poster.id || '')}`;
+        document.getElementById('btn-consult').href = `${indexBaseUrl}?open_studio=1`;
         document.getElementById('footer-link').href  = indexBaseUrl;
 
-        /* ─ 초기화 완료 ─ */
-
-        /* ─ 화면 전환 ─ */
         document.getElementById('loading-screen').style.display = 'none';
         document.getElementById('brand-card').style.display     = 'flex';
 
@@ -572,9 +761,6 @@ let indexBaseUrl = '';
     }
 })();
 
-/* ===================================================
-   가맹/매장 이동
-=================================================== */
 function openFranchise() {
     if (!posterData) return;
     window.location.href = `${indexBaseUrl}?poster_id=${posterData.id}&open=franchise`;
@@ -584,76 +770,51 @@ function openStore() {
     window.location.href = `${indexBaseUrl}?poster_id=${posterData.id}&open=store`;
 }
 
-/* ===================================================
-   카카오톡 공유: Kakao SDK 사용 (없으면 폴백)
-=================================================== */
 async function shareKakao() {
     if (!sharePageUrl || !posterData) return;
-    const name = posterData.brand_name || '브랜드';
+    const name = posterData.brand_name || '직거래 아이템';
     const imgUrl = posterData.image_url || '';
+    const desc = posterData.item_summary || `${name}의 쇼핑몰과 SNS를 한 번에 확인하세요!`;
 
-    // 카카오 SDK 초기화된 경우
     if (window.Kakao && window.Kakao.isInitialized()) {
-        const img = imgUrl && imgUrl.startsWith('http') ? imgUrl : 'https://placehold.co/800x400/6366f1/ffffff?text=' + encodeURIComponent(name);
+        const img = imgUrl && imgUrl.startsWith('http') ? imgUrl : 'https://placehold.co/800x400/ea580c/ffffff?text=' + encodeURIComponent(name);
         window.Kakao.Share.sendDefault({
             objectType: 'feed',
             content: {
-                title: `IFS 2026 박람회 참여 업체 - ${name}`,
-                description: `${name}의 가맹 창업 정보를 확인해보세요!`,
+                title: `[홍보야 직거래] ${name}`,
+                description: desc,
                 imageUrl: img,
                 link: { mobileWebUrl: sharePageUrl, webUrl: sharePageUrl }
             },
             buttons: [{
-                title: '브랜드 정보 보기',
+                title: '직거래 쇼핑몰 · SNS 보기',
                 link: { mobileWebUrl: sharePageUrl, webUrl: sharePageUrl }
             }]
         });
         return;
     }
 
-    // 1) 링크 복사
-    try {
-        await navigator.clipboard.writeText(sharePageUrl);
-    } catch(e) {
-        const ta = document.createElement('textarea');
-        ta.value = sharePageUrl; ta.style.cssText = 'position:fixed;opacity:0;';
-        document.body.appendChild(ta); ta.select();
-        document.execCommand('copy'); document.body.removeChild(ta);
-    }
-    // 2) 안내 박스 표시
+    await copyLink();
     const guide = document.getElementById('kakao-guide');
     if (guide) guide.style.display = 'block';
-    showToast('📋 링크 복사 완료! 카카오톡에 붙여넣기 하세요.');
-    // 3) 모바일: 카카오톡 앱 열기 시도
-    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-    if (isMobile) {
-        setTimeout(() => { window.location.href = 'kakaotalk://launch'; }, 400);
-    }
 }
 
-/* ===================================================
-   네이티브 공유
-=================================================== */
 async function shareNative() {
     if (!sharePageUrl || !posterData) return;
-    
     if (navigator.share) {
         try {
-            const name = posterData.brand_name || '브랜드';
+            const name = posterData.brand_name || '직거래 아이템';
             await navigator.share({
-                title: `IFS 2026 박람회 참여 업체 - ${name}`,
-                text: `${name}의 가맹 창업 정보를 확인해보세요!`,
+                title: `[홍보야 직거래] ${name}`,
+                text: posterData.item_summary || `${name}의 쇼핑몰과 SNS 직거래 링크입니다.`,
                 url: sharePageUrl
             });
-        } catch(err) { /* 무시 */ }
+        } catch(err) {}
     } else {
-        copyLink(); // 지원 안 하면 링크 복사로 폴백
+        copyLink();
     }
 }
 
-/* ===================================================
-   링크 복사
-=================================================== */
 async function copyLink() {
     try {
         await navigator.clipboard.writeText(sharePageUrl);
@@ -666,12 +827,9 @@ async function copyLink() {
         document.execCommand('copy');
         document.body.removeChild(ta);
     }
-    showToast('✅ 링크가 복사되었습니다! 카카오톡이나 SNS에 붙여넣기 하세요.');
+    showToast('✅ 직거래 홍보 링크가 복사되었습니다! SNS에 붙여넣어 공유하세요.');
 }
 
-/* ===================================================
-   헬퍼
-=================================================== */
 function showToast(msg) {
     const t = document.getElementById('share-toast');
     t.textContent = msg;
@@ -691,7 +849,7 @@ function setMeta(id, value) {
 }
 
 function placeholderHTML(name) {
-    return `<div class="poster-img-placeholder"><span>${(name||'브').slice(0,2)}</span></div>`;
+    return `<div class="poster-img-placeholder"><span>${(name||'홍').slice(0,2)}</span></div>`;
 }
 </script>
 </body>
