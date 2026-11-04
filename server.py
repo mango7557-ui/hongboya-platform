@@ -4,6 +4,7 @@ import json
 import mimetypes
 import sqlite3
 import uuid
+import mini_accounts
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -14,7 +15,7 @@ TABLES = {
     'poster_settings', 'site_config', 'chatbot_data', 'consultation_requests',
     'franchise_store_rows', 'banners', 'events', 'member_registrations',
 }
-PUBLIC_FILES = {p.name for p in ROOT.glob('*.html')} | {'sw.js', 'web-preview.js'}
+PUBLIC_FILES = {p.name for p in ROOT.glob('*.html')} | {'sw.js', 'web-preview.js', 'mini.js', 'mini.css'}
 
 
 def connect(database):
@@ -33,6 +34,9 @@ def make_handler(database):
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.send_header('Content-Length', str(len(payload)))
             self.send_header('Cache-Control', 'no-store')
+            if getattr(self, 'session_cookie', None):
+                self.send_header('Set-Cookie', self.session_cookie)
+                self.session_cookie = None
             self.end_headers()
             self.wfile.write(payload)
 
@@ -119,6 +123,8 @@ def make_handler(database):
             try:
                 url = urlsplit(self.path)
                 path = unquote(url.path)
+                if path.startswith('/api/mini/'):
+                    return mini_accounts.handle(self, path, database)
                 if path.startswith('/tables/'):
                     return self.handle_api(path, parse_qs(url.query))
                 if self.command not in ('GET', 'HEAD'):
