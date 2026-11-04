@@ -49,5 +49,26 @@
  $('menu-toggle').addEventListener('click',()=>{const expanded=$('menu-toggle').getAttribute('aria-expanded')==='true';$('menu-toggle').setAttribute('aria-expanded',String(!expanded));$('menu-toggle').setAttribute('aria-label',expanded?'메뉴 열기':'메뉴 닫기');$('mobile-menu').hidden=expanded;});
  $('mobile-menu').addEventListener('click',e=>{if(e.target.closest('a')){$('mobile-menu').hidden=true;$('menu-toggle').setAttribute('aria-expanded','false');$('menu-toggle').setAttribute('aria-label','메뉴 열기');}});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('mobile-menu').hidden=true;$('menu-toggle').setAttribute('aria-expanded','false');}});
+ function applyTheme(theme){
+  const isDark=theme==='dark';
+  document.documentElement.dataset.theme=isDark?'dark':'light';
+  const meta=document.querySelector('meta[name="theme-color"]');
+  if(meta)meta.setAttribute('content',isDark?'#121614':'#fbf9f5');
+  const btn=$('theme-toggle');
+  if(btn){
+   btn.setAttribute('aria-pressed',String(isDark));
+   btn.setAttribute('aria-label',isDark?'라이트모드로 전환':'다크모드로 전환');
+   const icon=btn.querySelector('.theme-icon');
+   const label=btn.querySelector('.theme-label');
+   if(icon)icon.textContent=isDark?'☀️':'🌙';
+   if(label)label.textContent=isDark?'라이트':'다크';
+  }
+ }
+ applyTheme(document.documentElement.dataset.theme||'light');
+ $('theme-toggle')?.addEventListener('click',()=>{
+  const next=document.documentElement.dataset.theme==='dark'?'light':'dark';
+  try{localStorage.setItem('hongboya-theme',next);}catch(e){}
+  applyTheme(next);
+ });
  render();
 })();

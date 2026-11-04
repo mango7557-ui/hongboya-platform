@@ -108,10 +108,23 @@
  async function native(url,p){if(!navigator.share)return copy(url);try{await navigator.share({title:p.name+' · 홍보야',text:p.bio.slice(0,120),url});}catch(e){if(e.name!=='AbortError')throw e;}}
  function backup(){const blob=new Blob([JSON.stringify(normalize(profile),null,2)],{type:'application/json'}),a=element('a');a.href=URL.createObjectURL(blob);a.download='hongboya-mini-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
  async function publicPage(p){publicProfile=normalize(p);show('public-view');render(publicProfile,$('public-home'));document.title=publicProfile.name+' · 홍보야 미니홈피';}
- const example={...blank(),name:'초록의 작은 농장',bio:'정성껏 기른 제철 먹거리.\n땅에서 시작된 이야기를 당신의 식탁까지 전합니다.\n이 페이지는 미니홈피 디자인 예시입니다.',role:'producer',theme:'forest',region:'전남 · 예시',links:[],products:[]};
- document.addEventListener('click',async e=>{
-   const b=e.target.closest('[data-action]');if(!b)return;
-   if(!ready){toast('저장 방식을 확인하고 있어요. 잠시 후 다시 눌러주세요.');return;}
+  const example={...blank(),name:'초록의 작은 농장',bio:'정성껏 기른 제철 먹거리.\n땅에서 시작된 이야기를 당신의 식탁까지 전합니다.\n이 페이지는 미니홈피 디자인 예시입니다.',role:'producer',theme:'forest',region:'전남 · 예시',links:[],products:[]};
+  function syncThemeButton(){
+    const isDark=document.documentElement?.dataset?.theme==='dark';
+    const btn=$('mini-theme-toggle');
+    if(btn){btn.textContent=isDark?'☀️ 라이트':'🌙 다크';btn.setAttribute?.('aria-pressed',String(isDark));}
+  }
+  syncThemeButton();
+  document.addEventListener('click',async e=>{
+    const b=e.target.closest('[data-action]');if(!b)return;
+    if(b.dataset.action==='theme-toggle'){
+      const next=document.documentElement.dataset.theme==='dark'?'light':'dark';
+      document.documentElement.dataset.theme=next;
+      try{localStorage.setItem('hongboya-theme',next);}catch(err){}
+      syncThemeButton();
+      return;
+    }
+    if(!ready){toast('저장 방식을 확인하고 있어요. 잠시 후 다시 눌러주세요.');return;}
    try{switch(b.dataset.action){
      case 'start':openJoin();break;case 'dashboard':await dashboard();break;
      case 'close':b.closest('dialog').close();break;case 'login-toggle':openJoin(!login);break;

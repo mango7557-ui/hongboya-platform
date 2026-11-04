@@ -5,10 +5,19 @@
 <title>홍보야 — 나의 작은 가게, 세상과 연결되다</title>
 <meta name="description" content="생산자부터 로컬 크리에이터까지. 나의 미니홈피, 미니샵, 모든 SNS를 하나의 홍보야 링크로.">
 <meta property="og:title" content="홍보야 · 나의 미니홈피 & 미니샵"><meta property="og:description" content="직접 만든 가치, 직접 전하는 이야기. 크리에이터의 쇼핑몰과 SNS를 만나보세요.">
+<script>
+(() => {
+  try {
+    const saved = localStorage.getItem('hongboya-theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme = saved === 'dark' || saved === 'light' ? saved : (prefersDark ? 'dark' : 'light');
+  } catch (e) {}
+})();
+</script>
 <link rel="stylesheet" href="mini.css"><script src="mini.js" defer></script>
 </head>
 <body>
-<header class="top"><a class="logo" href="mini.html">홍보야<span>●</span></a><nav><a href="index.html">아이템 탐색</a><button data-action="dashboard">내 스튜디오</button><button class="primary" data-action="start">미니홈피 만들기 ↗</button></nav></header>
+<header class="top"><a class="logo" href="index.html">홍보야<span>●</span></a><nav><a href="index.html">메인 홈</a><button type="button" id="mini-theme-toggle" data-action="theme-toggle" aria-label="다크모드 전환">🌙 다크</button><button data-action="dashboard">내 스튜디오</button><button class="primary" data-action="start">미니홈피 만들기 ↗</button></nav></header>
 <main id="landing" class="wrap">
  <section class="hero"><div><p class="eyebrow">YOUR STORY. YOUR SHOP. YOUR LINK.</p><h1>내가 만든 가치,<br>나만의 작은 가게로.<span>홍보는 내가, 연결은 홍보야.</span></h1><p class="lead">정성껏 기른 농산물부터 손으로 만든 물건,<br>나만의 콘텐츠와 동네 이야기까지.<br>미니홈피에 담고, 링크 하나로 세상에 전하세요.</p><div class="actions"><button class="primary large" data-action="start">내 미니홈피 · 미니샵 만들기 ↗</button><button data-action="example">미니홈피 구경하기 →</button></div><p class="muted">쇼핑몰 · SNS · 상품 · 문의 링크를 한곳에</p></div><div class="hero-art"><div class="orbit">Made by you,<br>shared with everyone.</div><div class="sample-phone"><div class="sample-cover">🌿</div><span class="pill">생산자 · 홍보야 예시</span><h2>초록의 작은 농장</h2><p>땅에서 시작된 이야기를<br>당신의 식탁까지 전합니다.</p><div class="sample-link">나의 쇼핑몰 방문하기 ↗</div><div class="sample-products"><span>🍅<small>제철 토마토</small></span><span>🥬<small>오늘의 채소</small></span></div><p class="muted">Instagram · Blog · Kakao</p></div><div class="floating">↗ 링크 하나로 나의 모든 채널을</div></div></section>
  <section class="roles"><article><b>🌾 생산자</b><p>내가 기른 먹거리와<br>산지의 이야기를 직접.</p></article><article><b>🛠 제조사 · 메이커</b><p>작업실의 정성과<br>직접 만든 제품을 소개.</p></article><article><b>✦ 크리에이티브</b><p>디자인, 강의, 디지털 콘텐츠.<br>보이지 않는 가치도 판매.</p></article><article><b>📍 로컬 크리에이터</b><p>우리 동네의 특별함을<br>나만의 브랜드로 연결.</p></article></section>
