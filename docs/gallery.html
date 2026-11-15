@@ -4668,6 +4668,11 @@
 
         async function submitConsultation(e) {
             e.preventDefault(); // 폼 기본 제출 방지 (새로고침 방지)
+
+            if (window.hongboyaServerAvailable && !(await window.hongboyaServerAvailable)) {
+                alert('현재 사이트에서는 상담 신청을 전달할 수 없습니다. 온라인 상담 서버 연결 후 이용해 주세요.');
+                return;
+            }
             
             const submitBtn = document.getElementById('cs-submit-btn');
             submitBtn.innerText = "제출 중...";
@@ -4693,13 +4698,14 @@
                     alert('✅ 상담 신청이 성공적으로 접수되었습니다.\n빠른 시일 내에 연락드리겠습니다.');
                     closeConsultationModal();
                 } else {
-                    alert('❌ 상담 신청에 실패했습니다. 다시 시도해 주세요.');
+                    const result = await response.json().catch(() => ({}));
+                    alert(result.error || '❌ 상담 신청에 실패했습니다. 다시 시도해 주세요.');
                 }
             } catch (error) {
                 console.error('제출 에러:', error);
                 alert('❌ 네트워크 오류가 발생했습니다.');
             } finally {
-                submitBtn.innerText = "상담 신청하기";
+                submitBtn.innerText = "직거래 문의 접수하기";
                 submitBtn.disabled = false;
             }
         }

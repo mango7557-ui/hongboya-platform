@@ -20,7 +20,7 @@ self.addEventListener('message', e => {
             tag: 'new-consult',          // 같은 tag면 덮어쓰기 (중복 방지)
             renotify: true,
             vibrate: [200, 100, 200],
-            data: { url: self.location.origin + '/admin.html' },
+            data: { url: new URL('admin.html', self.registration.scope).href },
             actions: [
                 { action: 'open',    title: '📋 확인하기' },
                 { action: 'dismiss', title: '닫기' }
@@ -33,7 +33,7 @@ self.addEventListener('message', e => {
 self.addEventListener('notificationclick', e => {
     e.notification.close();
     if (e.action === 'dismiss') return;
-    const targetUrl = (e.notification.data && e.notification.data.url) || '/admin.html';
+    const targetUrl = (e.notification.data && e.notification.data.url) || new URL('admin.html', self.registration.scope).href;
     e.waitUntil(
         self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clients => {
             for (const c of clients) {

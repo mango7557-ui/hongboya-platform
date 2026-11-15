@@ -10,7 +10,7 @@
             price_info: '24,900원 · 산지 무료배송',
             item_summary: '제초제 없이 키운 서귀포 노지감귤을 수확 당일 농장에서 바로 보내드립니다. 중간 유통 마진 없는 농가 직거래가로 만나보세요.',
             image_url: 'https://images.unsplash.com/photo-1557800636-894a64c1696f?auto=format&fit=crop&w=900&q=80',
-            phone_number: '010-3842-7788',
+            phone_number: '',
             shop_url: 'https://smartstore.naver.com/',
             target_link: 'https://smartstore.naver.com/',
             sns_instagram: 'https://instagram.com/',
@@ -31,7 +31,7 @@
             price_info: '58,000원 · 무료 이니셜 각인',
             item_summary: '이탈리아 베지터블 통가죽을 재단부터 손바느질까지 직접 제작하는 성수동 가죽공방입니다. 공장 직영가로 주문제작합니다.',
             image_url: 'https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=900&q=80',
-            phone_number: '010-5591-2048',
+            phone_number: '',
             shop_url: 'https://smartstore.naver.com/',
             target_link: 'https://smartstore.naver.com/',
             sns_instagram: 'https://instagram.com/',
@@ -52,7 +52,7 @@
             price_info: '39,000원 · 결제 즉시 다운로드 + 1:1 피드백',
             item_summary: '상세페이지 기획안, 인스타 릴스 대본 50선, 미리캔버스·피그마 템플릿까지 크리에이터가 직접 만든 무형 디지털 콘텐츠입니다.',
             image_url: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=80',
-            phone_number: '010-7210-9034',
+            phone_number: '',
             shop_url: 'https://marpple.shop/',
             target_link: 'https://notion.so/',
             sns_instagram: 'https://instagram.com/',
@@ -73,7 +73,7 @@
             price_info: '22,000원 · 강릉 로컬 스토리북 동봉',
             item_summary: '강릉 로컬 방앗간 참깨·흑임자와 스페셜티 원두를 블렌딩한 로컬 크리에이터 시그니처 커피입니다. 카페 납품 및 개인 직거래 환영.',
             image_url: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80',
-            phone_number: '010-9142-6612',
+            phone_number: '',
             shop_url: 'https://smartstore.naver.com/',
             target_link: 'https://instagram.com/',
             sns_instagram: 'https://instagram.com/',
@@ -94,7 +94,7 @@
             price_info: '29,500원 · 농장 직송 무료배송',
             item_summary: '일교차 큰 안동 고랭지에서 키운 아삭한 꿀사과입니다. 공판장을 거치지 않고 과수원에서 바로 포장해 발송합니다.',
             image_url: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=900&q=80',
-            phone_number: '010-4402-1198',
+            phone_number: '',
             shop_url: 'https://smartstore.naver.com/',
             target_link: 'https://smartstore.naver.com/',
             sns_instagram: 'https://instagram.com/',
@@ -115,7 +115,7 @@
             price_info: '46,000원 · 공방 직거래 파손보증',
             item_summary: '1250도 가마에서 구워낸 이천 수제 백자 식기입니다. 카페 로고 각인 대량 제작 및 집들이 선물 직거래 주문을 받습니다.',
             image_url: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=900&q=80',
-            phone_number: '010-6325-8821',
+            phone_number: '',
             shop_url: 'https://smartstore.naver.com/',
             target_link: 'https://smartstore.naver.com/',
             sns_instagram: 'https://instagram.com/',
@@ -129,6 +129,16 @@
         }
     ];
 
+    // These are illustrative records, not real sellers. Never expose their invented
+    // contact details or generic destination links as actionable information.
+    const exampleIds = new Set(DEFAULT_POSTERS.map(item => item.id));
+    const sanitizeExample = item => {
+        if (!exampleIds.has(item.id)) return item;
+        const clean = { ...item, is_example: true };
+        for (const key of ['phone_number', 'shop_url', 'target_link', 'sns_instagram', 'sns_youtube', 'sns_blog', 'sns_kakao']) clean[key] = '';
+        return clean;
+    };
+    DEFAULT_POSTERS.forEach((item, index) => { DEFAULT_POSTERS[index] = sanitizeExample(item); });
     window.HONGBOYA_DEFAULT_POSTERS = DEFAULT_POSTERS;
 
     // 공유 링크용 Base64URL 직렬화 헬퍼 (서버 없이도 타인에게 링크만으로 전체 정보 전달)
@@ -203,6 +213,7 @@
             db.poster_settings = DEFAULT_POSTERS.map(item => ({ ...item }));
             localStorage.setItem(storageKey, JSON.stringify(db));
         }
+        db.poster_settings = db.poster_settings.map(sanitizeExample);
         return db;
     };
 
@@ -220,6 +231,10 @@
             const db = loadDb();
             const rows = db[table] || [];
             const method = (options.method || (input instanceof Request ? input.method : 'GET')).toUpperCase();
+            // A browser-local preview cannot deliver a request to an operator.
+            if (table === 'consultation_requests' && method !== 'GET') {
+                return reply({ error: '현재 사이트에서는 상담 신청을 전달할 수 없습니다. 온라인 상담 서버 연결 후 이용해 주세요.' }, 503);
+            }
             const index = rows.findIndex(row => row.id === id);
             if (method === 'GET') {
                 if (id) return index < 0 ? reply({ error: 'Record not found' }, 404) : reply(rows[index]);
