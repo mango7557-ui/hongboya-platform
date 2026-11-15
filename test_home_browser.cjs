@@ -25,8 +25,8 @@ const base=process.argv[2] || 'http://127.0.0.1:8012/';
     const afterTheme=await page.evaluate(()=>document.documentElement.dataset.theme);
     assert.notEqual(beforeTheme,afterTheme);
     if(width<760){await page.locator('#menu-toggle').click();assert.equal(await page.locator('#mobile-menu').isVisible(),true);await page.locator('#mobile-menu a').first().click();assert.equal(await page.locator('#mobile-menu').isVisible(),false);}
-    await page.locator('.hero-buttons a').first().click();await page.locator('#onboarding').waitFor({state:'visible'});
-    assert.equal(await page.evaluate(()=>document.documentElement.dataset.theme),afterTheme);
+     await page.locator('.hero-buttons a').first().click();await page.locator('#creator-signup').waitFor({state:'visible'});
+     assert.equal(await page.evaluate(()=>localStorage.getItem('hongboya-theme')),afterTheme);
     console.log(`PASS: ${width}px layout, dark mode toggle+persist, filters, search, empty state, independent preview, FAQ, navigation, create CTA`);
   }
   for(const [width,name] of [[1440,'desktop'],[390,'mobile']]){await page.setViewportSize({width,height:1000});await page.goto(base);await page.evaluate(()=>document.fonts.ready);await page.locator('.hero-photo img').evaluate(img=>img.decode().catch(()=>{}));if(process.env.HOME_SCREENSHOT_DIR)await page.screenshot({path:process.env.HOME_SCREENSHOT_DIR+`/hongboya-home-${name}.png`,fullPage:true});}

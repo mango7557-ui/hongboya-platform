@@ -13,15 +13,18 @@
     <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
             integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4"
             crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="design-system.css">
+    <link rel="stylesheet" href="admin-workspace.css">
+    <script src="admin-design.js" defer></script>
 </head>
-<body class="bg-gray-100 font-sans antialiased text-[1.3em]">
+<body class="admin-page bg-gray-100 font-sans antialiased">
     <!-- 스케일 업을 위해 wrapper 추가 -->
-    <div style="zoom: 1.3; transform-origin: top center;">
+    <div>
         <div class="min-h-screen flex flex-col">
         <!-- Navbar -->
         <nav id="admin-navbar" class="bg-gray-900 text-white p-4 shadow-md flex justify-between items-center">
             <div class="text-xl font-bold tracking-tight">
-                <i class="fa-solid fa-seedling text-emerald-400 mr-2"></i> 홍보야 셀프 홍보 · 직거래 통합 관리자
+                WORKSPACE <span style="color:#9aa48e;margin:0 12px">/</span> 홍보야 운영 스튜디오
             </div>
             <a href="index.html" class="text-gray-300 hover:text-white transition-colors text-sm font-medium">
                 <i class="fa-solid fa-arrow-right-from-bracket mr-1"></i> 직거래 메인으로 돌아가기
@@ -53,6 +56,8 @@
 
         <!-- ══ 카테고리 탭 네비게이션 ══ -->
         <div id="admin-tab-nav" style="background:#fff; border-bottom: 2.5px solid #e5e7eb; position:sticky; top:0; z-index:40; box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+            <a class="hb-brand admin-rail-brand" href="index.html">홍보야<span>✳</span></a>
+            <p class="admin-rail-label">CREATOR MANAGEMENT</p>
             <div class="max-w-7xl mx-auto px-4 md:px-8">
                 <div class="flex items-center gap-1 overflow-x-auto" style="scrollbar-width:none; -ms-overflow-style:none;">
 
@@ -85,7 +90,7 @@
                         class="admin-tab-btn flex items-center gap-2 px-5 py-4 font-bold text-sm whitespace-nowrap border-b-[3px] transition-all duration-200"
                         style="border-color:transparent; color:#6b7280; background:transparent;">
                         <i class="fa-solid fa-layer-group"></i>
-                        <span>브랜드 관리</span>
+                        <span>브랜드 · 아이템</span>
                     </button>
 
                 </div>
@@ -94,6 +99,9 @@
 
         <!-- Main Content -->
         <main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full space-y-8">
+            <div class="admin-welcome"><div><span class="hb-kicker">A GOOD DAY TO GROW</span><h1>작은 브랜드의 성장을 함께.</h1><p>상담부터 콘텐츠까지, 오늘의 운영을 한눈에 관리하세요.</p></div><span id="admin-mode-label" class="admin-mode">데이터 관리</span></div>
+            <div class="admin-section-search"><label for="admin-section-query" class="sr-only">현재 탭의 설정 검색</label><input id="admin-section-query" type="search" placeholder="현재 탭에서 필요한 설정을 찾아보세요" maxlength="80"><span id="admin-section-count" aria-live="polite"></span></div>
+            <p id="admin-search-empty" class="admin-search-empty" hidden>일치하는 설정이 없어요. 다른 검색어를 입력해 주세요.</p>
 
             <!-- 탭별 페이지 타이틀 배너 -->
             <div id="tab-title-banner" class="rounded-2xl px-6 py-4 flex items-center gap-4 shadow-sm" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);display:none">
@@ -685,7 +693,7 @@
             </div>
 
             <!-- ══ 메인 AI 컨설팅 챗봇 안내 카드 ══ -->
-            <div class="bg-white rounded-xl shadow-md border border-indigo-200 overflow-hidden mb-4" data-tab="2">
+            <div class="bg-white rounded-xl shadow-md border border-indigo-200 overflow-hidden mb-4" data-tab="2" id="admin-assistant-section">
                 <div class="p-5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white flex justify-between items-start flex-wrap gap-3">
                     <div>
                         <h2 class="text-lg font-bold flex items-center gap-2">
@@ -693,7 +701,7 @@
                         </h2>
                         <p class="text-indigo-200 text-xs mt-0.5">메인 화면 우하단 플로팅 버튼 — 전체 브랜드 데이터 통합 컨설팅</p>
                     </div>
-                    <span class="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full">✅ 운영 중</span>
+                    <a href="chatbot.html" class="hb-button">상담 화면 확인 ↗</a>
                 </div>
                 <div class="p-5 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <!-- 기능 1 -->
@@ -1397,7 +1405,7 @@
                         <!-- 브랜드명 -->
                         <div class="md:col-span-1">
                             <label class="block text-xs font-semibold text-gray-700 mb-1">브랜드명 <span class="text-red-400">*</span></label>
-                            <input type="text" id="new-poster-brand" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="예: 자담치킨">
+                            <input type="text" id="new-poster-brand" required maxlength="80" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="예: 초록농장 제철 감귤">
                         </div>
                         <!-- 카테고리 -->
                         <div class="md:col-span-1">
@@ -1467,7 +1475,7 @@
                         <!-- 노출 순서 -->
                         <div class="md:col-span-1">
                             <label class="block text-xs font-semibold text-gray-700 mb-1">노출 순서</label>
-                            <input type="number" id="new-poster-order" value="10" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                            <input type="number" id="new-poster-order" value="10" min="0" step="1" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
                         </div>
                         <!-- 추가 버튼 -->
                         <div class="md:col-span-1">
@@ -3836,10 +3844,11 @@ ${existingContext}
 
             try {
                 // 이미 stats에서 로드된 데이터가 있으면 재사용 (API 중복 호출 방지)
-                if (!allConsultData || allConsultData.length === 0) {
+                {
                     const response = await fetch('tables/consultation_requests?limit=500');
                     const result = await response.json();
-                    allConsultData = (result.data || []).sort((a, b) => b.created_at - a.created_at);
+                    if (!response.ok) throw Error('상담 목록을 불러오지 못했습니다.');
+                    allConsultData = (result.data || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
                 }
                 if (loading) loading.classList.add('hidden');
 
@@ -4703,6 +4712,13 @@ ${existingContext}
 
         // 더보기 설정 저장
         async function saveLoadMoreConfig() {
+            for (const id of ['lm-pc-first','lm-pc-more','lm-tablet-first','lm-tablet-more','lm-mobile-first','lm-mobile-more']) {
+                const field = document.getElementById(id);
+                if (!field.value || !Number.isInteger(Number(field.value)) || Number(field.value) < 1 || Number(field.value) > 50) {
+                    field.setCustomValidity('1부터 50까지의 정수를 입력해 주세요.'); field.reportValidity();
+                    field.addEventListener('input', () => field.setCustomValidity(''), {once:true}); return;
+                }
+            }
             const saveBtn = document.querySelector('[onclick="saveLoadMoreConfig()"]');
             if (saveBtn) { saveBtn.disabled = true; saveBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-1"></i> 저장 중...'; }
 
@@ -6607,6 +6623,7 @@ ${storeInfo ? `\n【매장 현황】\n${storeInfo}` : ''}
                 btn.style.borderColor = 'transparent';
                 btn.style.color = '#6b7280';
                 btn.style.background = 'transparent';
+                btn.setAttribute('aria-selected', 'false');
             });
 
             // 선택된 탭 버튼 활성화
@@ -6615,6 +6632,7 @@ ${storeInfo ? `\n【매장 현황】\n${storeInfo}` : ''}
             if (activeBtn && tab) {
                 activeBtn.style.borderColor = tab.color;
                 activeBtn.style.color = tab.color;
+                activeBtn.setAttribute('aria-selected', 'true');
             }
 
             // 섹션 표시/숨김
@@ -6697,6 +6715,7 @@ ${storeInfo ? `\n【매장 현황】\n${storeInfo}` : ''}
                 const sizKB  = Math.round(blob.size / 1024);
                 const dataUrl = await uploadBlobToServer(blob, file.name);
                 urlInput.value = dataUrl;
+                urlInput.dispatchEvent(new Event('input', {bubbles:true}));
                 statusText.innerHTML = `<span class="text-green-600 font-bold">✅ 이미지 준비 완료! (${sizKB}KB)</span>`;
             } catch (e) {
                 console.error('Upload Error:', e);
@@ -6791,6 +6810,7 @@ ${storeInfo ? `\n【매장 현황】\n${storeInfo}` : ''}
                     fetch('tables/chatbot_data?limit=500')
                 ]);
 
+                if (!posterRes.ok || !chatbotRes.ok) throw Error('아이템 정보를 불러오지 못했습니다.');
                 const posterResult = await posterRes.json();
                 const chatbotResult = await chatbotRes.json();
                 
@@ -6809,6 +6829,12 @@ ${storeInfo ? `\n【매장 현황】\n${storeInfo}` : ''}
                     }
 
                     adminPostersData = posters;
+                    if (!posters.length) {
+                        const blank = document.createElement('div');
+                        blank.className = 'workspace-help';
+                        blank.textContent = '아직 등록된 아이템이 없어요. 위에서 첫 이미지를 올리고 브랜드의 이야기를 시작해 보세요.';
+                        listContainer.append(blank);
+                    }
 
                     // ── 포스터 카드 분산 렌더링 (한 번에 2개씩, rAF로 메인스레드 해방) ──
                     const renderPosters = (list, idx) => {
@@ -7503,6 +7529,9 @@ ${storeInfo ? `\n【매장 현황】\n${storeInfo}` : ''}
 
         async function addPoster(e) {
             e.preventDefault();
+            if (!document.getElementById('new-poster-brand').value.trim() || !document.getElementById('new-poster-img').value.trim()) {
+                showToastMsg('활동명과 포스터 이미지를 먼저 준비해 주세요.'); return;
+            }
             const btn = document.getElementById('add-poster-btn');
             btn.disabled = true;
             btn.innerText = "추가 중...";
@@ -7511,7 +7540,7 @@ ${storeInfo ? `\n【매장 현황】\n${storeInfo}` : ''}
                 brand_name: document.getElementById('new-poster-brand').value.trim(),
                 image_url: document.getElementById('new-poster-img').value.trim(),
                 phone_number: document.getElementById('new-poster-phone').value.trim(),
-                order_idx: parseInt(document.getElementById('new-poster-order').value) || 10,
+                order_idx: Number(document.getElementById('new-poster-order').value),
                 target_link: document.getElementById('new-poster-link') ? document.getElementById('new-poster-link').value.trim() : '',
                 category: document.getElementById('new-poster-category') ? document.getElementById('new-poster-category').value : ''
             };
@@ -7523,8 +7552,10 @@ ${storeInfo ? `\n【매장 현황】\n${storeInfo}` : ''}
                     body: JSON.stringify(newPoster)
                 });
                 if (response.ok) {
-                    alert('✅ 새 포스터가 추가되었습니다.');
+                    showToastMsg('✅ 새 아이템이 등록되었습니다.');
                     document.getElementById('add-poster-form').reset();
+                    document.getElementById('new-poster-img').value = '';
+                    document.getElementById('upload-status').textContent = '이미지를 선택하면 자동으로 준비됩니다.';
                     loadIntegratedSettings(); // 렌더링 함수 교체
                 } else {
                     alert('❌ 포스터 추가에 실패했습니다.');

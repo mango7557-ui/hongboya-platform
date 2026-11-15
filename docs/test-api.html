@@ -3,6 +3,7 @@
 <head>
     <script src="./web-preview.js"></script>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gemini API 완전 테스트</title>
 <style>
   body { font-family: sans-serif; background: #f1f5f9; padding: 20px; margin: 0; }
@@ -26,18 +27,19 @@
   .warn { background:#fef9c3; border:1.5px solid #fde047; border-radius:10px; padding:12px 16px; font-size:12px; color:#854d0e; margin-bottom:12px; }
   #log { background:#1e293b; color:#94a3b8; border-radius:10px; padding:12px; font-size:11px; font-family:monospace; margin-top:12px; max-height:160px; overflow-y:auto; white-space:pre-wrap; }
 </style>
+<link rel="stylesheet" href="design-system.css">
 </head>
-<body>
+<body class="utility-page">
+<header class="hb-page-nav"><a class="hb-brand" href="index.html">홍보야<span>✳</span></a><nav><a href="admin.html#tab2">AI 설정으로 돌아가기 ↗</a></nav></header>
 <div class="card">
   <h2>🔑 Gemini API 완전 테스트</h2>
   <p class="sub">v1 / v1beta / v1alpha 모든 API 버전 × 최신 모델 전수 조회</p>
 
   <div class="warn">
-    ⚠️ <b>한국 신규 키 이슈:</b> Google이 2024년 말부터 한국 신규 무료 키에서 gemini-1.5/2.0 계열을 차단하고 있습니다.<br>
-    → <b>gemini-2.5 계열 또는 v1alpha API</b>로 우회 가능합니다. 아래에서 자동으로 찾아드립니다.
+    <b>연결 진단 안내</b><br>모델별 사용 가능 여부는 API 키의 권한·할당량·모델 지원 상태에 따라 달라집니다. 테스트 결과에서 응답과 오류를 확인하세요.
   </div>
 
-  <input type="password" id="apiKey" placeholder="AIza...로 시작하는 API 키" value="" />
+   <label for="apiKey">Gemini API 키</label><input type="password" id="apiKey" placeholder="AIza...로 시작하는 API 키" value="" />
   <button class="btn" id="startBtn" onclick="startTest()">🚀 전체 테스트 시작 (v1 + v1beta + v1alpha)</button>
 
   <div id="result"></div>

@@ -3,6 +3,7 @@
 <head>
     <script src="./web-preview.js"></script>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gemini 모델 확인</title>
 <style>
   body { font-family: sans-serif; padding: 30px; background: #f5f5f5; }
@@ -18,12 +19,14 @@
   .loading { color: #6b7280; }
   pre { background: #1e293b; color: #e2e8f0; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 12px; }
 </style>
+<link rel="stylesheet" href="design-system.css">
 </head>
-<body>
+<body class="utility-page">
+<header class="hb-page-nav"><a class="hb-brand" href="index.html">홍보야<span>✳</span></a><nav><a href="admin.html#tab2">AI 설정으로 돌아가기 ↗</a></nav></header>
 <div class="box">
   <h2>🔍 Gemini API 사용 가능 모델 확인</h2>
   <p style="font-size:13px;color:#6b7280;">API 키를 입력하면 실제로 응답 가능한 모델을 자동으로 확인합니다.</p>
-  <input type="password" id="apiKey" placeholder="AIza...로 시작하는 Gemini API 키" />
+  <label for="apiKey">Gemini API 키</label><input type="password" id="apiKey" placeholder="AIza...로 시작하는 Gemini API 키" />
   <button onclick="checkModels()">모델 확인하기</button>
   <div id="result"></div>
 </div>

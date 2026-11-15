@@ -1024,8 +1024,9 @@
             .feed-item { padding: 20px 24px 0; }
         }
     </style>
+    <link rel="stylesheet" href="design-system.css">
 </head>
-<body>
+<body class="catalog-page">
 
     <!-- 상단 LED 전광판 (기본 숨김, 데이터 있으면 노출) -->
     <div id="global-led-banner" class="w-full bg-gray-900 overflow-hidden hidden relative z-50 shadow-md" style="height: 36px; border-bottom: 1px solid #1f2937;">
@@ -1041,21 +1042,18 @@
         
         <!-- 로고 영역: 좌측 (모바일, 태블릿/PC 모두) -->
         <div class="flex flex-1 justify-center md:justify-start shrink-0 w-full md:w-auto h-full py-1.5 md:py-2">
-            <picture class="h-full w-auto max-w-[320px] md:max-w-[500px] cursor-pointer" onclick="switchTab('home', null)">
-                <source media="(min-width: 768px)" srcset="https://www.genspark.ai/api/files/s/llo22tT0">
-                <img id="header-logo-img" src="https://www.genspark.ai/api/files/s/UetApAd8" alt="홍보야 로고" class="h-full w-full object-contain rounded-xl transition-transform origin-center" onerror="this.onerror=null; this.src='https://www.genspark.ai/api/files/s/UetApAd8'">
-            </picture>
+            <a class="hb-brand" href="index.html">홍보야<span>✳</span></a>
         </div>
 
         <!-- 검색창 및 내정보 아이콘 영역: 우측 배치 -->
         <div class="flex shrink-0 justify-end items-center gap-2 md:gap-3 md:flex-1">
             <!-- 셀프 홍보 & 직거래 링크 만들기 -->
             <button onclick="openCreatorStudioModal()" class="flex bg-gradient-to-r from-hongbo-600 to-orange-500 hover:from-hongbo-700 hover:to-orange-600 text-white rounded-full h-[38px] px-4 md:px-5 items-center justify-center gap-1.5 font-extrabold text-[13px] md:text-[14px] shadow-sm transition-all whitespace-nowrap">
-                <i class="fa-solid fa-wand-magic-sparkles text-yellow-200"></i> 내 아이템 홍보·링크 만들기
+                내 아이템 등록 ↗
             </button>
             <!-- 지도 영역: 태블릿/PC 전용 -->
             <a href="register-bot.html" class="hidden xl:flex bg-hongbo-50 hover:bg-hongbo-100 text-hongbo-700 border border-hongbo-200 rounded-full h-[38px] px-4 items-center justify-center gap-2 font-bold text-[13px] shadow-sm transition-colors whitespace-nowrap">
-                <i class="fa-solid fa-robot text-hongbo-500 text-base"></i> AI 회원가입
+                크리에이터 가입
             </a>
             <button onclick="switchTab('map')" class="hidden lg:flex bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 rounded-full h-[38px] px-4 items-center justify-center gap-2 font-bold text-[13px] shadow-sm transition-colors whitespace-nowrap">
                 <i class="fa-solid fa-map-location-dot text-[#ef4444] text-base"></i> 지도에서 찾기
@@ -1075,6 +1073,7 @@
         </div>
 
     </header>
+    <section class="hb-catalog-intro"><div><span class="hb-kicker">THE CREATOR MARKET</span><h1>만든 사람의 이야기를 만나다.</h1><p>생산자의 정성부터 로컬의 취향까지. 아이템을 발견하고 크리에이터의 판매처로 연결하세요.</p><p>기기 저장 모드의 초기 아이템은 디자인 예시입니다.</p></div><a class="hb-button primary" href="item-register.html">나의 아이템 등록하기 ↗</a></section>
 
     <div id="main-content-wrapper" class="w-full flex flex-row relative px-0 lg:px-4">
         <!-- PC 카테고리 사이드바 (데스크탑에서만 노출) -->
@@ -6048,6 +6047,8 @@
         }
 
         function switchTab(tabId, element) {
+            if (tabId === 'login' || tabId === 'find-password') { location.href = 'mini.html?studio=1'; return; }
+            if (tabId === 'signup' || tabId === 'company-signup') { location.href = 'register-bot.html'; return; }
             // 모든 탭 숨기기
             document.querySelectorAll('.tab-pane').forEach(tab => {
                 tab.classList.remove('active');

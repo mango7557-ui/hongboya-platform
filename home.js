@@ -3,7 +3,7 @@
  const params=new URLSearchParams(location.search);
  // Preserve previously shared item URLs and the original item-registration entry point.
  if(params.has('poster_id')||params.has('brand_id')){location.replace('gallery.html'+location.search+location.hash);return;}
- if(params.get('open_studio')==='1'){location.replace('mini.html?start=1');return;}
+  if(params.get('open_studio')==='1'){location.replace('register-bot.html');return;}
  const photo=(id)=>`https://images.unsplash.com/${id}?auto=format&fit=crop&w=700&q=80`;
  const creators=[
   {id:'farm',role:'producer',label:'생산자',name:'초록의 작은 농장',region:'전남 · 해남',bio:'땅의 시간과 농부의 정성을 담아, 제철의 맛을 전해요.',tags:['제철 농산물','산지 이야기'],image:photo('photo-1542838132-92c53300491e'),theme:'forest',symbol:'🌾'},
@@ -70,5 +70,6 @@
   try{localStorage.setItem('hongboya-theme',next);}catch(e){}
   applyTheme(next);
  });
- render();
+  document.querySelectorAll('a[href="mini.html?start=1"]').forEach(link => { link.href='register-bot.html'; });
+  render();
 })();

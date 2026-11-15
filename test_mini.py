@@ -47,9 +47,11 @@ class MiniAccountsTest(unittest.TestCase):
         self.assertEqual(self.request(self.other, 'me', 'PUT', {'name': 'tampered'})[0], 401)
         profile = me['profile']
         profile['products'] = [{'title': '직접 기른 사과', 'url': 'https://example.com/apple', 'price': '10,000원'}]
+        profile['roomProps'] = ['plant', 'plant', {}, [], None, 'unknown', 'lamp']
         self.assertEqual(self.request(self.owner, 'me', 'PUT', profile)[0], 200)
         status, public = self.request(self.other, 'public/' + account['id'])
         self.assertEqual(public['products'][0]['price'], '10,000원')
+        self.assertEqual(public['roomProps'], ['plant', 'lamp'])
         self.assertNotIn('email', public)
         self.assertNotIn('password', public)
         self.assertEqual(self.request(self.owner, 'logout', 'POST', {})[0], 200)

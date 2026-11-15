@@ -70,7 +70,8 @@ def clean_profile(value):
     result['minime'] = text('minime', 20) if value.get('minime') in ('farmer', 'maker', 'creator', 'barista', 'cat', 'dog') else 'farmer'
     allowed_props = {'box', 'plant', 'basket', 'lamp', 'speaker', 'coffee', 'sign', 'balloon'}
     raw_props = value.get('roomProps', ['box', 'plant', 'sign'])
-    result['roomProps'] = [p for p in (raw_props if isinstance(raw_props, list) else []) if p in allowed_props][:8]
+    result['roomProps'] = list(dict.fromkeys(p for p in (raw_props if isinstance(raw_props, list) else [])
+                                           if isinstance(p, str) and p in allowed_props))[:8]
     raw_guest = value.get('guestbook', [])
     if not isinstance(raw_guest, list) or len(raw_guest) > 12:
         raise ValueError('일촌평은 12개까지 등록할 수 있습니다.')

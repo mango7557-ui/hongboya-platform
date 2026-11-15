@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <meta id="og-title"       property="og:title"       content="홍보야 · 크리에이터 & 생산자 직거래 홍보 링크">
     <meta id="og-description" property="og:description" content="생산자·제조사·크리에이티브·로컬 크리에이터의 쇼핑몰과 SNS를 한 번에 연결하는 셀프 직거래 플랫폼">
@@ -358,8 +358,9 @@
             white-space: nowrap; box-shadow: 0 8px 28px rgba(0,0,0,.35);
         }
     </style>
+    <link rel="stylesheet" href="design-system.css">
 </head>
-<body>
+<body class="share-page">
 
 <div id="loading-screen">
     <div class="spinner"></div>
@@ -376,7 +377,7 @@
                     <i class="fa-solid fa-seedling" style="color:#fde047;font-size:11px;"></i>
                     <span id="hero-type-text">홍보야 직거래 크리에이터</span>
                 </div>
-                <a id="top-create-link" href="index.html?open_studio=1" class="create-own-btn">
+                <a id="top-create-link" href="register-bot.html" class="create-own-btn">
                     <i class="fa-solid fa-plus"></i> 나도 링크 만들기
                 </a>
             </div>
@@ -634,7 +635,7 @@ function inferCreatorType(poster) {
         document.getElementById('page-title').textContent = `${name} · 홍보야 직거래 링크`;
 
         document.getElementById('hero-type-text').textContent = typeMeta.label;
-        document.getElementById('top-create-link').href = `${indexBaseUrl}?open_studio=1`;
+        document.getElementById('top-create-link').href = new URL('register-bot.html', location.href).href;
         document.getElementById('card-category-badge').textContent = poster.category || typeMeta.badge;
 
         if (imgUrl) {
@@ -749,7 +750,7 @@ function inferCreatorType(poster) {
 
         document.getElementById('url-preview-text').textContent = sharePageUrl;
         document.getElementById('btn-enter').href   = `${indexBaseUrl}?poster_id=${encodeURIComponent(poster.id || '')}`;
-        document.getElementById('btn-consult').href = `${indexBaseUrl}?open_studio=1`;
+        document.getElementById('btn-consult').href = new URL('register-bot.html', location.href).href;
         document.getElementById('footer-link').href  = indexBaseUrl;
 
         document.getElementById('loading-screen').style.display = 'none';

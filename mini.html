@@ -15,8 +15,9 @@
 })();
 </script>
 <link rel="stylesheet" href="mini.css"><script src="mini.js" defer></script>
+<link rel="stylesheet" href="design-system.css">
 </head>
-<body>
+<body class="studio-page">
 <header class="top"><a class="logo" href="index.html">홍보야<span>●</span></a><nav><a href="index.html">메인 홈</a><button type="button" id="mini-theme-toggle" data-action="theme-toggle" aria-label="다크모드 전환">🌙 다크</button><button data-action="dashboard">내 스튜디오</button><button class="primary" data-action="start">미니홈피 만들기 ↗</button></nav></header>
 <main id="landing" class="wrap">
  <section class="hero"><div><p class="eyebrow">YOUR STORY. YOUR SHOP. YOUR LINK.</p><h1>내가 만든 가치,<br>나만의 작은 가게로.<span>홍보는 내가, 연결은 홍보야.</span></h1><p class="lead">정성껏 기른 농산물부터 손으로 만든 물건,<br>나만의 콘텐츠와 동네 이야기까지.<br>미니홈피에 담고, 링크 하나로 세상에 전하세요.</p><div class="actions"><button class="primary large" data-action="start">내 미니홈피 · 미니샵 만들기 ↗</button><button data-action="example">미니홈피 구경하기 →</button></div><p class="muted">쇼핑몰 · SNS · 상품 · 문의 링크를 한곳에</p></div><div class="hero-art"><div class="orbit">Made by you,<br>shared with everyone.</div><div class="sample-phone"><div class="sample-cover">🌿</div><span class="pill">생산자 · 홍보야 예시</span><h2>초록의 작은 농장</h2><p>땅에서 시작된 이야기를<br>당신의 식탁까지 전합니다.</p><div class="sample-link">나의 쇼핑몰 방문하기 ↗</div><div class="sample-products"><span>🍅<small>제철 토마토</small></span><span>🥬<small>오늘의 채소</small></span></div><p class="muted">Instagram · Blog · Kakao</p></div><div class="floating">↗ 링크 하나로 나의 모든 채널을</div></div></section>
@@ -25,6 +26,7 @@
  <p id="mode-notice" class="notice" role="status">저장 방식 확인 중…</p>
 </main>
 <section id="studio" class="wrap" hidden><div class="section-head"><div><p class="eyebrow">MY CREATOR STUDIO</p><h1>나만의 미니홈피 스튜디오</h1><p id="save-mode" class="muted"></p></div><div class="actions"><button data-action="logout">로그아웃 / 시작 화면</button><button class="primary" data-action="share">공유 링크 만들기 ↗</button></div></div>
+ <nav class="studio-outline" aria-label="스튜디오 편집 항목"><a href="#profile-form">01 프로필</a><a href="#studio-decoration">02 나의 공간 꾸미기</a><a href="#studio-links">03 쇼핑몰 · SNS</a><a href="#studio-products">04 미니샵 상품</a><a href="#preview">방문자 미리보기 ↗</a></nav>
  <div class="studio-grid"><form id="profile-form" class="panel"><div class="section-head"><h2>프로필 & 테마</h2><span id="save-status" role="status">편집 중</span></div>
  <label>활동명 / 브랜드명<input name="name" maxlength="60" required placeholder="예: 초록의 작은 농장"></label><div class="two"><label>나의 분야<select name="role"><option value="producer">🌾 생산자</option><option value="maker">🛠 제조사 · 메이커</option><option value="creative">✦ 크리에이티브</option><option value="local">📍 로컬 크리에이터</option></select></label><label>활동 지역<input name="region" maxlength="60" placeholder="예: 전남 해남"></label></div>
  <label>나를 소개하는 이야기<textarea name="bio" maxlength="400" rows="3" placeholder="어떤 가치를 만들고 있나요?"></textarea></label>
@@ -66,7 +68,7 @@
   </div>
   <label class="url-sub-label">또는 테마 배경 이미지 주소 직접 입력<input name="coverImage" type="text" placeholder="https://... (선택 · 배경 업로드/프리셋 선택 가능)"></label>
  </div>
- <div class="deco-box">
+  <div class="deco-box" id="studio-decoration">
   <div class="section-head"><h2>🎨 싸이월드 감성 · 미니홈피 & 미니룸 꾸미기</h2><span class="pill">CYWORLD STUDIO</span></div>
   <div class="two">
    <label>나의 포인트 색 (다이어리 스킨)<select name="theme"><option value="coral">코랄 · 따뜻한 시작</option><option value="forest">포레스트 · 자연의 정성</option><option value="violet">바이올렛 · 새로운 영감</option><option value="ocean">오션 · 로컬의 발견</option><option value="amber">선셋 골드 · 풍요로운 수확</option><option value="rose">로즈 베리 · 감성 아틀리에</option></select></label>
@@ -111,8 +113,8 @@
    <div id="guestbook-fields"></div>
   </div>
  </div>
- <div class="section-head"><h2>나의 쇼핑몰 & SNS</h2><button type="button" data-action="add-link">+ 링크 추가</button></div><p class="muted">쇼핑몰, 인스타그램, 유튜브, 블로그, 문의 채널의 주소를 연결하세요.</p><div id="link-fields"></div>
- <div class="section-head"><h2>미니샵 상품</h2><button type="button" data-action="add-product">+ 상품 추가</button></div><p class="muted">상품 버튼은 연결한 판매·예약 페이지로 이동합니다. 결제는 해당 판매처에서 진행돼요.</p><div id="product-fields"></div>
+  <div class="section-head" id="studio-links"><h2>나의 쇼핑몰 & SNS</h2><button type="button" data-action="add-link">+ 링크 추가</button></div><p class="muted">쇼핑몰, 인스타그램, 유튜브, 블로그, 문의 채널의 주소를 연결하세요.</p><div id="link-fields"></div>
+  <div class="section-head" id="studio-products"><h2>미니샵 상품</h2><button type="button" data-action="add-product">+ 상품 추가</button></div><p class="muted">상품 버튼은 연결한 판매·예약 페이지로 이동합니다. 결제는 해당 판매처에서 진행돼요.</p><div id="product-fields"></div>
  <div class="actions"><button class="primary" type="submit">변경 내용 저장</button><button type="button" data-action="backup">백업 다운로드</button><label class="file-button">백업 불러오기<input id="import-file" type="file" accept="application/json" hidden></label></div><p id="form-error" role="alert"></p></form>
  <aside class="preview-column"><div class="section-head"><b>방문자 미리보기</b><span class="pill">LIVE PREVIEW</span></div><div id="preview" class="mini-home"></div></aside></div>
 </section>

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>홍보야 · AI 크리에이터 & 직거래 링크 등록 봇</title>
+    <link rel="icon" type="image/png" href="https://www.genspark.ai/api/files/s/L6fGSb1x">
+    <script src="./web-preview.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        hongbo: {
+                            50:  '#fef2f2',
+                            100: '#fee2e2',
+                            200: '#fecaca',
+                            300: '#fca5a5',
+                            400: '#f87171',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f4f4f5; font-family: 'Pretendard', sans-serif; }
+        .chat-container { height: calc(100vh - 60px); }
+        .message-enter { animation: slideIn 0.3s ease-out forwards; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .typing-indicator span {
+            display: inline-block;
+            width: 6px; height: 6px;
+            background-color: #9ca3af;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out both;
+            margin: 0 2px;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    </style>
+    <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="item-register-page flex flex-col h-screen overflow-hidden">
+
+    <!-- Header -->
+    <header class="h-[60px] bg-white border-b border-gray-200 flex items-center px-4 justify-between shrink-0 shadow-sm z-10 relative">
+        <div class="flex items-center gap-3">
+            <button onclick="location.href='index.html'" aria-label="홈으로 돌아가기" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-600 transition-colors">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div class="flex items-center gap-2">
+                <img src="https://www.genspark.ai/api/files/s/L6fGSb1x" alt="로고" class="w-8 h-8 object-contain">
+                <div>
+                    <h1 class="text-base sm:text-lg font-extrabold text-gray-800 leading-tight">나의 첫 아이템, 함께 등록해요.</h1>
+                    <p class="text-[11px] text-gray-500">생산자 · 제조사 · 크리에이티브 · 로컬 크리에이터 셀프 등록</p>
+                </div>
+            </div>
+        </div>
+        <a href="mini.html?studio=1" class="text-xs font-extrabold text-hongbo-600 bg-hongbo-50 border border-hongbo-200 px-3 py-1.5 rounded-full">
+            스튜디오 폼으로 등록
+        </a>
+    </header>
+
+    <!-- Chat Area -->
+    <main class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 relative chat-container" id="chat-box"></main>
+
+    <!-- Input Area -->
+    <div id="input-area" class="bg-white border-t border-gray-200 p-3 pb-6 sm:pb-3 shrink-0 hidden shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] relative z-10">
+        <!-- 업로드 또는 바로 시작 뷰 -->
+        <div id="upload-view" class="flex flex-col items-center justify-center py-2 hidden gap-2">
+            <input type="file" id="biz-license-upload" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+            <div class="flex flex-col sm:flex-row gap-2 w-full max-w-md">
+                <button onclick="document.getElementById('biz-license-upload').click()" class="flex-1 bg-hongbo-600 hover:bg-hongbo-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-camera"></i> 사업자등록증·상품 사진으로 시작
+                </button>
+                <button onclick="startWithoutPhoto()" class="flex-1 bg-gray-800 hover:bg-black text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-bolt text-yellow-300"></i> 사진 없이 바로 등록 시작
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-1 text-center">농가 생산자, 수공예 메이커, 무형 콘텐츠 크리에이터 누구나 1분 만에 직거래 링크를 만들 수 있습니다.</p>
+        </div>
+
+        <!-- 텍스트 입력 뷰 -->
+        <div id="text-input-view" class="hidden flex items-center gap-2 w-full max-w-2xl mx-auto">
+            <input type="text" id="chat-input" aria-label="아이템 등록 답변" maxlength="1000" class="flex-1 border border-gray-300 rounded-full px-4 py-2.5 outline-none focus:border-hongbo-500 text-sm" placeholder="메시지를 입력하세요..." onkeydown="if(event.key==='Enter' && !event.isComposing) handleSendText()">
+            <button onclick="handleSendText()" aria-label="답변 보내기" class="w-11 h-11 bg-hongbo-600 rounded-full text-white flex items-center justify-center shrink-0 hover:bg-hongbo-700 transition-colors shadow-sm">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const inputArea = document.getElementById('input-area');
+        const uploadView = document.getElementById('upload-view');
+        const textInputView = document.getElementById('text-input-view');
+        const chatInput = document.getElementById('chat-input');
+
+        let currentState = 'START';
+        const formData = {
+            companyName: '',
+            itemTitle: '',
+            priceInfo: '',
+            shopUrl: '',
+            snsUrl: '',
+            phone: '',
+            category: '',
+            creatorType: 'local'
+        };
+        const escapeText = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+        window.onload = () => {
+            setTimeout(() => {
+                addBotMessage('안녕하세요! <b>홍보야(HONGBOYA) 셀프 홍보 & 직거래 링크 등록 봇</b>입니다. 🌱');
+                setTimeout(() => {
+                    addBotMessage('생산자(농사), 제조사(메이커), 무형 콘텐츠 크리에이티브, 로컬 크리에이터 누구나 <b>내 쇼핑몰과 내 SNS를 연결한 직거래 공유링크</b>를 만들 수 있습니다.<br><br>사업자등록증/상품 사진을 올리시거나, <b>[사진 없이 바로 등록 시작]</b>을 눌러주세요!');
+                    inputArea.classList.remove('hidden');
+                    uploadView.classList.remove('hidden');
+                    textInputView.classList.add('hidden');
+                    scrollToBottom();
+                }, 650);
+            }, 350);
+        };
+
+        function addBotMessage(htmlContent) {
+            const div = document.createElement('div');
+            div.className = 'flex gap-3 message-enter w-full max-w-2xl mx-auto';
+            div.innerHTML = `
+                <div class="w-9 h-9 rounded-full bg-hongbo-50 flex items-center justify-center shrink-0 border border-hongbo-100 mt-1">
+                    <img src="https://www.genspark.ai/api/files/s/L6fGSb1x" alt="봇" class="w-6 h-6 object-contain">
+                </div>
+                <div class="flex flex-col gap-1 max-w-[85%] sm:max-w-[80%]">
+                    <span class="text-xs font-bold text-gray-500 ml-1">홍보야 직거래 AI 봇</span>
+                    <div class="bg-white px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 text-sm text-gray-800 leading-relaxed">
+                        ${htmlContent}
+                    </div>
+                </div>
+            `;
+            chatBox.appendChild(div);
+            scrollToBottom();
+            return div;
+        }
+
+        function addUserMessage(text) {
+            const div = document.createElement('div');
+            div.className = 'flex justify-end message-enter w-full max-w-2xl mx-auto mb-2';
+            div.innerHTML = `<div class="bg-hongbo-600 text-white px-4 py-2.5 rounded-2xl rounded-tr-sm shadow-sm text-sm max-w-[85%] sm:max-w-[80%] break-words leading-relaxed">${escapeText(text)}</div>`;
+            chatBox.appendChild(div);
+            scrollToBottom();
+        }
+
+        function addUserImageMessage(imageUrl) {
+            const div = document.createElement('div');
+            div.className = 'flex justify-end message-enter w-full max-w-2xl mx-auto mb-2';
+            div.innerHTML = `
+                <div class="bg-hongbo-600 p-2 rounded-2xl rounded-tr-sm shadow-sm max-w-[70%] sm:max-w-[50%]">
+                    <img src="${imageUrl}" class="w-full h-auto rounded-xl border border-hongbo-700/30">
+                </div>
+            `;
+            chatBox.appendChild(div);
+            scrollToBottom();
+        }
+
+        function addTypingIndicator() {
+            const div = document.createElement('div');
+            div.className = 'flex gap-3 message-enter w-full max-w-2xl mx-auto';
+            div.id = 'typing-indicator';
+            div.innerHTML = `
+                <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center shrink-0 border border-gray-200 mt-1">
+                    <i class="fa-solid fa-robot text-gray-400"></i>
+                </div>
+                <div class="bg-white px-4 py-3.5 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 text-sm">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            chatBox.appendChild(div);
+            scrollToBottom();
+            return div;
+        }
+
+        function removeTypingIndicator() {
+            document.getElementById('typing-indicator')?.remove();
+        }
+
+        function scrollToBottom() {
+            setTimeout(() => {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 50);
+        }
+
+        function enableTextInput(placeholder = '메시지를 입력하세요...') {
+            inputArea.classList.remove('hidden');
+            uploadView.classList.add('hidden');
+            textInputView.classList.remove('hidden');
+            textInputView.classList.add('flex');
+            chatInput.placeholder = placeholder;
+            chatInput.focus();
+        }
+
+        function disableInput() {
+            inputArea.classList.add('hidden');
+        }
+
+        function startWithoutPhoto() {
+            disableInput();
+            addUserMessage('사진 없이 바로 직거래 아이템 등록 시작');
+            setTimeout(() => {
+                addBotMessage('좋습니다! 먼저 고객에게 보여줄 <b>농장명 / 공방·브랜드명 / 크리에이터 활동명</b>을 입력해주세요.<br><span class="text-xs text-gray-500">예: 제주 햇살농원 / 성수 아틀리에 결 / 스튜디오 올라운드</span>');
+                currentState = 'COMPANY_NAME';
+                enableTextInput('생산자·브랜드·크리에이터명을 입력하세요');
+            }, 400);
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/') || file.size > 10 * 1024 * 1024) { alert('10MB 이하의 이미지 파일을 선택해주세요.'); return; }
+            disableInput();
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                addUserImageMessage(e.target.result);
+                addTypingIndicator();
+                setTimeout(() => {
+                    removeTypingIndicator();
+                    addBotMessage('사진을 확인했어요. 현재 자동 이미지 인식은 연결되어 있지 않아 정보를 직접 입력합니다. 사진은 이 대화에서 미리보기로만 표시돼요.');
+                    setTimeout(() => {
+                        addBotMessage('📝 고객에게 보여줄 <b>생산자 / 브랜드 / 크리에이터 활동명</b>을 입력해주세요.');
+                        currentState = 'COMPANY_NAME';
+                        enableTextInput('네 또는 새 브랜드/크리에이터명 입력');
+                    }, 600);
+                }, 1200);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleSendText() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+            if (['SHOP_URL','SNS_URL'].includes(currentState) && !['없음','패스'].includes(text)) {
+                try {
+                    const url = new URL(/^https?:\/\//i.test(text) ? text : 'https://' + text);
+                    if (!['https:','http:'].includes(url.protocol) || url.username || url.password || !url.hostname.includes('.')) throw Error();
+                } catch { addBotMessage('올바른 쇼핑몰 또는 SNS 주소를 입력해주세요. 링크가 없으면 <b>없음</b>이라고 입력할 수 있어요.'); return; }
+            }
+            addUserMessage(text);
+            chatInput.value = '';
+            disableInput();
+            setTimeout(() => processAnswer(text), 450);
+        }
+
+        function processAnswer(text) {
+            if (currentState === 'COMPANY_NAME') {
+                formData.companyName = text;
+                addBotMessage(`✅ 크리에이터/브랜드명이 <b>[${escapeText(formData.companyName)}]</b>(으)로 설정되었습니다.`);
+                setTimeout(() => {
+                    addBotMessage('🛍️ 홍보할 <b>대표 아이템(상품/콘텐츠) 제목</b>을 입력해주세요.<br><span class="text-xs text-gray-500">예: 당일수확 고당도 노지감귤 5kg / 수제 베지터블 가죽 카드지갑 / 릴스 템플릿 올인원 팩</span>');
+                    currentState = 'ITEM_TITLE';
+                    enableTextInput('홍보할 아이템/상품명을 입력하세요');
+                }, 600);
+            } else if (currentState === 'ITEM_TITLE') {
+                formData.itemTitle = text;
+                addBotMessage(`✅ 홍보 아이템명이 <b>[${escapeText(formData.itemTitle)}]</b>(으)로 저장되었습니다.`);
+                setTimeout(() => {
+                    addBotMessage('💝 고객에게 제공할 <b>직거래 가격 또는 혜택</b>을 입력해주세요.<br><span class="text-xs text-gray-500">예: 24,900원 산지 무료배송 / 39,000원 즉시 다운로드</span>');
+                    currentState = 'PRICE_INFO';
+                    enableTextInput('직거래 가격 또는 혜택을 입력하세요');
+                }, 600);
+            } else if (currentState === 'PRICE_INFO') {
+                formData.priceInfo = text;
+                addBotMessage(`✅ 직거래 혜택이 <b>[${escapeText(formData.priceInfo)}]</b>(으)로 저장되었습니다.`);
+                setTimeout(() => {
+                    addBotMessage('🛒 연동할 <b>내 쇼핑몰 주소(스마트스토어·자사몰·주문폼 URL)</b>를 입력해주세요.<br><span class="text-xs text-gray-500">아직 없으시면 "없음"이라고 입력하셔도 됩니다.</span>');
+                    currentState = 'SHOP_URL';
+                    enableTextInput('https://smartstore.naver.com/... 또는 없음');
+                }, 600);
+            } else if (currentState === 'SHOP_URL') {
+                formData.shopUrl = (text === '없음' || text === '패스') ? '' : (text.startsWith('http') ? text : 'https://' + text);
+                addBotMessage(formData.shopUrl ? `✅ 내 쇼핑몰 링크가 연결되었습니다!` : `ℹ️ 쇼핑몰 링크 없이 전화/SNS 직거래로 진행합니다.`);
+                setTimeout(() => {
+                    addBotMessage('📱 연동할 <b>내 대표 SNS 주소(인스타그램·유튜브·블로그·스레드 등)</b>를 입력해주세요.');
+                    currentState = 'SNS_URL';
+                    enableTextInput('https://instagram.com/... 또는 없음');
+                }, 600);
+            } else if (currentState === 'SNS_URL') {
+                formData.snsUrl = (text === '없음' || text === '패스') ? '' : (text.startsWith('http') ? text : 'https://' + text);
+                addBotMessage(formData.snsUrl ? `✅ 내 SNS 채널이 연결되었습니다!` : `ℹ️ SNS 링크는 나중에 관리자/스튜디오에서도 추가할 수 있습니다.`);
+                setTimeout(() => {
+                    addBotMessage('📞 직거래 문의받을 <b>대표 전화번호</b>를 입력해주세요. (예: 010-1234-5678)');
+                    currentState = 'PHONE';
+                    enableTextInput('010-0000-0000');
+                }, 600);
+            } else if (currentState === 'PHONE') {
+                formData.phone = text;
+                addBotMessage(`✅ 연락처가 <b>[${escapeText(formData.phone)}]</b>(으)로 저장되었습니다.`);
+                setTimeout(() => askCategory(), 600);
+            }
+        }
+
+        function askCategory() {
+            currentState = 'CATEGORY';
+            disableInput();
+            const options = `
+                <option value="">-- 직거래 분야 선택 --</option>
+                <optgroup label="── ★ 홍보야 4대 직거래 크리에이터 ──">
+                <option value="생산자·농축수산 직거래">🌾 생산자·농축수산 직거래 (농부·어부·목장)</option>
+                <option value="제조사·수공예·공방 브랜드">🛠️ 제조사·수공예·공방 브랜드 (메이커)</option>
+                <option value="크리에이티브·디지털·지식콘텐츠">🎨 크리에이티브·디지털·지식콘텐츠 (무형 콘텐츠)</option>
+                <option value="로컬크리에이터·지역특산·공간">📍 로컬크리에이터·지역특산·공간</option>
+                </optgroup>
+                <optgroup label="── 로컬 외식·F&B 직거래 ──">
+                <option value="커피·카페·무인카페">☕ 커피·카페·로스터리</option>
+                <option value="제과제빵·디저트">🍰 제과제빵·수제디저트</option>
+                <option value="한식·고기·찜·탕·죽">🍲 한식·반찬·밀키트</option>
+                </optgroup>
+                <optgroup label="── 전문 서비스 & 라이프스타일 ──">
+                <option value="소프트웨어 개발·디자인·마케팅">💻 소프트웨어 개발·디자인·마케팅</option>
+                <option value="뷰티·미용·에스테틱">💅 뷰티·미용·에스테틱</option>
+                <option value="반려동물·펫케어">🐾 반려동물·수제간식·펫케어</option>
+                </optgroup>
+            `;
+            const html = `
+                <p class="mb-2">🏷️ <b>나의 직거래 크리에이터 분야</b>를 선택해주세요.</p>
+                <select id="chat-cat-select" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm mb-3 focus:ring-1 focus:ring-hongbo-500 outline-none">${options}</select>
+                <button onclick="handleCategorySelect()" class="w-full bg-hongbo-600 hover:bg-hongbo-700 text-white font-bold rounded-lg py-2.5 text-sm shadow-sm transition-colors">선택 완료</button>
+            `;
+            addBotMessage(html);
+        }
+
+        function handleCategorySelect() {
+            const selectEl = document.getElementById('chat-cat-select');
+            const val = selectEl.value;
+            if (!val) {
+                alert('카테고리를 선택해주세요.');
+                return;
+            }
+            selectEl.disabled = true;
+            selectEl.nextElementSibling.disabled = true;
+            selectEl.nextElementSibling.classList.replace('bg-hongbo-600', 'bg-gray-400');
+
+            addUserMessage(val);
+            formData.category = val;
+            if (val.includes('생산자')) formData.creatorType = 'producer';
+            else if (val.includes('제조사')) formData.creatorType = 'maker';
+            else if (val.includes('크리에이티브') || val.includes('소프트웨어')) formData.creatorType = 'creative';
+            else formData.creatorType = 'local';
+
+            setTimeout(() => showFinalSummary(), 500);
+        }
+
+        function showFinalSummary() {
+            currentState = 'DONE';
+            const html = `
+                <p class="mb-3">🎉 직거래 크리에이터 정보 입력이 완료되었습니다!<br>아래 내용으로 홍보야에 등록하고 <b>SNS 공유용 직거래 링크</b>를 바로 생성할까요?</p>
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 text-[13px] text-gray-700 flex flex-col gap-1.5 mb-3">
+                    <div class="flex"><span class="w-24 text-gray-500 font-bold shrink-0">크리에이터</span><span class="font-bold">${escapeText(formData.companyName)}</span></div>
+                    <div class="flex"><span class="w-24 text-gray-500 font-bold shrink-0">홍보 아이템</span><span class="font-bold text-hongbo-600">${escapeText(formData.itemTitle)}</span></div>
+                    <div class="flex"><span class="w-24 text-gray-500 font-bold shrink-0">직거래 혜택</span><span class="font-medium">${escapeText(formData.priceInfo)}</span></div>
+                    <div class="flex"><span class="w-24 text-gray-500 font-bold shrink-0">내 쇼핑몰</span><span class="font-medium truncate">${escapeText(formData.shopUrl || '미입력')}</span></div>
+                    <div class="flex"><span class="w-24 text-gray-500 font-bold shrink-0">내 SNS</span><span class="font-medium truncate">${escapeText(formData.snsUrl || '미입력')}</span></div>
+                    <div class="flex"><span class="w-24 text-gray-500 font-bold shrink-0">전화번호</span><span class="font-medium">${escapeText(formData.phone)}</span></div>
+                    <div class="flex"><span class="w-24 text-gray-500 font-bold shrink-0">분야</span><span class="font-medium">${formData.category}</span></div>
+                </div>
+                <button id="final-submit-btn" onclick="submitRegistration()" class="w-full bg-gradient-to-r from-hongbo-600 to-orange-500 hover:from-hongbo-700 hover:to-orange-600 text-white font-extrabold py-3 rounded-xl shadow-md transition-all text-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-link"></i> 홍보야 등록 & 내 직거래 공유링크 발급받기
+                </button>
+            `;
+            addBotMessage(html);
+        }
+
+        async function submitRegistration() {
+            const submitBtn = document.getElementById('final-submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 직거래 링크 생성 중...';
+
+            const defaultImgs = {
+                producer: 'https://images.unsplash.com/photo-1557800636-894a64c1696f?auto=format&fit=crop&w=900&q=80',
+                maker:    'https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=900&q=80',
+                creative: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=80',
+                local:    'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80'
+            };
+
+            const posterPayload = {
+                brand_name: formData.itemTitle,
+                creator_name: formData.companyName,
+                creator_type: formData.creatorType,
+                category: formData.category,
+                price_info: formData.priceInfo,
+                item_summary: `${formData.companyName}에서 직접 선보이는 ${formData.itemTitle}입니다. 내 쇼핑몰과 SNS를 통해 중간 유통 없이 직거래로 만나보세요.`,
+                image_url: defaultImgs[formData.creatorType] || defaultImgs.local,
+                phone_number: formData.phone,
+                shop_url: formData.shopUrl,
+                target_link: formData.shopUrl || formData.snsUrl,
+                sns_instagram: formData.snsUrl.includes('youtube') ? '' : formData.snsUrl,
+                sns_youtube: formData.snsUrl.includes('youtube') || formData.snsUrl.includes('youtu.be') ? formData.snsUrl : '',
+                search_keywords: `#${formData.companyName.replace(/\s+/g,'')}, #${formData.itemTitle.replace(/\s+/g,'')}, #직거래, #홍보야`,
+                order_idx: 1
+            };
+
+            try {
+                await fetch('tables/member_registrations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        company_name: formData.companyName,
+                        representative: formData.companyName,
+                        phone: formData.phone,
+                        category: formData.category,
+                        shop_url: formData.shopUrl,
+                        sns_url: formData.snsUrl
+                    })
+                });
+
+                const posterRes = await fetch('tables/poster_settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(posterPayload)
+                });
+                if (!posterRes.ok) throw Error('아이템 저장에 실패했습니다. 다시 시도해 주세요.');
+                const savedPoster = await posterRes.json();
+                const shareUrl = window.buildHongboShareUrl
+                    ? window.buildHongboShareUrl(savedPoster)
+                    : `share.html?brand_id=${encodeURIComponent(savedPoster.id)}`;
+
+                setTimeout(() => {
+                    addBotMessage(`
+                        🎉 <b>${escapeText(formData.companyName)}</b>님의 직거래 아이템과 전용 공유링크가 완성되었습니다!<br><br>
+                        이 링크를 인스타그램 프로필, 카카오톡, 스레드, 블로그에 붙여넣으면 고객이 내 쇼핑몰과 SNS로 바로 연결되어 직거래할 수 있습니다.
+                        <div class="mt-3 p-2.5 bg-orange-50 border border-orange-200 rounded-xl">
+                            <input id="bot-share-url" type="text" readonly value="${shareUrl}" class="w-full text-xs bg-white border border-orange-200 rounded-lg px-2.5 py-2 text-gray-700 mb-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="navigator.clipboard.writeText(document.getElementById('bot-share-url').value).then(()=>alert('직거래 홍보링크가 복사되었습니다!'))" class="py-2 rounded-lg bg-hongbo-600 text-white font-bold text-xs">
+                                    <i class="fa-solid fa-copy mr-1"></i> 홍보링크 복사
+                                </button>
+                                <a href="${shareUrl}" target="_blank" class="py-2 rounded-lg bg-gray-900 text-white font-bold text-xs text-center no-underline">
+                                    <i class="fa-solid fa-up-right-from-square mr-1"></i> 내 직거래 페이지 열기
+                                </a>
+                            </div>
+                        </div>
+                        <button onclick="location.href='index.html'" class="mt-3 w-full bg-hongbo-100 hover:bg-hongbo-200 text-hongbo-700 font-bold py-2.5 px-4 rounded-xl transition-colors border border-hongbo-200 text-sm flex justify-center items-center gap-1">
+                            <i class="fa-solid fa-house text-xs"></i> 홍보야 메인 화면으로 이동
+                        </button>
+                    `);
+                }, 400);
+            } catch (error) {
+                console.error(error);
+                alert('등록 중 오류가 발생했습니다.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fa-solid fa-link"></i> 홍보야 등록 & 내 직거래 공유링크 발급받기';
+            }
+        }
+    </script>
+</body>
+</html>

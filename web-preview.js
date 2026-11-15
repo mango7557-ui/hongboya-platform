@@ -186,6 +186,10 @@
     };
 
     const originalFetch = window.fetch.bind(window);
+    // Detect API support rather than hostname so static previews and deployed APIs both work.
+    const serverAvailable = originalFetch(new URL('api/mini/status', location.href), {signal:AbortSignal.timeout(5000)})
+        .then(async response => response.ok && (await response.json()).accounts === true).catch(() => false);
+    window.hongboyaServerAvailable = serverAvailable;
     const storageKey = 'hongboya-preview:' + new URL('.', location.href).pathname;
     const tables = new Set(['poster_settings', 'site_config', 'chatbot_data',
         'consultation_requests', 'franchise_store_rows', 'banners', 'events', 'member_registrations']);
@@ -195,7 +199,7 @@
 
     const loadDb = () => {
         const db = JSON.parse(localStorage.getItem(storageKey) || '{}');
-        if (!Array.isArray(db.poster_settings) || db.poster_settings.length === 0) {
+        if (!Array.isArray(db.poster_settings)) {
             db.poster_settings = DEFAULT_POSTERS.map(item => ({ ...item }));
             localStorage.setItem(storageKey, JSON.stringify(db));
         }
@@ -203,11 +207,13 @@
     };
 
     window.fetch = async (input, options = {}) => {
+        // Local Python hosts use their real SQLite API, not the Pages preview DB.
         const url = new URL(input instanceof Request ? input.url : input, location.href);
         const base = new URL('.', location.href).pathname + 'tables/';
         if (url.origin !== location.origin || !url.pathname.startsWith(base)) {
             return originalFetch(input, options);
         }
+        if (await serverAvailable) return originalFetch(input, options);
         const [table, id] = url.pathname.slice(base.length).split('/');
         if (!tables.has(table)) return reply({ error: 'Unknown table' }, 404);
         try {
