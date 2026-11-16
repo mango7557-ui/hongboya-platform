@@ -1025,6 +1025,7 @@
         }
     </style>
     <link rel="stylesheet" href="design-system.css">
+    <link rel="stylesheet" href="map-page.css">
 </head>
 <body class="catalog-page">
 
@@ -6053,6 +6054,7 @@
         }
 
         function switchTab(tabId, element) {
+            document.body.classList.toggle('map-mode', tabId === 'map');
             if (tabId === 'login' || tabId === 'find-password') { location.href = 'mini.html?studio=1'; return; }
             if (tabId === 'signup' || tabId === 'company-signup') { location.href = 'register-bot.html'; return; }
             // 모든 탭 숨기기
@@ -7391,36 +7393,41 @@
     </script>
 
     <!-- 지도 탭 -->
-    <div id="tab-map" class="tab-pane bg-[#fef2f2] h-[calc(100vh-80px)] md:h-[calc(100vh-80px)]">
-        <div class="w-full h-[calc(100%-60px)] md:h-full relative bg-[#fef2f2]">
-            
-            <!-- 프랜차이즈 박람회 지도 타이틀 배너 (상단 고정) -->
-            <div class="absolute top-0 inset-x-0 z-20 px-4 w-full max-w-[1000px] lg:max-w-full lg:px-[10px] mx-auto mt-4 mb-2">
-                <div class="w-full bg-[#fef2f2] py-3.5 sm:py-4 md:py-3 px-4 flex items-center justify-center relative shadow-sm border border-[#D1F2EB] rounded-xl overflow-hidden">
-                    <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-                    <h2 class="text-gray-800 text-[19px] sm:text-[22px] md:text-[24px] lg:text-[26px] font-extrabold tracking-tight relative z-10 flex flex-nowrap justify-center items-center gap-1 sm:gap-2 whitespace-nowrap">
-                        <img src="https://www.genspark.ai/api/files/s/L6fGSb1x" alt="소상공인 공급업체 Icon" class="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 object-contain mr-0.5 sm:mr-0">
-                        <span class="text-hongbo-600">소상공인 공급업체</span>
-                        <span class="text-gray-800">지도에서 업체 찾기</span>
-                    </h2>
+    <div id="tab-map" class="tab-pane map-page">
+        <header class="map-header">
+            <div class="map-header-inner">
+                <a class="map-brand" href="index.html" aria-label="홍보야 홈">홍보야<span aria-hidden="true">✳</span></a>
+                <nav class="map-nav" aria-label="주 메뉴">
+                    <a href="index.html#discover">크리에이터 둘러보기</a>
+                    <a href="gallery.html?tab=map" aria-current="page">지도에서 찾기</a>
+                    <a href="index.html#how">이용 방법</a>
+                </nav>
+                <a class="map-header-action" href="register-bot.html">내 공간 만들기 <span aria-hidden="true">↗</span></a>
+            </div>
+        </header>
+        <div class="map-content">
+            <div class="map-heading">
+                <div><a class="map-back" href="index.html">← 메인으로</a>
+                    <h1>지도에서 업체 찾기<span>.</span></h1>
+                    <p>궁금한 장소와 업체를 검색하고, 지도에서 가까이 만나보세요.</p>
                 </div>
+                <span class="map-provider">Kakao 지도 기반 장소 검색</span>
             </div>
-
-            <!-- 지도 내 검색창 -->
-            <div class="absolute top-24 left-1/2 -translate-x-1/2 z-10 w-11/12 max-w-md bg-white rounded-full shadow-lg flex items-center px-4 py-2.5 border border-gray-200">
-                <input type="text" id="map-search-input" class="w-full outline-none text-[15px] text-gray-700 bg-transparent placeholder-gray-400" placeholder="지도에서 장소, 업체 검색..." onkeypress="if(event.key==='Enter') searchGoogleMap()">
-                <button onclick="searchGoogleMap()" class="text-[#ef4444] hover:text-hongbo-700 p-1 shrink-0 transition-colors ml-2">
-                    <i class="fa-solid fa-magnifying-glass text-xl"></i>
-                </button>
+            <form class="map-search" role="search" onsubmit="event.preventDefault(); searchGoogleMap()">
+                <label for="map-search-input">장소 또는 업체명</label>
+                <div class="map-search-row">
+                    <div class="map-search-field"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input type="search" id="map-search-input" placeholder="지역, 장소 또는 업체명을 입력하세요" autocomplete="off"></div>
+                    <button type="submit">검색하기 <span aria-hidden="true">↗</span></button>
+                </div>
+                <p>예: 성수동 카페, 제주 농장, 서울역</p>
+            </form>
+            <div class="map-canvas-wrap">
+                <div id="google-map-iframe" class="map-canvas" aria-label="카카오 지도"></div>
+                <button type="button" onclick="loadCurrentLocationToMap(true)" class="map-location" title="내 위치로 이동" aria-label="내 위치로 이동"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>내 위치</span></button>
             </div>
-
-            <!-- 현위치 이동 버튼 -->
-            <button onclick="loadCurrentLocationToMap(true)" class="absolute bottom-24 md:bottom-8 right-4 z-10 bg-white w-11 h-11 rounded-full shadow-md flex items-center justify-center text-gray-700 hover:text-[#ef4444] border border-gray-200 transition-all hover:scale-105 active:scale-95" title="내 위치로 이동">
-                <i class="fa-solid fa-location-crosshairs text-[22px]"></i>
-            </button>
-
-            <div id="google-map-iframe" class="absolute inset-0 pt-[140px] z-0"></div>
+            <div class="map-caption"><p>지도를 움직이거나 검색해 원하는 장소를 찾아보세요.</p><a href="gallery.html">아이템 갤러리 둘러보기 <span aria-hidden="true">↗</span></a></div>
         </div>
+        <footer class="map-footer"><span>홍보야 <b>✳</b></span><p>직접 만든 가치, 직접 전하는 이야기.</p><a href="index.html">홍보야 홈으로 ↗</a></footer>
     </div>
 
     <script src="./kakao-map-config.js"></script>
