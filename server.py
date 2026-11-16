@@ -15,7 +15,7 @@ TABLES = {
     'poster_settings', 'site_config', 'chatbot_data', 'consultation_requests',
     'franchise_store_rows', 'banners', 'events', 'member_registrations',
 }
-PUBLIC_FILES = {p.name for p in ROOT.glob('*.html')} | {'sw.js', 'web-preview.js', 'mini.js', 'mini.css', 'home.js', 'home.css', 'design-system.css', 'register.js', 'admin-design.js', 'admin-workspace.css', 'map-page.css', 'kakao-map.js', 'kakao-map-config.js'}
+PUBLIC_FILES = {p.name for p in ROOT.glob('*.html')} | {'sw.js', 'web-preview.js', 'mini.js', 'mini.css', 'home.js', 'home.css', 'design-system.css', 'register.js', 'admin-design.js', 'admin-workspace.css', 'map-page.css', 'kakao-map.js', 'kakao-map-config.js', 'hongboya-logo.jpg'}
 
 
 def connect(database):

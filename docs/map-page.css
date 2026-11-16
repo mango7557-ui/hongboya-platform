@@ -8,6 +8,7 @@ body.map-mode #main-content-wrapper>main{background:#fbf9f5!important}
 .map-header-inner{max-width:1240px;min-height:86px;margin:auto;padding:0 32px;display:flex;align-items:center;gap:36px}
 .map-brand{display:inline-flex;align-items:center;gap:5px;color:#252b27;font-size:32px;font-weight:900;letter-spacing:-2.5px;white-space:nowrap}
 .map-brand span,.map-footer b{color:#ed624b}
+.map-brand .hb-logo-image{width:56px;height:56px}.map-footer>a:first-child{margin-left:0}.map-footer .hb-logo-image{width:48px;height:48px}
 .map-nav{display:flex;align-items:center;gap:30px;margin:auto;font-size:13px;font-weight:600}
 .map-nav a{white-space:nowrap;color:#3b443c}.map-nav a[aria-current]{color:#b64532}.map-nav a:hover,.map-back:hover,.map-caption a:hover,.map-footer a:hover{color:#b64532}
 .map-header-action,.map-search-row>button{display:inline-flex;align-items:center;justify-content:center;gap:18px;background:#df5a43;color:#fff;border:0;border-radius:9px;font-size:13px;font-weight:700;white-space:nowrap;transition:background .2s,transform .2s}

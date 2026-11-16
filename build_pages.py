@@ -16,7 +16,7 @@ def main():
         (OUTPUT / page.name).write_text(html, encoding='utf-8')
     for name in ('web-preview.js', 'sw.js', 'mini.js', 'mini.css', 'home.js', 'home.css',
                  'design-system.css', 'register.js', 'admin-design.js', 'admin-workspace.css',
-                 'kakao-map-config.js', 'kakao-map.js', 'map-page.css'):
+                 'kakao-map-config.js', 'kakao-map.js', 'map-page.css', 'hongboya-logo.jpg'):
         shutil.copy2(ROOT / name, OUTPUT / name)
     (OUTPUT / '.nojekyll').touch()
     print(f'Built {len(pages)} HTML pages for GitHub Pages')
