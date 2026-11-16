@@ -7422,6 +7422,7 @@
                 </div>
                 <p>예: 성수동 카페, 제주 농장, 서울역</p>
             </form>
+            <div class="directory-map-tools"><label for="directory-map-category">홍보야 등록 업체</label><select id="directory-map-category"><option value="">전체 카테고리</option></select><span id="directory-map-status" role="status">등록 업체를 불러오는 중입니다.</span><a href="directory.html">업체 목록 보기 ↗</a></div>
             <div class="map-canvas-wrap">
                 <div id="google-map-iframe" class="map-canvas" aria-label="카카오 지도"></div>
                 <button type="button" onclick="loadCurrentLocationToMap(true)" class="map-location" title="내 위치로 이동" aria-label="내 위치로 이동"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>내 위치</span></button>
@@ -7431,6 +7432,8 @@
         <footer class="map-footer"><a href="index.html" aria-label="홍보야 홈"><img class="hb-logo-image" src="hongboya-logo.jpg" alt="홍보야 로고"></a><p>직접 만든 가치, 직접 전하는 이야기.</p><a href="index.html">홍보야 홈으로 ↗</a></footer>
     </div>
 
+    <script src="./directory-config.js"></script>
+    <script src="./directory-client.js"></script>
     <script src="./kakao-map-config.js"></script>
     <script src="./kakao-map.js"></script>
 

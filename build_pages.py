@@ -11,12 +11,13 @@ def main():
     pages = list(ROOT.glob('*.html'))
     for page in pages:
         html = page.read_text(encoding='utf-8')
-        if page.name not in ('mini.html', 'index.html') and './web-preview.js' not in html:
+        if page.name not in ('mini.html', 'index.html', 'directory.html', 'directory-admin.html', 'place.html') and './web-preview.js' not in html:
             html = html.replace('<head>', '<head>\n    <script src="./web-preview.js"></script>', 1)
         (OUTPUT / page.name).write_text(html, encoding='utf-8')
     for name in ('web-preview.js', 'sw.js', 'mini.js', 'mini.css', 'home.js', 'home.css',
                  'design-system.css', 'register.js', 'admin-design.js', 'admin-workspace.css',
-                 'kakao-map-config.js', 'kakao-map.js', 'map-page.css', 'hongboya-logo.jpg', 'brand-theme.css'):
+                 'kakao-map-config.js', 'kakao-map.js', 'map-page.css', 'hongboya-logo.jpg', 'brand-theme.css',
+                 'directory-config.js', 'directory-client.js', 'directory.js', 'directory-admin.js', 'place.js', 'directory.css'):
         shutil.copy2(ROOT / name, OUTPUT / name)
     (OUTPUT / '.nojekyll').touch()
     print(f'Built {len(pages)} HTML pages for GitHub Pages')

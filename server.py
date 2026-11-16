@@ -16,6 +16,7 @@ TABLES = {
     'franchise_store_rows', 'banners', 'events', 'member_registrations',
 }
 PUBLIC_FILES = {p.name for p in ROOT.glob('*.html')} | {'sw.js', 'web-preview.js', 'mini.js', 'mini.css', 'home.js', 'home.css', 'design-system.css', 'register.js', 'admin-design.js', 'admin-workspace.css', 'map-page.css', 'kakao-map.js', 'kakao-map-config.js', 'hongboya-logo.jpg', 'brand-theme.css'}
+PUBLIC_FILES |= {'directory-config.js', 'directory-client.js', 'directory.js', 'directory-admin.js', 'place.js', 'directory.css'}
 
 
 def connect(database):

@@ -4,6 +4,25 @@
   let sdkPromise;
   const key = String(window.HONGBOYA_KAKAO_MAP_KEY || '').trim();
   const kakaoSearchUrl = query => 'https://map.kakao.com/link/search/' + encodeURIComponent(query);
+  let publishedPlaces = [];
+  async function loadPublishedPlaces(state) {
+    const status = document.getElementById('directory-map-status'), select = document.getElementById('directory-map-category');
+    if (!status || !select || !window.hbPublic) return;
+    try {
+      publishedPlaces = await hbPublic('hongboya_places','select=id,name,category,address,latitude,longitude&published=eq.true&order=created_at.desc&limit=1000');
+      for (const cat of [...new Set(publishedPlaces.map(p=>p.category).filter(Boolean))].sort()) select.append(new Option(cat,cat));
+      const render = () => {
+        (state.directoryMarkers || []).forEach(m => m.setMap(null)); state.directoryMarkers = [];
+        const items = publishedPlaces.filter(p => (!select.value || p.category === select.value) && p.latitude != null && p.longitude != null);
+        for (const p of items) {
+          const marker = new state.api.Marker({map:state.map,position:new state.api.LatLng(p.latitude,p.longitude)}); state.directoryMarkers.push(marker);
+          state.api.event.addListener(marker,'click',()=>{state.info?.close();const box=document.createElement('div');box.style.cssText='padding:10px;min-width:160px;color:#222';const title=document.createElement('strong');title.textContent=p.name;const link=document.createElement('a');link.textContent='미니홈피 보기 ↗';link.href='place.html?id='+encodeURIComponent(p.id);box.append(title,document.createElement('br'),link);state.info=new state.api.InfoWindow({content:box,removable:true});state.info.open(state.map,marker)});
+        }
+        status.textContent=items.length?`지도에 ${items.length}개 업체 표시 중`:'공개된 위치 정보가 없습니다.';
+      };
+      select.addEventListener('change',render);render();
+    } catch { status.textContent='등록 업체를 불러오지 못했습니다.'; }
+  }
   function message(container, text, query) {
     container.replaceChildren();
     const panel = document.createElement('div');
@@ -38,7 +57,7 @@
       if (maps.has(id)) return maps.get(id);
       container.replaceChildren();
       const state = {api, map: new api.Map(container,{center:new api.LatLng(36.5,127.5),level:13}), markers:[], info:null};
-      maps.set(id,state); state.map.relayout(); return state;
+      maps.set(id,state); state.map.relayout(); if(id==='google-map-iframe') loadPublishedPlaces(state); return state;
     } catch (error) { message(container,error.message); return null; }
   }
   window.resizeLeafletMap = id => { window.setTimeout(() => ensureMap(id), 100); };
