@@ -11422,5 +11422,10 @@
                 }
             });
         </script>
-    </body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        if (new URLSearchParams(location.search).get('tab') === 'map') switchTab('map');
+    });
+</script>
+</body>
 </html>
