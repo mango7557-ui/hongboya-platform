@@ -1,0 +1,41 @@
+/* Hongboya: logo red, ink charcoal and warm white. */
+:root{--hb-paper:#faf8f8;--hb-surface:#fff;--hb-ink:#292428;--hb-muted:#6f666a;--hb-line:#e8dfe1;--hb-green:#cb0035;--hb-accent:#d5003b;--hb-soft:#fff0f3;--hb-shadow:0 14px 45px #35101c0a;--brand-red:#d5003b;--brand-red-dark:#a9002e;--brand-charcoal:#292428}
+::selection{background:#ffd4df;color:#292428}
+:where(button,a,input,select,textarea,summary):focus-visible{outline-color:#d5003b}
+.home-page{--bg:#faf8f8;--ink:#292428;--green:#cb0035;--coral:#d5003b;--line:#e8dfe1}
+.home-page .announcement{background:#292428;color:#fff}
+.home-page .header,.studio-page .top{background:#faf8f8ed}
+.home-page .button.primary,.home-page .mini-card-link,.home-page .filters button.active,.studio-page button.primary,.hb-button.primary,.catalog-page #global-header button[onclick="openCreatorStudioModal()"]{background:#cb0035;border-color:#cb0035;color:#fff}
+.home-page .button.primary:hover,.studio-page button.primary:hover,.hb-button.primary:hover{background:#a9002e;border-color:#a9002e}
+.home-page .coral,.home-page .card-button,.home-page .desktop-nav a:hover{color:#c40035}
+.home-page .discover,.home-page .connection-art,.home-page .how{background:#f7eef0}
+.home-page .creator-card{border-color:#eadfe2}.home-page .round-seal{background:#fbe3e9;color:#a9002e}
+.home-page .share-label{background:#fbe3e9;color:#63323e}
+.home-page .hero .eyebrow,.home-page .eyebrow{color:#a9002e}
+.home-page .hub{background:#292428}.home-page .cta{background:#cb0035;color:#fff}.home-page .cta-spark,.home-page .cta-circle,.home-page .cta p{color:#ffe3e9}
+.catalog-page .hb-catalog-intro{background:#f9ecef;border-color:#eed9de}.catalog-page header{background:#faf8f8!important}
+.catalog-page #creator-direct-hub>div{background:#292428!important}
+.join-story{background:#292428!important}.join-form-panel{background:#fff!important}
+.join-story h1{color:#fff}.join-story h1 em{color:#ff9ab3}.join-story p,.join-story .hb-kicker{color:#e8d8de}
+.join-art{color:#292428;background:#fffafb;border-color:#ecdce0;box-shadow:12px 12px 0 #70424f}.join-art-avatar,.join-art-links span{background:#f9ecef}.join-art small{color:#72646a}.join-art-stamp{color:#a9002e}
+.join-role input:checked+span{background:#fff0f3;border-color:#c40035}.join-form-panel input:not([type="radio"]){background:#fffafb}.join-form-panel input::placeholder{color:#766b6f}
+.admin-page #admin-tab-nav{background:#f6edef!important}.admin-page .admin-tab-btn[aria-selected="true"],.admin-page .admin-tab-btn[aria-selected="true"]:hover{background:#cb0035!important;color:#fff!important}
+.admin-page .admin-tab-btn:hover{background:#f3dfe4!important}
+.studio-page .deco-box,.studio-page .entry,.studio-page .notice{background:#faf1f3}
+.assistant-page .app-header{background:#292428}
+.map-mode,.map-mode #main-content-wrapper>main,#tab-map.map-page,.map-header{background:#faf8f8!important;color:#292428}
+.map-header{border-color:#e8dfe1}.map-brand,.map-heading h1{color:#292428}
+.map-nav a{color:#41383c}.map-nav a[aria-current],.map-back:hover,.map-caption a:hover,.map-footer a:hover{color:#b60032}
+.map-header-action,.map-search-row>button{background:#cb0035;color:#fff}.map-header-action:hover,.map-search-row>button:hover{background:#a9002e}
+.map-heading h1 span{color:#d5003b}.map-heading p,.map-provider,.map-caption,.map-footer,.map-search>p{color:#6f666a}
+.map-back,.map-caption a,.map-footer a,.map-search label{color:#4b3c42}
+.map-search{background:#f9ecef;border-color:#eed9de}.map-search-field{border-color:#e3d8db;color:#6f666a}
+.map-search input{color:#292428}.map-search input::placeholder{color:#70666b}.map-search-field:focus-within{outline-color:#d5003b}
+.map-canvas-wrap{background:#f7f1f2;border-color:#eadfe2}.map-location{color:#4b3c42;border-color:#e3d8db}.map-location:hover{background:#fff0f3}.map-footer{border-color:#e8dfe1}
+html[data-theme="dark"]{--hb-paper:#1e191b;--hb-surface:#30272b;--hb-ink:#f8edef;--hb-muted:#d1bec4;--hb-line:#514047;--hb-green:#e80043;--hb-accent:#ff8aa8;--hb-soft:#3a292f}
+html[data-theme="dark"] .home-page{--bg:var(--hb-paper);--ink:var(--hb-ink);--line:var(--hb-line);--green:#e80043;--coral:#ff8aa8}
+html[data-theme="dark"] .home-page .header,html[data-theme="dark"] .studio-page .top{background:#1e191bed}
+html[data-theme="dark"] .home-page .discover,html[data-theme="dark"] .home-page .connection-art,html[data-theme="dark"] .home-page .how,html[data-theme="dark"] .studio-page .deco-box,html[data-theme="dark"] .studio-page .entry,html[data-theme="dark"] .studio-page .notice{background:#302328;color:#f0e1e5}
+html[data-theme="dark"] .home-page .hero .eyebrow,html[data-theme="dark"] .home-page .eyebrow,html[data-theme="dark"] .home-page .coral,html[data-theme="dark"] .home-page .card-button{color:#ff9ab3}
+html[data-theme="dark"] .home-page .round-seal{background:#57303c;color:#fff}
+html[data-theme="dark"] .studio-page input,html[data-theme="dark"] .studio-page textarea,html[data-theme="dark"] .studio-page select,html[data-theme="dark"] .studio-page #profile-form>.actions:last-of-type{background:#30272b;color:#f8edef}
